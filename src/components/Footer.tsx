@@ -1,9 +1,9 @@
 "use client"
 
-import { Facebook, Instagram } from "lucide-react"
-import Link from "next/link"
+import { Phone, MapPin, Clock, MessageCircle, Facebook, Instagram } from "lucide-react"
 import { ContactData } from "@/types/contact"
 import { Make, Model } from "@/utilities/types"
+import Link from "next/link"
 
 interface FooterProps {
   contactData?: ContactData | null
@@ -11,128 +11,128 @@ interface FooterProps {
   models: Model[]
 }
 
-export default function Footer({ contactData, makes, models }: FooterProps) {
+export default function Footer({ contactData }: FooterProps) {
+  const primaryPhone = contactData?.phoneNumbers?.find(p => p.isPrimary) ?? contactData?.phoneNumbers?.[0]
+  const primaryEmail = contactData?.emailAddresses?.find(e => e.isPrimary) ?? contactData?.emailAddresses?.[0]
+  const address = contactData?.businessAddress
 
-  // Extract contact information with fallbacks
-  const businessAddress = contactData?.businessAddress
+  const phone = primaryPhone?.number ?? '01484 480777'
+  const email = primaryEmail?.email ?? 'sales@s-s-c.co.uk'
+  const addressLine = address
+    ? [address.name, address.street, address.city && address.postcode ? `${address.city}, ${address.postcode}` : address.city ?? address.postcode].filter(Boolean).join(', ')
+    : 'EEHAD House, Northgate, Huddersfield, HD1 6AP'
 
-  const primaryPhone =
-    contactData?.phoneNumbers?.find((phone) => phone.isPrimary) ??
-    contactData?.phoneNumbers?.[0]
+  const socialLinks = (contactData?.socialLinks ?? []).filter(s => s.isActive !== false)
 
-  const secondaryPhone =
-    contactData?.phoneNumbers?.find(
-      (phone) => !phone.isPrimary && phone.number !== primaryPhone?.number
-    ) ?? contactData?.phoneNumbers?.[1]
-
-  const primaryEmail =
-    contactData?.emailAddresses?.find((email) => email.isPrimary) ??
-    contactData?.emailAddresses?.[0]
-
-  // Fallback values
-  const primaryPhoneNumber = primaryPhone?.number ?? "01274 299734"
-  const emailAddress = primaryEmail?.email ?? "info@MYDVautosltd.co.uk"
+  const getSocialIcon = (platform: string) => {
+    switch (platform) {
+      case 'facebook': return <Facebook className="h-5 w-5 text-white" />
+      case 'instagram': return <Instagram className="h-5 w-5 text-white" />
+      case 'whatsapp': return <MessageCircle className="h-5 w-5 text-white" />
+      default: return <MessageCircle className="h-5 w-5 text-white" />
+    }
+  }
 
   return (
-    <footer className="bg-[#191919] text-white pt-16 mt-auto">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="w-full bg-black text-gray-400 py-16 px-6 lg:px-12 border-t border-red-600/50 relative z-20">
+      <div className="max-w-7xl mx-auto flex flex-col items-center">
 
-        {/* Top Section */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-zinc-800">
-
-          {/* Logo Area */}
-          <div className="col-span-1 md:col-span-1">
-            <h2 className="text-3xl md:text-4xl tracking-[0.3em] font-light uppercase">
-              MYDV
-            </h2>
-            <p className="text-[10px] tracking-[0.6em] text-zinc-400 mt-2 ml-1 uppercase">
-              A U T O M O T I V E
-            </p>
+        {/* Main Info Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full mb-16 px-4 lg:px-0">
+          {/* Contact Details */}
+          <div className="flex flex-col gap-6 items-center md:items-start md:border-r border-white/10 md:pr-12">
+            <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-4 w-full justify-center md:justify-start group">
+              <div className="flex items-center justify-center w-10 h-10 border border-white/20 group-hover:border-red-600 transition-colors shrink-0">
+                <Phone className="h-4 w-4 text-white" />
+              </div>
+              <div className="text-white font-semibold tracking-wider text-xl">{phone}</div>
+            </a>
+            <a href={`mailto:${email}`} className="flex items-center gap-4 w-full justify-center md:justify-start group">
+              <div className="flex items-center justify-center w-10 h-10 border border-white/20 group-hover:border-red-600 transition-colors shrink-0">
+                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="text-white font-medium tracking-wide">{email}</div>
+            </a>
           </div>
 
-          {/* Links Column 1 */}
-          <div className="col-span-1 flex flex-col space-y-4 text-[13px] tracking-widest font-semibold uppercase text-zinc-300">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <Link href="/used-cars" className="hover:text-white transition-colors">Shop Vehicles</Link>
-            <Link href="/sell-your-car" className="hover:text-white transition-colors">Sell Your Car</Link>
-            <Link href="/part-exchange" className="hover:text-white transition-colors">Part Exchange</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link>
-          </div>
-
-          {/* Links Column 2 */}
-          <div className="col-span-1 flex flex-col space-y-4 text-[13px] tracking-widest font-semibold uppercase text-zinc-300">
-            <Link href="/sitemap.xml" className="hover:text-white transition-colors">Sitemap</Link>
-            <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/cookies" className="hover:text-white transition-colors">Cookie Preferences</Link>
-          </div>
-
-          {/* Contact Area */}
-          <div className="col-span-1 flex flex-col space-y-4">
-            <h3 className="text-sm font-bold tracking-widest uppercase mb-1">Contact</h3>
-
-            <p className="text-zinc-400 text-sm leading-relaxed">
-              {businessAddress?.name ?? "MYDV Autos Ltd"} <br />
-              {businessAddress?.street ?? "Premium Auto Centre"} <br />
-              {businessAddress?.city ?? "Nottingham"},{" "}
-              {businessAddress?.postcode ?? "NG1 1NG"}
-            </p>
-
-            <p className="text-2xl md:text-3xl font-bold mt-2">
-              {primaryPhoneNumber}
-            </p>
-
-            <div className="flex gap-4 mt-4">
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full border border-zinc-500 flex items-center justify-center hover:border-white hover:text-white text-zinc-300 transition-all duration-300"
-              >
-                <Facebook className="w-[18px] h-[18px]" />
-              </a>
-
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full border border-zinc-500 flex items-center justify-center hover:border-white hover:text-white text-zinc-300 transition-all duration-300"
-              >
-                <Instagram className="w-[18px] h-[18px]" />
-              </a>
+          {/* Address & Hours */}
+          <div className="flex flex-col gap-6 items-center md:items-start md:border-r border-white/10 md:pr-12">
+            <div className="flex items-start gap-4 w-full justify-center md:justify-start">
+              <div className="flex items-center justify-center w-10 h-10 border border-white/20 hover:border-red-600 transition-colors mt-1 shrink-0">
+                <MapPin className="h-4 w-4 text-white" />
+              </div>
+              <address className="not-italic text-white/80 text-sm leading-relaxed tracking-wide">
+                {addressLine}
+              </address>
+            </div>
+            <div className="flex items-start gap-4 w-full justify-center md:justify-start">
+              <div className="flex items-center justify-center w-10 h-10 border border-white/20 hover:border-red-600 transition-colors mt-1 shrink-0">
+                <Clock className="h-4 w-4 text-white" />
+              </div>
+              <div className="text-white/80 text-xs leading-relaxed tracking-wider space-y-1">
+                <div>Mon - Fri: 09:00 am - 06:00 pm</div>
+                <div>Sat: 10:00 am - 05:00 pm</div>
+                <div>Sun: By Appointment Only</div>
+              </div>
             </div>
           </div>
 
+          {/* Social Icons */}
+          <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">
+            {socialLinks.length > 0 ? (
+              socialLinks.map(s => (
+                <a
+                  key={s.id ?? s.url}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.platform}
+                  className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-red-600 hover:text-red-500 transition-colors"
+                >
+                  {getSocialIcon(s.platform)}
+                </a>
+              ))
+            ) : (
+              <>
+                <a href="#" className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-red-600 hover:text-red-500 transition-colors">
+                  <MessageCircle className="h-5 w-5 text-white" />
+                </a>
+                <a href="#" className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-red-600 hover:text-red-500 transition-colors">
+                  <Facebook className="h-5 w-5 text-white" />
+                </a>
+                <a href="#" className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-red-600 hover:text-red-500 transition-colors">
+                  <Instagram className="h-5 w-5 text-white" />
+                </a>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* FCA Text Section */}
-        <div className="py-8">
-          <p className="text-sm text-zinc-400 leading-relaxed font-light">
-            MYDV Automotive ltd is authorised and regulated by the Financial Conduct Authority, FRN: 779199.
-            All finance is subject to status and income. Written quotation on request. We act as a credit broker
-            not a lender. We work with a number of carefully selected credit providers who may be able to offer
-            you finance for your purchase. We are only able to offer finance products from these providers.
+        <div className="w-full h-px bg-white/10 mb-12" />
+
+        {/* FCA Disclaimer */}
+        <div className="text-[10px] md:text-xs text-center text-gray-500 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
+          <p className="mb-4">
+            This dealership is authorised and regulated by the Financial Conduct Authority for Consumer Credit. We are a credit broker, not a lender, and can introduce you to a limited number of lenders.
+          </p>
+          <p>
+            All finance applications are subject to status, terms and conditions apply, UK residents only, 18&apos;s or over. Guarantees may be required. The commission we receive does not influence the interest rate you will pay. Our aim is to secure finance for you at the lowest interest rate you are eligible for from our panel of lenders.
           </p>
         </div>
 
-      </div>
-
-      {/* Bottom Legal / Copyright Section */}
-      <div className="bg-[#222222] py-8 border-t border-zinc-800">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col space-y-8">
-
-          {/* Row 1 */}
-          <div className="flex flex-wrap gap-x-8 gap-y-2 text-[13px] text-zinc-400 font-light">
-            <span>MYDV Automotive</span>
-            <span>Registered in England and Wales</span>
-            <span>Company No. 17614346</span>
-          </div>
-
-          {/* Row 3 */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 text-[13px] text-zinc-400 font-light pt-2">
-            <div>
-              <span>© {new Date().getFullYear()} All Rights Reserved Website by </span>
-              <span className="text-white font-medium">MYDV Autos</span>
-            </div>
-            <span>FCA Number: 779199</span>
-          </div>
-
+        {/* Bottom Legal Links */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-500 tracking-wider">
+          <span>© {new Date().getFullYear()} Template</span>
+          <span className="hidden md:inline">|</span>
+          <Link href="/terms" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Terms &amp; Conditions</Link>
+          <span className="hidden md:inline">|</span>
+          <Link href="/privacy" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Privacy Policy</Link>
+          <span className="hidden md:inline">|</span>
+          <Link href="/cookies" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Cookie Preferences</Link>
+          <span className="hidden md:inline">|</span>
+          <Link href="/contact" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Contact Us</Link>
         </div>
       </div>
     </footer>
