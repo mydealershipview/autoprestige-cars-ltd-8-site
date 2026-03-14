@@ -1,126 +1,142 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { draftMode } from 'next/headers'
-
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
-import { cache } from 'react'
-
-import type { Page } from '@/payload-types'
-
-const queryWarrantyPage = cache(async (): Promise<Page | null> => {
-  const payload = await getPayload({ config: configPromise })
-
-  try {
-    const result = await payload.find({
-      collection: 'pages',
-      draft: (await draftMode()).isEnabled,
-      where: {
-        template: {
-          equals: 'warranty',
-        },
-      },
-    })
-
-    return result.docs?.[0] || null
-  } catch (error) {
-    return null
-  }
-})
 
 export const metadata: Metadata = {
-  title: 'Car Warranty - MWA Autos | Comprehensive Used Car Warranty Protection',
-  description: 'Protect your used car with MWA Autos comprehensive warranty packages. Third party and in-house warranties available from £99. Covers any vehicle, any age.',
-  keywords: 'car warranty Nottingham, used car warranty, vehicle protection, warranty cover, automotive warranty, car protection plan',
+  title: 'RAC Warranty | Template',
+  description:
+    'Every eligible vehicle we sell includes an RAC Warranty. 3-month maintenance and repair cover, 12 months free RAC Breakdown Cover, Car Data Check and no excess to pay.',
   openGraph: {
-    title: 'Car Warranty - MWA Autos',
-    description: 'Comprehensive warranty packages for used cars. Protection from £99 covering any vehicle, any age.',
+    title: 'RAC Warranty | Template',
+    description:
+      'Comprehensive RAC warranty protection with every eligible vehicle sold. Peace of mind driving from day one.',
     type: 'website',
     locale: 'en_GB',
   },
 }
 
-export default async function WarrantyPage() {
-  let page: Page | null = null
+const warrantyFeatures = [
+  {
+    title: 'RAC Maintenance and Repair Warranty',
+    description:
+      '3 month warranty with every eligible vehicle*. RAC Maintenance and Repair Warranty is included with all makes and models and can give you the extra reassurance in the event of something happening to your vehicle. For additional peace of mind, you can extend the term of the warranty to up to 36 months for an additional fee.',
+    image: '/car_8.jpg',
+  },
+  {
+    title: '12 Months Free RAC Breakdown Cover**',
+    description:
+      'Every vehicle includes free 12 months RAC Breakdown Cover, which may require activation. RAC Accident Care — Your RAC breakdown cover includes Accident Care and Motor Legal Care (for the duration of Breakdown Cover).',
+    image: '/car_9.jpg',
+  },
+  {
+    title: 'Car Data Check',
+    description:
+      'Evidences the vehicle you are buying is not stolen, written off or have any outstanding finance. Complete peace of mind before you drive away.',
+    image: '/car_10.jpg',
+  },
+  {
+    title: 'No Excess to Pay',
+    description:
+      'Unlike many warranty providers, our RAC Warranty comes with no excess payments. When something goes wrong you are fully covered with no hidden costs to worry about.',
+    image: '/car_8.jpg',
+  },
+]
 
-  try {
-    page = await queryWarrantyPage()
-  } catch (error) {
-    // continue with null page
-  }
+const AccentBar = () => (
+  <div className="flex items-center justify-center gap-0 mx-auto w-32 mt-3">
+    <div className="h-[3px] flex-1 bg-red-600" />
+    <div className="w-4 h-4 bg-red-600 rotate-45 -mx-1" />
+    <div className="h-[3px] flex-1 bg-red-600" />
+  </div>
+)
 
+const FeatureCard = ({ feature }: { feature: (typeof warrantyFeatures)[number] }) => (
+  <div className="relative flex flex-col items-center justify-center text-center px-10 py-16 overflow-hidden min-h-[340px] group">
+    <div
+      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+      style={{ backgroundImage: `url('${feature.image}')` }}
+    />
+    <div className="absolute inset-0 bg-black/70 group-hover:bg-black/55 transition-colors duration-300" />
+    <div className="relative z-10">
+      <h3 className="text-base md:text-lg font-black tracking-widest uppercase text-red-500 mb-2">
+        {feature.title}
+      </h3>
+      <div className="h-[2px] w-12 bg-red-600 mx-auto mb-4" />
+      <p className="text-white/80 text-sm leading-relaxed max-w-xs mx-auto">
+        {feature.description}
+      </p>
+    </div>
+  </div>
+)
+
+export default function WarrantyPage() {
   return (
-    <main className="min-h-screen bg-[#111111] text-white pt-24 pb-20">
-      {/* Hero Section */}
-      <section className="relative w-full h-[600px] md:h-[700px] flex items-center">
-        <div className="absolute inset-0 z-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1920&q=80"
-            alt="Car steering wheel close up - Assurance"
-            className="w-full h-full object-cover opacity-70"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
-        </div>
-        
-        <div className="relative z-10 max-w-[1700px] mx-auto px-6 w-full mt-10 md:mt-20">
-          <div className="bg-[#1a1a1a]/95 max-w-lg p-10 md:p-14 border border-white/5">
-            <h1 className="text-3xl md:text-5xl tracking-[0.2em] font-light uppercase mb-6 leading-tight text-center">
-              Warranty
-            </h1>
-            <p className="text-sm text-zinc-300 leading-relaxed font-light text-center">
-              Drive away with complete peace of mind. Comprehensive third-party and in-house warranties available to protect your investment.
-            </p>
-          </div>
+    <div className="bg-black text-white min-h-screen">
+      {/* ─── HERO ─── */}
+      <section
+        className="relative flex items-center justify-center overflow-hidden"
+        style={{ minHeight: '52vh', paddingTop: '5rem' }}
+      >
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/car_9.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-black/60" />
+
+        <div className="relative z-10 text-center px-4">
+          <h1 className="text-5xl md:text-7xl font-black tracking-[0.2em] uppercase text-white mb-4">
+            RAC Warranty
+          </h1>
+          <AccentBar />
         </div>
       </section>
 
-      {/* Info Sections */}
-      <section className="max-w-4xl mx-auto px-6 py-20">
-        
-        <div className="mb-16">
-          <h2 className="text-xl md:text-2xl tracking-widest uppercase mb-6">
-            Comprehensive Cover From £99
-          </h2>
-          <p className="text-sm text-zinc-400 font-light mb-4">
-            At MWA Autos, we understand that buying a used car is a significant investment. That&apos;s why we offer comprehensive warranty packages designed to give you total peace of mind long after you leave our showroom.
-          </p>
-          <p className="text-sm text-zinc-400 font-light mb-4">
-            We provide a range of tailored warranty options, including trusted third-party coverage and our very own in-house policies. Starting from just £99, you can ensure your vehicle is protected against unforeseen mechanical and electrical failures.
-          </p>
-          <p className="text-sm text-zinc-400 font-light">
-            Our flexible plans are built to cover any vehicle, of any age, ensuring that no matter which car you choose from our site, you are fully supported on the road ahead.
-          </p>
-        </div>
+      {/* ─── PROUD RAC DEALER ─── */}
+      <section className="py-14 text-center px-4">
+        <h2 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-3 flex items-center justify-center gap-3 flex-wrap">
+          <div className="w-5 h-5 bg-red-600 rotate-45 inline-block shrink-0" />
+          We&apos;re Proud to Be an RAC Dealer
+        </h2>
+        <AccentBar />
+        <p className="text-white/60 max-w-2xl mx-auto text-sm leading-relaxed mt-6">
+          Although we take care and pride in ensuring all our vehicles are in their best condition
+          when sold, sometimes things can go wrong. We&apos;d like to offer you added peace of mind
+          when driving your new vehicle. As part of the RAC Dealer Network, every eligible vehicle
+          we sell includes an RAC Warranty.
+        </p>
+      </section>
 
-        <div>
-          <h2 className="text-xl md:text-2xl tracking-widest uppercase mb-6">
-            Why Choose Our Warranty?
-          </h2>
-          <ul className="text-sm text-zinc-400 font-light space-y-4 list-none">
-            <li className="flex items-start gap-4 border-b border-white/10 pb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0"></span>
-              <span>Available from just £99 with transparent pricing and absolutely no hidden fees.</span>
-            </li>
-            <li className="flex items-start gap-4 border-b border-white/10 pb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0"></span>
-              <span>Flexible coverage options spanning both mechanical and electrical components so you&apos;re never caught off-guard.</span>
-            </li>
-            <li className="flex items-start gap-4 border-b border-white/10 pb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0"></span>
-              <span>Policies built to suit any vehicle make, model, or age.</span>
-            </li>
-            <li className="flex items-start gap-4 border-b border-white/10 pb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0"></span>
-              <span>Choose between top-tier third-party providers or our highly-rated in-house coverage for rapid claim resolution.</span>
-            </li>
-            <li className="flex items-start gap-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0"></span>
-              <span>Dedicated aftersales support to help you get back on the road safely and swiftly.</span>
-            </li>
-          </ul>
+      {/* ─── EVERY VEHICLE COMES WITH ─── */}
+      <section className="pb-4 text-center px-4">
+        <h2 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-2 flex items-center justify-center gap-3 flex-wrap">
+          <div className="w-5 h-5 bg-red-600 rotate-45 inline-block shrink-0" />
+          Every Vehicle Sold Comes With:
+        </h2>
+        <AccentBar />
+      </section>
+
+      {/* ─── FEATURE CARDS ─── */}
+      <section className="pb-6 pt-4">
+        {/* Row 1 — 3 cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3">
+          {warrantyFeatures.slice(0, 3).map((feature, index) => (
+            <FeatureCard key={index} feature={feature} />
+          ))}
+        </div>
+        {/* Row 2 — 1 card, centred */}
+        <div className="grid grid-cols-1 md:grid-cols-1 md:max-w-[33.333%] md:mx-auto w-full">
+          {warrantyFeatures.slice(3).map((feature, index) => (
+            <FeatureCard key={index + 3} feature={feature} />
+          ))}
         </div>
       </section>
-    </main>
+
+      {/* ─── SMALL PRINT ─── */}
+      <section className="py-10 px-4 border-t border-white/10">
+        <p className="text-white/30 text-xs max-w-3xl mx-auto text-center leading-relaxed">
+          * Subject to vehicle eligibility criteria. ** 12 Months RAC Breakdown Cover may require
+          activation. Terms and conditions apply. Please ask a member of our team for full details.
+        </p>
+      </section>
+    </div>
   )
 }
