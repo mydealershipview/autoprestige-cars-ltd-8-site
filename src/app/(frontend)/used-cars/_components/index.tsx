@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 import { Make, Model } from '@/utilities/types'
+import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
 import type { Page } from '@/payload-types'
-import { generateVehicleSlug } from '@/utilities/formatVehicleData'
+import { useWishlist } from '@/contexts/WishlistContext'
+import { ChevronDown, Search, MessageCircle, CreditCard, Camera, Video } from 'lucide-react'
 
 interface UsedCarsComponentProps {
-  listingsData: Page | null
+  listingsData?: Page | null
 }
 
 interface ListingsFilters {
@@ -17,17 +19,16 @@ interface ListingsFilters {
   model: string
   minPrice: string
   maxPrice: string
-  minMileage: string
-  maxMileage: string
   fuelType: string
   bodyType: string
   transmissionType: string
   minYear: string
   maxYear: string
+  colour: string
+  minMileage: string
+  maxMileage: string
+  seats: string
 }
-
-type SortOrder = 'asc' | 'desc'
-type SortBy = 'dateAdded' | 'price' | 'year' | 'mileage' | 'make' | 'model' | 'fuelType'
 
 type ExtendedModel = Model & {
   makeName: string
@@ -38,186 +39,187 @@ export default function UsedCarsComponent({ listingsData }: UsedCarsComponentPro
   const searchParams = useSearchParams()
 
   const [listings, setListings] = useState<AutoTraderVehicle[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalResults, setTotalResults] = useState(0)
-  const pageSize = 20
+  const [pageSize] = useState(20)
+  const { toggleWishlist, isInWishlist } = useWishlist()
+
+  // Sorting state
+  const [sortBy, setSortBy] = useState('price')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Make and Model state
   const [makes, setMakes] = useState<Make[]>([])
   const [models, setModels] = useState<ExtendedModel[]>([])
   const [allModels, setAllModels] = useState<ExtendedModel[]>([])
-  const [showFiltersModal, setShowFiltersModal] = useState(false)
-  const [showSortModal, setShowSortModal] = useState(false)
-  const [draftFilters, setDraftFilters] = useState<ListingsFilters>({
-    make: '',
-    model: '',
-    minPrice: '',
-    maxPrice: '',
-    minMileage: '',
-    maxMileage: '',
-    fuelType: '',
-    bodyType: '',
-    transmissionType: '',
-    minYear: '',
-    maxYear: '',
-  })
-  const [draftSortBy, setDraftSortBy] = useState<SortBy>('dateAdded')
-  const [draftSortOrder, setDraftSortOrder] = useState<SortOrder>('desc')
+  const [makesModelsLoaded, setMakesModelsLoaded] = useState(false)
 
   // Get current page from URL params
   const currentPage = parseInt(searchParams.get('page') || '1', 10)
 
-  const appliedSortBy = (searchParams.get('sortBy') as SortBy) || 'dateAdded'
-  const appliedSortOrder = (searchParams.get('sortOrder') as SortOrder) || 'desc'
+  // Get sorting from URL params
+  useEffect(() => {
+    const urlSortBy = searchParams.get('sortBy') || 'price'
+    const urlSortOrder = (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc'
+    setSortBy(urlSortBy)
+    setSortOrder(urlSortOrder)
+  }, [searchParams])
 
   // Get filters from URL params
   const getFiltersFromParams = useCallback((): ListingsFilters => {
     return {
-      make: searchParams.get('make') || '',
-      model: searchParams.get('model') || '',
+      make: decodeURIComponent(searchParams.get('make') || ''),
+      model: decodeURIComponent(searchParams.get('model') || ''),
       minPrice: searchParams.get('minPrice') || '',
       maxPrice: searchParams.get('maxPrice') || '',
-      minMileage: searchParams.get('minMileage') || '',
-      maxMileage: searchParams.get('maxMileage') || '',
       fuelType: searchParams.get('fuelType') || '',
       bodyType: searchParams.get('bodyType') || '',
       transmissionType: searchParams.get('transmissionType') || '',
       minYear: searchParams.get('minYear') || '',
-      maxYear: searchParams.get('maxYear') || ''
+      maxYear: searchParams.get('maxYear') || '',
+      colour: searchParams.get('colour') || '',
+      minMileage: searchParams.get('minMileage') || '',
+      maxMileage: searchParams.get('maxMileage') || '',
+      seats: searchParams.get('seats') || '',
     }
   }, [searchParams])
 
-  // Memoize filters so it doesn't cause infinite re-renders in useEffect
-  const filters = useMemo(() => getFiltersFromParams(), [getFiltersFromParams])
+  const filters = getFiltersFromParams()
 
   const totalPages = Math.ceil(totalResults / pageSize)
 
-  const fetchListings = useCallback(async (page: number, currentFilters: ListingsFilters, currentSortBy: SortBy, currentSortOrder: SortOrder) => {
+  const fetchListings = async (
+    page: number,
+    currentFilters: ListingsFilters,
+    currentSortBy?: string,
+    currentSortOrder?: 'asc' | 'desc',
+  ) => {
     setLoading(true)
     setError(null)
 
     try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(pageSize),
-        sortBy: currentSortBy,
-        sortOrder: currentSortOrder,
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+        sortBy: currentSortBy || sortBy,
+        sortOrder: currentSortOrder || sortOrder,
       })
 
+      // Add filters to query params
       Object.entries(currentFilters).forEach(([key, value]) => {
+        if (value) {
+          queryParams.append(key, value)
+        }
+      })
+
+      const response = await fetch(`/api/listings?${queryParams}`)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setListings(data.results)
+      setTotalResults(data.totalResults)
+
+      // Update makes and models from the response
+      if (data.availableMakes) {
+        setMakes(data.availableMakes)
+      }
+      if (data.availableModels) {
+        setAllModels(data.availableModels)
+        if (!makesModelsLoaded) {
+          setMakesModelsLoaded(true)
+        }
+      }
+
+      // Filter models for the selected make
+      if (data.availableModels) {
+        const filteredModels = filters.make
+          ? data.availableModels.filter((model: any) => {
+              const selectedMakeObj = data.availableMakes?.find(
+                (make: any) => make.name === filters.make,
+              )
+              return selectedMakeObj && model.makeId === selectedMakeObj.makeId
+            })
+          : []
+        setModels(filteredModels)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch listings')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Load listings on component mount and when parameters change
+  useEffect(() => {
+    fetchListings(currentPage, filters, sortBy, sortOrder)
+  }, [currentPage, sortBy, sortOrder, filters.maxPrice, filters.minPrice])
+
+  const updateURL = useCallback(
+    (
+      newFilters: ListingsFilters,
+      page: number = 1,
+      newSortBy?: string,
+      newSortOrder?: 'asc' | 'desc',
+    ) => {
+      const params = new URLSearchParams()
+
+      if (page > 1) {
+        params.set('page', page.toString())
+      }
+
+      const currentSortBy = newSortBy || sortBy
+      const currentSortOrder = newSortOrder || sortOrder
+      if (currentSortBy !== 'price' || currentSortOrder !== 'desc') {
+        params.set('sortBy', currentSortBy)
+        params.set('sortOrder', currentSortOrder)
+      }
+
+      Object.entries(newFilters).forEach(([key, value]) => {
         if (value) {
           params.set(key, value)
         }
       })
 
-      const response = await fetch(`/api/listings?${params.toString()}`, {
-        method: 'GET',
-        cache: 'no-store',
-      })
+      const newURL = params.toString() ? `?${params.toString()}` : '/showroom'
+      router.push(newURL, { scroll: false })
+    },
+    [router, sortBy, sortOrder],
+  )
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch listings (${response.status})`)
-      }
-
-      const data = await response.json()
-      const incomingListings: AutoTraderVehicle[] = data.results || []
-      const incomingMakes: Make[] = data.availableMakes || []
-      const incomingModels: ExtendedModel[] = data.availableModels || []
-
-      setListings(incomingListings)
-      setTotalResults(data.totalResults || 0)
-      setMakes(incomingMakes)
-      setAllModels(incomingModels)
-
-      if (currentFilters.make) {
-        setModels(incomingModels.filter((model) => model.makeName === currentFilters.make))
-      } else {
-        setModels([])
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch listings')
-      setListings([])
-      setTotalResults(0)
-    } finally {
-      setLoading(false)
-    }
-  }, [pageSize])
-
-  // Load listings on component mount and when parameters change
-  useEffect(() => {
-    fetchListings(currentPage, filters, appliedSortBy, appliedSortOrder)
-  }, [currentPage, appliedSortBy, appliedSortOrder, filters, fetchListings])
-
-  useEffect(() => {
-    if (!showFiltersModal) {
-      return
-    }
-
-    setDraftFilters(filters)
-    if (filters.make) {
-      setModels(allModels.filter((model) => model.makeName === filters.make))
-    } else {
-      setModels([])
-    }
-  }, [showFiltersModal, filters, allModels])
-
-  useEffect(() => {
-    if (!showSortModal) {
-      return
-    }
-
-    setDraftSortBy(appliedSortBy)
-    setDraftSortOrder(appliedSortOrder)
-  }, [showSortModal, appliedSortBy, appliedSortOrder])
-
-  const updateURL = useCallback((newFilters: ListingsFilters, page = 1, newSortBy?: SortBy, newSortOrder?: SortOrder) => {
-    const params = new URLSearchParams()
-
-    // Add page parameter
-    if (page > 1) {
-      params.set('page', page.toString())
-    }
-
-    // Add sorting parameters
-    const currentSortBy = newSortBy || appliedSortBy
-    const currentSortOrder = newSortOrder || appliedSortOrder
-    if (currentSortBy !== 'dateAdded') {
-      params.set('sortBy', currentSortBy)
-    }
-    if (currentSortOrder !== 'desc') {
-      params.set('sortOrder', currentSortOrder)
-    }
-
-    // Add filter parameters
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value)
-      }
-    })
-
-    // Update URL
-    const newURL = params.toString() ? `?${params.toString()}` : '/used-cars'
-    router.push(newURL, { scroll: false })
-  }, [router, appliedSortBy, appliedSortOrder])
-
-  const handleDraftFilterChange = (key: keyof ListingsFilters, value: string) => {
-    setDraftFilters((prev) => ({ ...prev, [key]: value }))
+  const handleFilterChange = (key: keyof ListingsFilters, value: string) => {
+    const newFilters = { ...filters, [key]: value }
+    updateURL(newFilters, 1, sortBy, sortOrder)
   }
 
-  const handleDraftMakeChange = (makeName: string) => {
-    setDraftFilters((prev) => ({ ...prev, make: makeName, model: '' }))
+  // Handle make change
+  const handleMakeChange = (makeName: string) => {
+    const newFilters = { ...filters, make: makeName, model: '' }
     setModels(allModels.filter((model) => model.makeName === makeName))
+    updateURL(newFilters, 1, sortBy, sortOrder)
   }
 
-  const handleApplyModalFilters = () => {
-    updateURL(draftFilters, 1, appliedSortBy, appliedSortOrder)
-    setShowFiltersModal(false)
+  // Handle model change
+  const handleModelChange = (modelName: string) => {
+    const newFilters = { ...filters, model: modelName }
+    updateURL(newFilters, 1, sortBy, sortOrder)
   }
 
-  const handleApplySort = () => {
-    updateURL(filters, 1, draftSortBy, draftSortOrder)
-    setShowSortModal(false)
+  // Handle sorting change from dropdown
+  const handleSortDropdownChange = (value: string) => {
+    const lastDash = value.lastIndexOf('-')
+    const newSortBy = value.substring(0, lastDash)
+    const newSortOrder = value.substring(lastDash + 1) as 'asc' | 'desc'
+    setSortBy(newSortBy)
+    setSortOrder(newSortOrder)
+    updateURL(filters, 1, newSortBy, newSortOrder)
+    fetchListings(1, filters, newSortBy, newSortOrder)
   }
 
   const handleClearFilters = () => {
@@ -226,490 +228,683 @@ export default function UsedCarsComponent({ listingsData }: UsedCarsComponentPro
       model: '',
       minPrice: '',
       maxPrice: '',
-      minMileage: '',
-      maxMileage: '',
       fuelType: '',
       bodyType: '',
       transmissionType: '',
       minYear: '',
-      maxYear: ''
+      maxYear: '',
+      colour: '',
+      minMileage: '',
+      maxMileage: '',
+      seats: '',
     }
-    setDraftFilters(clearedFilters)
-    updateURL(clearedFilters, 1, appliedSortBy, appliedSortOrder)
+    updateURL(clearedFilters, 1, sortBy, sortOrder)
     setModels([])
-    setShowFiltersModal(false)
   }
 
   const handlePageChange = (page: number) => {
-    updateURL(filters, page, appliedSortBy, appliedSortOrder)
+    updateURL(filters, page, sortBy, sortOrder)
   }
 
   const formatMileage = (mileage: number | null) => {
-    if (!mileage) return 'Not specified'
-    return new Intl.NumberFormat('en-GB').format(mileage) + ' m'
+    if (mileage == null) return null
+    return `${new Intl.NumberFormat('en-GB').format(mileage)}mi`
   }
 
-  const calculateMonthlyPayment = (price: number | null) => {
+  const calculateMonthlyPayment = (price: number | null): string => {
     if (!price || price <= 0) return 'N/A'
-
-    const deposit = price * 0.1 // 10% deposit
-    const loanAmount = price - deposit
-    const monthlyRate = 0.099 / 12 // 9.9% APR divided by 12 months
-    const numPayments = 60 // 60 months
-
-    const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1)
-
+    const deposit = price * 0.1
+    const principal = price - deposit
+    // 8.9% APR, 48 months
+    const monthlyRate = Math.pow(1.089, 1 / 12) - 1
+    const n = 48
+    const monthly = (principal * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1)
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(monthlyPayment)
+    }).format(monthly)
   }
 
-  const sortOptions: Array<{ value: SortBy; label: string }> = [
-    { value: 'dateAdded', label: 'Recently Added' },
-    { value: 'price', label: 'Price' },
-    { value: 'year', label: 'Year' },
-    { value: 'mileage', label: 'Mileage' },
-    { value: 'make', label: 'Make' },
-    { value: 'model', label: 'Model' },
-    { value: 'fuelType', label: 'Fuel Type' },
-  ]
+  const isULEZCompliant = (vehicle: AutoTraderVehicle): boolean => {
+    const emissionClass = (vehicle.vehicle.emissionClass || '').toLowerCase()
+    const fuelType = (vehicle.vehicle.fuelType || vehicle.vehicle.standard?.fuelType || '').toLowerCase()
+    if (fuelType === 'electric') return true
+    if (fuelType === 'petrol' || fuelType === 'hybrid') {
+      return emissionClass.includes('euro 4') || emissionClass.includes('euro 5') || emissionClass.includes('euro 6')
+    }
+    if (fuelType === 'diesel') return emissionClass.includes('euro 6')
+    return false
+  }
 
-  const showResultsFrom = totalResults === 0 ? 0 : (currentPage - 1) * pageSize + 1
-  const showResultsTo = Math.min(currentPage * pageSize, totalResults)
-  const visiblePagination = Array.from({ length: totalPages }).slice(
-    Math.max(0, currentPage - 3),
-    Math.max(0, currentPage - 3) + 5,
+  const hasActiveFilters = Object.values(filters).some((v) => v !== '')
+
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    vehicleTypes: false,
+    manufacturer: true,
+    model: false,
+    price: false,
+    version: false,
+    bodyType: false,
+    fuelType: false,
+    transmission: false,
+    colours: false,
+    seats: false,
+    engineLitres: false,
+    mileage: false,
+  })
+
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  // Client-side text search across make, model, colour
+  const filteredListings = useMemo(() => {
+    if (!searchQuery.trim()) return listings
+    const q = searchQuery.toLowerCase()
+    return listings.filter((v) => {
+      const make = (v.vehicle?.make || v.vehicle?.standard?.make || '').toLowerCase()
+      const model = (v.vehicle?.model || v.vehicle?.standard?.model || '').toLowerCase()
+      const colour = (v.vehicle?.colour || v.vehicle?.standard?.colour || '').toLowerCase()
+      const derivative = (v.vehicle?.derivative || v.vehicle?.standard?.derivative || '').toLowerCase()
+      return make.includes(q) || model.includes(q) || colour.includes(q) || derivative.includes(q)
+    })
+  }, [listings, searchQuery])
+
+  // Accordion section component
+  const FilterSection = ({
+    sectionKey,
+    label,
+    isActive,
+    children,
+  }: {
+    sectionKey: string
+    label: string
+    isActive?: boolean
+    children: React.ReactNode
+  }) => (
+    <div className="border-b border-white/10">
+      <button
+        onClick={() => toggleSection(sectionKey)}
+        className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-white/5 transition-colors"
+      >
+        <span
+          className={`text-sm font-semibold tracking-wide uppercase ${
+            isActive ? 'text-red-500' : 'text-white'
+          }`}
+        >
+          {label}
+        </span>
+        <ChevronDown
+          className={`w-4 h-4 text-gray-400 transition-transform ${
+            openSections[sectionKey] ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+      {openSections[sectionKey] && (
+        <div className="px-5 pb-4 pt-1 space-y-2">{children}</div>
+      )}
+    </div>
   )
 
+  const inputCls =
+    'w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white/30 appearance-none'
+  const selectCls =
+    'w-full bg-[#111] border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30'
+
   return (
-    <main className="min-h-screen bg-[#111111] text-white pt-24 pb-20">
-      
-      {/* Title */}
-      <div className="text-center py-10">
-        <h1 className="text-2xl md:text-3xl tracking-[0.2em] font-light uppercase">
-          Shop Our Vehicles
-        </h1>
+    <main className="min-h-screen bg-[#111111] text-white">
+      {/* Navbar spacer — nav is rendered globally via Layout */}
+      <div className="h-20" />
+
+      {/* Page header */}
+      <div className="text-center py-9 border-b border-white/10">
+        <h1 className="text-4xl font-extrabold tracking-[0.2em] uppercase">Our Showroom</h1>
+        <p className="text-sm tracking-[0.15em] text-gray-400 mt-2 uppercase font-medium">
+          {loading ? '...' : `${totalResults} Vehicles for Sale`}
+        </p>
       </div>
 
-      {/* Filter and Order Buttons */}
-      <div className="max-w-425 mx-auto px-6 grid grid-cols-2 gap-4 mb-8">
-        <button 
-          className="bg-white text-black py-4 text-xs font-semibold tracking-widest uppercase hover:bg-gray-200 transition-colors!"
-          onClick={() => setShowFiltersModal(true)}
-        >
-          FILTER
-        </button>
-        <button 
-          className="bg-zinc-500 text-white py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-600 transition-colors!"
-          onClick={() => setShowSortModal(true)}
-        >
-          ORDER BY
-        </button>
-      </div>
-
-      {/* Display Count */}
-      <div className="text-center text-[10px] tracking-widest uppercase text-white mb-10 font-semibold">
-        CURRENTLY DISPLAYING {showResultsFrom} - {showResultsTo} OF {totalResults}
-      </div>
-
-      {error && (
-        <div className="max-w-425 mx-auto px-6 mb-6">
-          <div className="border border-red-500/30 bg-red-500/10 p-4 text-xs tracking-wide uppercase text-red-300 text-center">
-            {error}
-          </div>
-        </div>
-      )}
-
-      {/* Filters Modal */}
-      {showFiltersModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-3xl bg-[#161616] border border-white/10">
-            <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-              <h2 className="text-sm tracking-[0.2em] uppercase">Filter Vehicles</h2>
-              <button
-                className="text-xs tracking-[0.2em] uppercase text-zinc-400 hover:text-white"
-                onClick={() => setShowFiltersModal(false)}
-              >
-                Close
-              </button>
+      <div className="flex min-h-[calc(100vh-120px)]">
+        {/* ── Sidebar ── */}
+        <aside className="w-52 shrink-0 border-r border-white/10 bg-[#0d0d0d] flex flex-col sticky top-0 h-screen overflow-y-auto scrollbar-thin">
+          {/* Header */}
+          <div className="px-5 pt-5 pb-4 border-b border-white/10 flex items-start justify-between">
+            <div>
+              <p className="text-sm font-extrabold tracking-widest uppercase">Filters</p>
+              <p className="text-[11px] text-gray-500 mt-0.5 font-semibold uppercase tracking-wider">
+                {loading ? '...' : `${totalResults} Available`}
+              </p>
             </div>
-
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Make</label>
-                <select
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.make}
-                  onChange={(e) => handleDraftMakeChange(e.target.value)}
-                >
-                  <option value="">All Makes</option>
-                  {makes.map((make) => (
-                    <option key={make.makeId} value={make.name}>{make.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Model</label>
-                <select
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.model}
-                  onChange={(e) => handleDraftFilterChange('model', e.target.value)}
-                  disabled={!draftFilters.make}
-                >
-                  <option value="">All Models</option>
-                  {models.map((model) => (
-                    <option key={model.modelId} value={model.name}>{model.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Min Price (£)</label>
-                <input
-                  type="number"
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.minPrice}
-                  onChange={(e) => handleDraftFilterChange('minPrice', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Max Price (£)</label>
-                <input
-                  type="number"
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.maxPrice}
-                  onChange={(e) => handleDraftFilterChange('maxPrice', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Min Mileage</label>
-                <input
-                  type="number"
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.minMileage}
-                  onChange={(e) => handleDraftFilterChange('minMileage', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Max Mileage</label>
-                <input
-                  type="number"
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.maxMileage}
-                  onChange={(e) => handleDraftFilterChange('maxMileage', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Min Year</label>
-                <input
-                  type="number"
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.minYear}
-                  onChange={(e) => handleDraftFilterChange('minYear', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Max Year</label>
-                <input
-                  type="number"
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.maxYear}
-                  onChange={(e) => handleDraftFilterChange('maxYear', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Fuel Type</label>
-                <select
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.fuelType}
-                  onChange={(e) => handleDraftFilterChange('fuelType', e.target.value)}
-                >
-                  <option value="">All Fuel Types</option>
-                  <option value="Petrol">Petrol</option>
-                  <option value="Diesel">Diesel</option>
-                  <option value="Electric">Electric</option>
-                  <option value="Hybrid">Hybrid</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Body Type</label>
-                <input
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.bodyType}
-                  onChange={(e) => handleDraftFilterChange('bodyType', e.target.value)}
-                  placeholder="SUV, Hatchback, Saloon"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Transmission</label>
-                <select
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftFilters.transmissionType}
-                  onChange={(e) => handleDraftFilterChange('transmissionType', e.target.value)}
-                >
-                  <option value="">All Transmissions</option>
-                  <option value="Automatic">Automatic</option>
-                  <option value="Manual">Manual</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
+            {hasActiveFilters && (
               <button
-                className="text-xs tracking-[0.2em] uppercase text-zinc-400 hover:text-white"
                 onClick={handleClearFilters}
+                className="text-[10px] text-red-400 hover:text-red-300 transition-colors mt-0.5 uppercase tracking-wide"
               >
-                Clear All
+                Clear
               </button>
-              <button
-                className="bg-white text-black text-xs px-6 py-3 tracking-[0.2em] uppercase font-semibold hover:bg-zinc-200"
-                onClick={handleApplyModalFilters}
-              >
-                Confirm Filters
-              </button>
-            </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* Sort Modal */}
-      {showSortModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-xl bg-[#161616] border border-white/10">
-            <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-              <h2 className="text-sm tracking-[0.2em] uppercase">Order Vehicles</h2>
-              <button
-                className="text-xs tracking-[0.2em] uppercase text-zinc-400 hover:text-white"
-                onClick={() => setShowSortModal(false)}
-              >
-                Close
-              </button>
+          {/* Vehicle Types */}
+          <FilterSection sectionKey="vehicleTypes" label="Vehicle Types">
+            <select className={selectCls} disabled>
+              <option value="">All Types</option>
+              <option value="Car">Car</option>
+              <option value="Van">Van</option>
+              <option value="Motorcycle">Motorcycle</option>
+            </select>
+          </FilterSection>
+
+          {/* Manufacturer */}
+          <FilterSection sectionKey="manufacturer" label="Manufacturer" isActive={!!filters.make}>
+            <select
+              value={filters.make}
+              onChange={(e) => handleMakeChange(e.target.value)}
+              className={selectCls}
+            >
+              <option value="">All Makes</option>
+              {makes.map((make) => (
+                <option key={make.makeId} value={make.name}>
+                  {make.name}
+                </option>
+              ))}
+            </select>
+          </FilterSection>
+
+          {/* Model */}
+          <FilterSection sectionKey="model" label="Model" isActive={!!filters.model}>
+            <select
+              value={filters.model}
+              onChange={(e) => handleModelChange(e.target.value)}
+              disabled={!filters.make}
+              className={`${selectCls} disabled:opacity-40`}
+            >
+              <option value="">All Models</option>
+              {models.map((model) => (
+                <option key={model.modelId} value={model.name}>
+                  {model.name}
+                </option>
+              ))}
+            </select>
+          </FilterSection>
+
+          {/* Price / Monthly Finance */}
+          <FilterSection sectionKey="price" label="Price/Monthly Finance" isActive={!!(filters.minPrice || filters.maxPrice)}>
+            <div className="flex gap-1.5">
+              <input
+                type="number"
+                placeholder="Min £"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                className={inputCls}
+              />
+              <input
+                type="number"
+                placeholder="Max £"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                className={inputCls}
+              />
             </div>
+          </FilterSection>
 
-            <div className="p-6 space-y-6">
-              <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-zinc-400 mb-2">Sort By</label>
-                <select
-                  className="w-full bg-[#111111] border border-white/10 px-3 py-3 text-xs uppercase tracking-wide"
-                  value={draftSortBy}
-                  onChange={(e) => setDraftSortBy(e.target.value as SortBy)}
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </div>
+          {/* Version */}
+          <FilterSection sectionKey="version" label="Version" isActive={false}>
+            <select className={selectCls} disabled>
+              <option value="">Any Version</option>
+            </select>
+          </FilterSection>
 
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  className={`py-3 text-xs tracking-[0.2em] uppercase border ${draftSortOrder === 'desc' ? 'bg-white text-black border-white' : 'border-white/20 text-zinc-200 hover:border-white/40'}`}
-                  onClick={() => setDraftSortOrder('desc')}
-                >
-                  Descending
-                </button>
-                <button
-                  className={`py-3 text-xs tracking-[0.2em] uppercase border ${draftSortOrder === 'asc' ? 'bg-white text-black border-white' : 'border-white/20 text-zinc-200 hover:border-white/40'}`}
-                  onClick={() => setDraftSortOrder('asc')}
-                >
-                  Ascending
-                </button>
-              </div>
+          {/* Body Type */}
+          <FilterSection sectionKey="bodyType" label="Body Type" isActive={!!filters.bodyType}>
+            <select
+              value={filters.bodyType}
+              onChange={(e) => handleFilterChange('bodyType', e.target.value)}
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              <option value="Saloon">Saloon</option>
+              <option value="Hatchback">Hatchback</option>
+              <option value="SUV">SUV</option>
+              <option value="Coupe">Coupe</option>
+              <option value="Convertible">Convertible</option>
+              <option value="Estate">Estate</option>
+              <option value="MPV">MPV</option>
+            </select>
+          </FilterSection>
+
+          {/* Fuel Type */}
+          <FilterSection sectionKey="fuelType" label="Fuel Type" isActive={!!filters.fuelType}>
+            <select
+              value={filters.fuelType}
+              onChange={(e) => handleFilterChange('fuelType', e.target.value)}
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </FilterSection>
+
+          {/* Transmission */}
+          <FilterSection sectionKey="transmission" label="Transmission" isActive={!!filters.transmissionType}>
+            <select
+              value={filters.transmissionType}
+              onChange={(e) => handleFilterChange('transmissionType', e.target.value)}
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </FilterSection>
+
+          {/* Colours */}
+          <FilterSection sectionKey="colours" label="Colours" isActive={!!filters.colour}>
+            <input
+              type="text"
+              placeholder="e.g. Black, Red..."
+              value={filters.colour}
+              onChange={(e) => handleFilterChange('colour', e.target.value)}
+              className={inputCls}
+            />
+          </FilterSection>
+
+          {/* Seats */}
+          <FilterSection sectionKey="seats" label="Seats" isActive={!!filters.seats}>
+            <select
+              value={filters.seats}
+              onChange={(e) => handleFilterChange('seats', e.target.value)}
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              <option value="2">2 Seats</option>
+              <option value="4">4 Seats</option>
+              <option value="5">5 Seats</option>
+              <option value="7">7 Seats</option>
+            </select>
+          </FilterSection>
+
+          {/* Engine Litres */}
+          <FilterSection sectionKey="engineLitres" label="Engine Litres" isActive={false}>
+            <div className="flex gap-1.5">
+              <input type="number" placeholder="Min L" step="0.1" className={inputCls} disabled />
+              <input type="number" placeholder="Max L" step="0.1" className={inputCls} disabled />
             </div>
+          </FilterSection>
 
-            <div className="px-6 py-4 border-t border-white/10 flex justify-end">
-              <button
-                className="bg-white text-black text-xs px-6 py-3 tracking-[0.2em] uppercase font-semibold hover:bg-zinc-200"
-                onClick={handleApplySort}
-              >
-                Confirm Order
-              </button>
+          {/* Mileage */}
+          <FilterSection sectionKey="mileage" label="Mileage" isActive={!!(filters.minMileage || filters.maxMileage)}>
+            <div className="flex gap-1.5">
+              <input
+                type="number"
+                placeholder="Min mi"
+                value={filters.minMileage}
+                onChange={(e) => handleFilterChange('minMileage', e.target.value)}
+                className={inputCls}
+              />
+              <input
+                type="number"
+                placeholder="Max mi"
+                value={filters.maxMileage}
+                onChange={(e) => handleFilterChange('maxMileage', e.target.value)}
+                className={inputCls}
+              />
             </div>
+          </FilterSection>
+        </aside>
+
+        {/* ── Main content ── */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Search + Sort bar */}
+          <div className="flex items-center gap-3 px-5 py-3 border-b border-white/10 bg-[#111111]">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search for a make, model or colour"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1a1a1a] border border-white/10 rounded pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white/30"
+              />
+            </div>
+            <select
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => handleSortDropdownChange(e.target.value)}
+              className="bg-[#1a1a1a] border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 min-w-[210px] shrink-0"
+            >
+              <option value="price-desc">Price Highest to Lowest</option>
+              <option value="price-asc">Price Lowest to Highest</option>
+              <option value="dateAdded-desc">Newest First</option>
+              <option value="dateAdded-asc">Oldest First</option>
+              <option value="mileage-asc">Mileage: Low to High</option>
+              <option value="year-desc">Year: Newest First</option>
+            </select>
           </div>
-        </div>
-      )}
 
-      {/* Listings Grid */}
-      <div className="max-w-425 mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 min-h-75">
-          {loading && Array.from({ length: 8 }).map((_, index) => (
-            <div key={`skeleton-${index}`} className="bg-[#1a1a1a] animate-pulse">
-              <div className="aspect-4/3 bg-zinc-800" />
-              <div className="p-6 space-y-3">
-                <div className="h-4 bg-zinc-700" />
-                <div className="h-3 bg-zinc-800" />
-                <div className="h-3 bg-zinc-800" />
-              </div>
-            </div>
-          ))}
-
-          {!loading && listings.map((vehicle) => {
-            const make = vehicle.vehicle.make || vehicle.vehicle.standard?.make || 'Unknown Make'
-            const model = vehicle.vehicle.model || vehicle.vehicle.standard?.model || 'Unknown Model'
-            const derivative = vehicle.vehicle.derivative || vehicle.vehicle.standard?.derivative || ''
-            const mileage = vehicle.vehicle.odometerReadingMiles
-            const fuelType = vehicle.vehicle.fuelType || vehicle.vehicle.standard?.fuelType || 'N/A'
-            const transmission = vehicle.vehicle.transmissionType || vehicle.vehicle.standard?.transmissionType || 'N/A'
-            const colour = vehicle.vehicle.colour || vehicle.vehicle.standard?.colour || 'N/A'
-            const price = vehicle.adverts?.forecourtPrice?.amountGBP || vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP || null
-            const wasPrice = vehicle.adverts?.soldPrice?.amountGBP || null
-            const image = vehicle.media?.images?.[0]?.href || '/placeholder.svg'
-            const href = `/used-cars/${generateVehicleSlug(vehicle)}`
-
-            return (
-              <Link href={href} key={vehicle.metadata.stockId} className="group bg-[#1a1a1a] flex flex-col hover:bg-[#222] transition-colors! duration-300!">
-                {/* Image Container */}
-                <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={image} alt={`${make} ${model}`} className="w-full h-full object-cover transition-transform! duration-700! group-hover:scale-105" />
-                  {/* Logo Overlay */}
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-center opacity-70 pointer-events-none">
-                    <h2 className="text-2xl tracking-[0.3em] font-light text-white uppercase">MYDV autos</h2>
-                  </div>
-                </div>
-
-                {/* Content Container */}
-                <div className="p-6 flex flex-col grow text-center">
-                  {/* Title */}
-                  <div className="mb-4">
-                    <h3 className="text-sm font-light tracking-widest uppercase mb-1">
-                      {make} {model}
-                    </h3>
-                    <p className="text-[10px] text-zinc-400 uppercase tracking-wider h-6 overflow-hidden text-ellipsis px-4">
-                      {derivative}
-                    </p>
-                  </div>
-
-                  {/* Specs */}
-                  <div className="text-[9px] text-zinc-400 tracking-[0.15em] uppercase mb-8 flex justify-center items-center gap-2">
-                    <span>{formatMileage(mileage)}</span>
-                    <span>/</span>
-                    <span>{fuelType}</span>
-                    <span>/</span>
-                    <span>{transmission}</span>
-                    <span>/</span>
-                    <span>{colour}</span>
-                  </div>
-
-                  {/* Pricing */}
-                  <div className="flex justify-between items-end mt-auto pt-4 border-t border-white/10">
-                    <div className="text-sm font-semibold text-zinc-300">
-                      {price ? `£${new Intl.NumberFormat('en-GB').format(price)}` : 'POA'}
-                      {wasPrice && (
-                        <span className="text-[8px] text-zinc-500 ml-2 line-through font-normal">Was £{new Intl.NumberFormat('en-GB').format(wasPrice)}</span>
-                      )}
-                    </div>
-                    <div className="text-right flex items-baseline gap-1">
-                      <span className="text-sm font-bold text-white">{calculateMonthlyPayment(price)}</span>
-                      <span className="text-[8px] text-zinc-400 uppercase tracking-widest">per month</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
-
-          {!loading && !listings.length && (
-            <div className="col-span-full border border-white/10 bg-[#171717] p-10 text-center">
-              <h3 className="text-sm tracking-[0.2em] uppercase mb-3">No Vehicles Found</h3>
-              <p className="text-xs text-zinc-400 tracking-wide uppercase">Try widening your filters or changing the sort order.</p>
-            </div>
-          )}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-20 text-[10px] tracking-widest uppercase pb-10 font-bold flex-wrap">
-            <button
-              className="px-3 py-1 text-zinc-400 hover:text-white disabled:opacity-40"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage <= 1}
-            >
-              Prev
-            </button>
-
-            {visiblePagination.map((_, index) => {
-              const page = Math.max(1, currentPage - 2) + index
-              if (page > totalPages) {
-                return null
-              }
-
-              return (
-                <button
-                  key={`page-${page}`}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-3 border border-zinc-700 py-1 ${page === currentPage ? 'bg-white/10 text-white' : 'text-zinc-400 hover:text-white'}`}
-                >
-                  {page}
-                </button>
-              )
-            })}
-
-            <button
-              className="px-3 py-1 text-zinc-400 hover:text-white disabled:opacity-40"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-            >
-              Next &rsaquo;
-            </button>
-
-            <button
-              className="px-3 py-1 text-zinc-400 hover:text-white disabled:opacity-40"
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage >= totalPages}
-            >
-              Last &raquo;
-            </button>
-          </div>
-        )}
-
-        {/* Finance Disclosure */}
-        <div className="text-center max-w-5xl mx-auto border-t border-white/10 pt-10 mt-10 space-y-4">
-            <h4 className="text-[10px] tracking-[0.2em] font-bold text-white uppercase">FINANCE REPRESENTATIVE EXAMPLE (HP)</h4>
-            <p className="text-[9px] text-zinc-400 leading-relaxed">
-              Total cash price <span className="text-white">£232,995.00</span>. Borrowing <span className="text-white">£209,695.50</span> with a <span className="text-white">£23,299.50</span> deposit at a representative APR of <span className="text-white">11.4%</span>. Total amount payable <span className="text-white">£295,881.90</span>. We are a credit broker not a lender.
+          {/* Finance disclaimer */}
+          <div className="text-center px-6 py-3 border-b border-white/5 bg-[#111111]">
+            <p className="text-[11px] font-bold text-gray-300 mb-0.5">
+              We are a credit broker, not a lender. Representative Example:
             </p>
-            
-            <div className="grid grid-cols-6 border border-white/10 text-center mt-6 uppercase text-[9px] tracking-wider text-zinc-400 divide-x divide-white/10">
-              <div className="py-4 px-2">
-                <div className="mb-1">60 monthly payments of</div>
-                <div className="text-white font-bold">£4,543.04</div>
+            <p className="text-[10px] text-gray-500 leading-relaxed max-w-5xl mx-auto">
+              Finance Product Type: Hire Purchase. The fixed interest rate of 8.9% is applied to a total credit
+              amount of £18,895.50 for a duration of 48 months. The cash price of the vehicle is £20,995.00, and
+              a deposit of £2,099.50 is required. The total amount to be paid over the term of the agreement is
+              £24,479.02, with monthly repayments of £466.24. The Representative APR of 8.9% represents the
+              overall cost of borrowing, including any additional charges.
+            </p>
+          </div>
+
+          {/* Content area */}
+          <div className="flex-1 p-4">
+            {/* Loading skeleton */}
+            {loading && (
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="bg-[#1a1a1a] rounded overflow-hidden animate-pulse">
+                    <div className="h-44 bg-white/10" />
+                    <div className="p-3 space-y-2">
+                      <div className="h-3 bg-white/10 rounded w-3/4" />
+                      <div className="h-4 bg-white/10 rounded w-1/2" />
+                      <div className="h-3 bg-white/10 rounded w-2/3" />
+                      <div className="h-8 bg-white/10 rounded mt-3" />
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="py-4 px-2">
-                <div className="mb-1">Representative APR</div>
-                <div className="text-white font-bold">11.4%</div>
+            )}
+
+            {/* Error */}
+            {!loading && error && (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <p className="text-red-400 font-medium mb-2">Failed to load listings</p>
+                <p className="text-gray-500 text-sm mb-5">{error}</p>
+                <button
+                  onClick={() => fetchListings(currentPage, filters, sortBy, sortOrder)}
+                  className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 transition-colors"
+                >
+                  Try Again
+                </button>
               </div>
-              <div className="py-4 px-2">
-                <div className="mb-1">Fixed interest rate</div>
-                <div className="text-white font-bold">11.40%</div>
+            )}
+
+            {/* No results */}
+            {!loading && !error && filteredListings.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <p className="text-white font-medium mb-2">No vehicles found</p>
+                <p className="text-gray-500 text-sm mb-5">Try adjusting your filters</p>
+                <button
+                  onClick={handleClearFilters}
+                  className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 transition-colors"
+                >
+                  Clear Filters
+                </button>
               </div>
-              <div className="py-4 px-2">
-                <div className="mb-1">Final payment</div>
-                <div className="text-white font-bold">£4,543.04</div>
-              </div>
-              <div className="py-4 px-2">
-                <div className="mb-1">Option to purchase fee</div>
-                <div className="text-white font-bold">£0.00</div>
-              </div>
-              <div className="py-4 px-2 col-span-1">
-                <div className="mb-1">Total amount of credit</div>
-                <div className="text-white font-bold">209,695.50</div>
-              </div>
-            </div>
-            
+            )}
+
+            {/* Vehicle grid */}
+            {!loading && !error && filteredListings.length > 0 && (
+              <>
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredListings.map((vehicle) => {
+                    const stockId = vehicle.metadata?.stockId || ''
+                    const slug = generateVehicleSlug(vehicle)
+                    const inWishlist = isInWishlist(stockId)
+
+                    const imageUrl =
+                      vehicle.media?.images?.[0]?.href ||
+                      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800'
+                    const imageCount = vehicle.media?.images?.length || 0
+                    const hasVideo = !!(vehicle.media?.video?.href)
+
+                    const vehicleMake = vehicle.vehicle?.make || vehicle.vehicle?.standard?.make || ''
+                    const vehicleModel = vehicle.vehicle?.model || vehicle.vehicle?.standard?.model || ''
+                    const vehicleDerivative =
+                      vehicle.vehicle?.derivative || vehicle.vehicle?.standard?.derivative || ''
+                    const vehicleYear = vehicle.vehicle?.yearOfManufacture
+                    const vehicleMileage = vehicle.vehicle?.odometerReadingMiles
+                    const vehicleFuelType =
+                      vehicle.vehicle?.fuelType || vehicle.vehicle?.standard?.fuelType || ''
+                    const vehicleTransmission =
+                      vehicle.vehicle?.transmissionType ||
+                      vehicle.vehicle?.standard?.transmissionType ||
+                      ''
+                    const vehicleHighlights =
+                      vehicle.highlights?.length
+                        ? vehicle.highlights.join('+')
+                        : ''
+                    const vehiclePrice =
+                      vehicle.adverts?.forecourtPrice?.amountGBP ??
+                      vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP ??
+                      null
+                    const ulez = isULEZCompliant(vehicle)
+                    const monthlyPrice = calculateMonthlyPayment(vehiclePrice)
+                    const mileageStr = formatMileage(vehicleMileage)
+
+                    const whatsappMsg = encodeURIComponent(
+                      `Hi, I'm interested in the ${vehicleYear || ''} ${vehicleMake} ${vehicleModel}. Stock ID: ${stockId}`,
+                    )
+                    const whatsappHref = `https://wa.me/441484480777?text=${whatsappMsg}`
+
+                    return (
+                      <div
+                        key={stockId || slug}
+                        className="bg-[#1a1a1a] flex flex-col overflow-hidden group"
+                      >
+                        {/* Image */}
+                        <div className="relative h-44 overflow-hidden bg-black">
+                          <img
+                            src={imageUrl}
+                            alt={`${vehicleMake} ${vehicleModel}`}
+                            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {/* Photo / video count */}
+                          {imageCount > 0 && (
+                            <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                              <span className="flex items-center gap-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-medium">
+                                <Camera className="w-3 h-3" />
+                                {imageCount}
+                              </span>
+                              {hasVideo && (
+                                <span className="flex items-center gap-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-medium">
+                                  <Video className="w-3 h-3" />1
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {/* Wishlist */}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              // toggleWishlist(stockId)
+                            }}
+                            className="absolute top-2 right-2 p-1.5 rounded bg-black/60 hover:bg-black/80 transition-colors"
+                            aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill={inWishlist ? 'currentColor' : 'none'}
+                              stroke="currentColor"
+                              strokeWidth={1.5}
+                              className={`h-3.5 w-3.5 ${inWishlist ? 'text-red-500' : 'text-white'}`}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Card body */}
+                        <div className="flex flex-col flex-1 px-3 pt-2.5 pb-0">
+                          {/* Highlights */}
+                          {vehicleHighlights && (
+                            <p className="text-[10px] text-gray-400 uppercase tracking-wide truncate mb-1">
+                              {vehicleHighlights}
+                            </p>
+                          )}
+
+                          {/* Make + Model */}
+                          <p className="text-base font-extrabold uppercase tracking-wide leading-tight truncate">
+                            {vehicleMake} {vehicleModel}
+                          </p>
+
+                          {/* Derivative */}
+                          {vehicleDerivative && (
+                            <p className="text-[10px] text-gray-400 truncate mt-0.5">{vehicleDerivative}</p>
+                          )}
+
+                          {/* Price columns */}
+                          <div className="flex gap-4 mt-2.5">
+                            <div>
+                              <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                                Our Price
+                              </p>
+                              <p className="text-sm font-bold text-white leading-tight">
+                                {vehiclePrice ? formatPrice(vehiclePrice) : 'POA'}
+                              </p>
+                            </div>
+                            {vehiclePrice && monthlyPrice !== 'N/A' && (
+                              <div>
+                                <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                                  Monthly Price
+                                </p>
+                                <p className="text-sm font-bold text-red-500 leading-tight">{monthlyPrice}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Badges */}
+                          <div className="flex flex-wrap gap-1 mt-2.5">
+                            {vehicleYear && (
+                              <span className="text-[10px] border border-white/20 text-gray-300 px-2 py-0.5 rounded-sm">
+                                {vehicleYear}
+                              </span>
+                            )}
+                            {vehicleTransmission && (
+                              <span className="text-[10px] border border-white/20 text-gray-300 px-2 py-0.5 rounded-sm">
+                                {vehicleTransmission}
+                              </span>
+                            )}
+                            {mileageStr && (
+                              <span className="text-[10px] border border-white/20 text-gray-300 px-2 py-0.5 rounded-sm">
+                                {mileageStr}
+                              </span>
+                            )}
+                            {vehicleFuelType && (
+                              <span className="text-[10px] border border-white/20 text-gray-300 px-2 py-0.5 rounded-sm">
+                                {vehicleFuelType}
+                              </span>
+                            )}
+                            {ulez && (
+                              <span className="text-[10px] bg-teal-600/20 border border-teal-500/40 text-teal-400 px-2 py-0.5 rounded-sm font-semibold">
+                                ULEZ
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Action buttons */}
+                          <div className="mt-3 grid grid-cols-3 border-t border-l border-white/10">
+                            <a
+                              href={whatsappHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center justify-center gap-1 py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 transition-colors"
+                            >
+                              <svg viewBox="0 0 24 24" className="w-3 h-3 fill-[#25D366]">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                              </svg>
+                              Chat
+                            </a>
+                            <Link
+                              href={`/reservation?stockId=${stockId}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center justify-center py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 transition-colors"
+                            >
+                              Reserve
+                            </Link>
+                            <Link
+                              href={`/finance?stockId=${stockId}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center justify-center gap-1 py-2 border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 transition-colors"
+                            >
+                              <CreditCard className="w-3 h-3 text-red-400" />
+                              Finance
+                            </Link>
+                          </div>
+                        </div>
+
+                        {/* MORE button */}
+                        <Link
+                          href={`/showroom/${slug}`}
+                          className="block text-center bg-red-600 hover:bg-red-500 transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
+                        >
+                          More &rsaquo;
+                        </Link>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-10 mb-4">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 rounded border border-white/10 text-sm text-gray-400 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Previous
+                    </button>
+                    {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                      let page: number
+                      if (totalPages <= 7) {
+                        page = i + 1
+                      } else if (currentPage <= 4) {
+                        page = i + 1
+                      } else if (currentPage >= totalPages - 3) {
+                        page = totalPages - 6 + i
+                      } else {
+                        page = currentPage - 3 + i
+                      }
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`w-9 h-9 rounded border text-sm transition-colors ${
+                            currentPage === page
+                              ? 'border-white bg-white text-black font-semibold'
+                              : 'border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    })}
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 rounded border border-white/10 text-sm text-gray-400 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </main>
   )
 }
+
