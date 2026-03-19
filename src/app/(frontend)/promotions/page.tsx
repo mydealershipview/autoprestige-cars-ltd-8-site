@@ -45,8 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: 'Promotions - MWA Autos | Special Offers on Used Cars',
-    description: 'Check out our current special offers and promotions on used cars, warranties, and finance deals at MWA Autos.',
+    title: 'Promotions - MYDV Autos | Special Offers on Used Cars',
+    description: 'Check out our current special offers and promotions on used cars, warranties, and finance deals at MYDV Autos.',
   }
 }
 

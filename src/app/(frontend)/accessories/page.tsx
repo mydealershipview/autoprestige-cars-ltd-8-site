@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const metadata = {
-  title: 'Accessories | MWA autos',
+  title: 'Accessories | MYDV autos',
   description: 'Riviera Automotive can take your vehicle to the next level with our available accessories, including alloys, body kits and exhausts.',
 }
 

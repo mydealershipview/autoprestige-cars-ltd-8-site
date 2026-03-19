@@ -61,7 +61,7 @@ export default function ContactModal({ isOpen, onClose, onButtonClick, phoneNumb
                     Quick Contact
                   </h2>
                   <p className="text-gray-600 font-sans text-sm">
-                    Get in touch with MWA Autos
+                    Get in touch with MYDV Autos
                   </p>
                 </div>
 

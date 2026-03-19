@@ -9,8 +9,7 @@ const navItems = [
   { label: "SHOWROOM", href: "/used-cars" },
   { label: "SERVICES", href: "/services" },
   { label: "WARRANTY", href: "/warranty" },
-  { label: "PART EXCHANGE", href: "/part-exchange" },
-  { label: "REVIEWS", href: "/reviews-and-customer-experience" },
+  { label: "REVIEWS", href: "/reviews" },
   { label: "CONTACT US", href: "/contact" },
 ]
 

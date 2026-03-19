@@ -64,32 +64,32 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
   title: {
-    default: 'MWA Autos - Trusted Used Car Dealers Nottingham | Quality Pre-Owned Vehicles',
-    template: '%s | MWA Autos - Nottingham Used Car Dealers'
+    default: 'MYDV Autos - Trusted Used Car Dealers Nottingham | Quality Pre-Owned Vehicles',
+    template: '%s | MYDV Autos - Nottingham Used Car Dealers'
   },
-  description: 'MWA Autos - Your reliable family-run used car dealer in Nottinghamshire. Quality used cars from Audi, BMW, Ford, Mercedes & more. Indoor showroom, FCA registered finance & part exchange welcome.',
-  keywords: 'used cars Nottingham, car dealers Nottingham, used car finance Nottingham, part exchange Nottingham, indoor car showroom Nottingham, family car dealers Nottinghamshire, MWA Autos, FCA registered',
-  authors: [{ name: 'MWA Autos' }],
-  creator: 'MWA Autos',
-  publisher: 'MWA Autos',
+  description: 'MYDV Autos - Your reliable family-run used car dealer in Nottinghamshire. Quality used cars from Audi, BMW, Ford, Mercedes & more. Indoor showroom, FCA registered finance & part exchange welcome.',
+  keywords: 'used cars Nottingham, car dealers Nottingham, used car finance Nottingham, part exchange Nottingham, indoor car showroom Nottingham, family car dealers Nottinghamshire, MYDV Autos, FCA registered',
+  authors: [{ name: 'MYDV Autos' }],
+  creator: 'MYDV Autos',
+  publisher: 'MYDV Autos',
   formatDetection: {
     telephone: true,
     email: true,
     address: true,
   },
   openGraph: mergeOpenGraph({
-    title: 'MWA Autos - Trusted Used Car Dealers Nottingham',
+    title: 'MYDV Autos - Trusted Used Car Dealers Nottingham',
     description: 'Your honest, reliable, family-run used car dealer in Nottinghamshire. Premium quality vehicles with exceptional aftercare.',
     url: getServerSideURL(),
-    siteName: 'MWA Autos',
+    siteName: 'MYDV Autos',
     locale: 'en_GB',
     type: 'website',
   }),
   twitter: {
     card: 'summary_large_image',
-    title: 'MWA Autos - Trusted Used Car Dealers Nottingham',
+    title: 'MYDV Autos - Trusted Used Car Dealers Nottingham',
     description: 'Your honest, reliable, family-run used car dealer in Nottinghamshire.',
-    creator: '@mwaautos',
+    creator: '@MYDVautos',
   },
   robots: {
     index: true,

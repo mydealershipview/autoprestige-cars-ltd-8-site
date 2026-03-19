@@ -182,7 +182,7 @@ export const ContactInfo: GlobalConfig = {
           name: 'name',
           type: 'text',
           label: 'Business Name',
-          defaultValue: 'MWA Autos',
+          defaultValue: 'MYDV Autos',
         },
         {
           name: 'street',

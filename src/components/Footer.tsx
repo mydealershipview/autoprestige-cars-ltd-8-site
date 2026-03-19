@@ -134,6 +134,11 @@ export default function Footer({ contactData }: FooterProps) {
           <span className="hidden md:inline">|</span>
           <Link href="/contact" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Contact Us</Link>
         </div>
+
+        {/* Powered By */}
+        <div className="mt-8 text-center text-[10px] md:text-xs text-gray-600 tracking-wider">
+          Website powered by <a href="https://mydealershipview.com/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-red-500 transition-colors border-b border-red-800 pb-0.5">MYDEALERSHIPVIEW</a>
+        </div>
       </div>
     </footer>
   )

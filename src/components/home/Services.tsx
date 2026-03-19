@@ -9,7 +9,7 @@ const servicesData = [
     id: 'sell',
     title: 'SELL YOUR CAR',
     navTitle: 'SELL YOUR CAR',
-    description: 'We could be looking to buy your car at MWA Autos. Simply provide us with your vehicle details and we will contact you at the earliest opportunity with a valuation.',
+    description: 'We could be looking to buy your car at MYDV Autos. Simply provide us with your vehicle details and we will contact you at the earliest opportunity with a valuation.',
     image: 'https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=1000&auto=format&fit=crop',
     link: '/sell'
   },

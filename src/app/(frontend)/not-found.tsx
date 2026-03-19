@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Page Not Found | MWA Autos',
+  title: 'Page Not Found | MYDV Autos',
   description: 'The page you\'re looking for could not be found. Return to explore our quality used cars.',
   robots: {
     index: false,

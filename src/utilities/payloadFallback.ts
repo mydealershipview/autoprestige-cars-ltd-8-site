@@ -245,7 +245,7 @@ function convertPayloadToAutoTrader(doc: any): AutoTraderVehicle {
     },
     advertiser: {
       advertiserId: doc.advertiser?.advertiserId || process.env.AUTOTRADER_ADVERTISER_ID || '',
-      name: doc.advertiser?.name || 'MWA Autos',
+      name: doc.advertiser?.name || 'MYDV Autos',
       segment: doc.advertiser?.segment || 'Independent',
       website: doc.advertiser?.website || '',
       phone: doc.advertiser?.phone || '',

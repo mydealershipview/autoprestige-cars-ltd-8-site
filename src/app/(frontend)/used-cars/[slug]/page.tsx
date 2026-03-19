@@ -57,12 +57,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   // Fallback metadata
   const fallbackMetadata: Metadata = {
-    title: 'Quality Used Car for Sale | MWA Autos Nottingham',
-    description: 'Discover this premium quality used car at MWA Autos in Nottingham. Expert valuations, finance options, and exceptional customer service. Visit our showroom today.',
-    keywords: 'used cars for sale, quality used cars, car dealer Nottingham, car finance, MWA Autos',
+    title: 'Quality Used Car for Sale | MYDV Autos Nottingham',
+    description: 'Discover this premium quality used car at MYDV Autos in Nottingham. Expert valuations, finance options, and exceptional customer service. Visit our showroom today.',
+    keywords: 'used cars for sale, quality used cars, car dealer Nottingham, car finance, MYDV Autos',
     openGraph: {
-      title: 'Quality Used Car for Sale | MWA Autos',
-      description: 'Premium quality used car available at MWA Autos Nottingham. Finance options and part exchange welcome.',
+      title: 'Quality Used Car for Sale | MYDV Autos',
+      description: 'Premium quality used car available at MYDV Autos Nottingham. Finance options and part exchange welcome.',
       type: 'website',
       locale: 'en_GB',
     },
@@ -102,8 +102,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const priceText = price ? ` for £${price.toLocaleString()}` : ''
     const mileageText = mileage ? ` with ${mileage.toLocaleString()} miles` : ''
 
-    const title = `${year ? `${year} ` : ''}${make} ${model}${priceText} | Used Cars Nottingham | MWA Autos`
-    const description = `${year ? `${year} ` : ''}${make} ${model}${mileageText}. ${fuelType ? `${fuelType} engine` : ''}${transmission ? `, ${transmission} transmission` : ''}${bodyType ? `, ${bodyType} body style` : ''}. Quality used car with finance options available at MWA Autos Nottingham.`
+    const title = `${year ? `${year} ` : ''}${make} ${model}${priceText} | Used Cars Nottingham | MYDV Autos`
+    const description = `${year ? `${year} ` : ''}${make} ${model}${mileageText}. ${fuelType ? `${fuelType} engine` : ''}${transmission ? `, ${transmission} transmission` : ''}${bodyType ? `, ${bodyType} body style` : ''}. Quality used car with finance options available at MYDV Autos Nottingham.`
 
     const keywords = [
       `${make} ${model} for sale`,
@@ -114,16 +114,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       transmission ? `${transmission} ${make}` : '',
       'used cars Nottingham',
       'car finance Nottingham',
-      'MWA Autos'
+      'MYDV Autos'
     ].filter(Boolean).join(', ')
 
     return {
-      title: title.length > 60 ? `Buy Used ${year ? `${year} ` : ''}${make} ${model} | MWA Autos Nottingham` : title,
+      title: title.length > 60 ? `Buy Used ${year ? `${year} ` : ''}${make} ${model} | MYDV Autos Nottingham` : title,
       description: description.length > 160 ? description.substring(0, 157) + '...' : description,
       keywords,
       openGraph: {
         title: `${year ? `${year} ` : ''}${make} ${model}${priceText}`,
-        description: `Premium quality ${make} ${model}${mileageText} available at MWA Autos Nottingham. Finance options and part exchange welcome.`,
+        description: `Premium quality ${make} ${model}${mileageText} available at MYDV Autos Nottingham. Finance options and part exchange welcome.`,
         type: 'website',
         locale: 'en_GB',
         images: vehicle.media?.images?.length > 0 ? [

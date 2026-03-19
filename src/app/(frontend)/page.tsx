@@ -8,11 +8,11 @@ import { AnimatedCard } from '@/components/AnimatedCard'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'MWA Autos - Trusted Used Car Dealers Nottingham | Quality Pre-Owned Vehicles',
-  description: 'MWA Autos - Your reliable family-run used car dealer in Nottinghamshire. Quality used cars from Audi, BMW, Ford, Mercedes & more. Indoor showroom, FCA registered finance & part exchange welcome.',
+  title: 'MYDV Autos - Trusted Used Car Dealers Nottingham | Quality Pre-Owned Vehicles',
+  description: 'MYDV Autos - Your reliable family-run used car dealer in Nottinghamshire. Quality used cars from Audi, BMW, Ford, Mercedes & more. Indoor showroom, FCA registered finance & part exchange welcome.',
   keywords: 'used cars Nottingham, car dealers Nottingham, used car finance Nottingham, part exchange Nottingham, indoor car showroom Nottingham, family car dealers Nottinghamshire, quality used cars, FCA registered, Audi, BMW, Ford, Mercedes, Vauxhall',
   openGraph: {
-    title: 'MWA Autos - Trusted Used Car Dealers Nottingham',
+    title: 'MYDV Autos - Trusted Used Car Dealers Nottingham',
     description: 'Your honest, reliable, family-run used car dealer in Nottinghamshire. Premium quality vehicles with exceptional aftercare.',
     type: 'website',
     locale: 'en_GB',
@@ -23,7 +23,7 @@ const script = {
   __html: JSON.stringify({
     "@context": "https://schema.org",
     "@type": "AutoDealer",
-    "name": "MWA Autos",
+    "name": "MYDV Autos",
     "description": "Family-run used car dealer in Nottinghamshire offering quality pre-owned vehicles with exceptional customer service",
     "address": {
       "@type": "PostalAddress",
