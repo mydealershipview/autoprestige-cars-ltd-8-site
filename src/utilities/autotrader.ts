@@ -1,6 +1,3 @@
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-
 interface AutoTraderAuthResponse {
   access_token: string
   token_type: string
@@ -214,6 +211,20 @@ interface AutoTraderVehicle {
 let authToken: string | null = null
 let tokenExpiry: number | null = null
 
+const getActiveAffiliateIdsFromEnv = (): string[] => {
+  const raw =
+    process.env.AUTOTRADER_AFFILIATE_IDS ||
+    process.env.AFFILIATE_IDS ||
+    process.env.AUTOTRADER_ADVERTISER_ID ||
+    process.env.NEXT_PUBLIC_DEALER_AFFILIATE_ID ||
+    ''
+
+  return raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+}
+
 export async function getAutoTraderAuthToken(): Promise<string> {
   // TODO: Check if we have a valid cached token
   if (authToken && tokenExpiry && Date.now() < tokenExpiry) {
@@ -322,23 +333,15 @@ export async function fetchAutoTraderListings(params: {
   } = params
 
   const apiUrl = process.env.AUTOTRADER_API_URL
-  
-  const payload = await getPayload({ config: configPromise })
-  const advertiserIdPayload = await payload.findGlobal({
-    slug: 'affiliateId',
-  })
 
   if (!apiUrl) {
     throw new Error('AutoTrader API configuration is missing')
   }
 
-  // Get active affiliate IDs from payload
-  const activeAffiliateIds = advertiserIdPayload?.affiliateIds?.filter(
-    (affiliate: any) => affiliate.isActive && affiliate.dealerAffiliateId
-  ) || []
+  const activeAffiliateIds = getActiveAffiliateIdsFromEnv()
 
   if (activeAffiliateIds.length === 0) {
-    throw new Error('No active affiliate IDs found in configuration')
+    throw new Error('No active affiliate IDs found in environment configuration')
   }
 
   // Try MyDealershipView API first
@@ -395,9 +398,8 @@ export async function fetchAutoTraderListings(params: {
       const allResults: AutoTraderVehicle[] = []
       let totalResults = 0
       
-      for (const affiliate of activeAffiliateIds) {
-        const advertiserId = affiliate.dealerAffiliateId
-        console.log(`Fetching vehicles for affiliate ID: ${advertiserId} (${affiliate.description})`)
+      for (const advertiserId of activeAffiliateIds) {
+        console.log(`Fetching vehicles for affiliate ID: ${advertiserId}`)
         
         // Build query parameters
         const queryParams = new URLSearchParams({

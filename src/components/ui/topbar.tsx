@@ -16,6 +16,14 @@ interface TopBarProps {
 export default function TopBar({ contactData }: TopBarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const { wishlistCount } = useWishlist();
+  const displayName = contactData?.businessAddress?.name || 'Dealership'
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((token) => token[0]?.toUpperCase() || '')
+    .join('')
+    .padEnd(3, 'D')
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,19 +75,19 @@ export default function TopBar({ contactData }: TopBarProps) {
               <div className="flex items-center">
                 {/* Y - Green Block */}
                 <div className={` bg-[#8F8F8F] skew-x-[-16deg] flex items-center justify-center !transition-all !duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
-                  <span className={`font-bold skew-x-[16deg] text-white !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>M</span>
+                  <span className={`font-bold skew-x-[16deg] text-white !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[0]}</span>
                 </div>
                 {/* N - Blue Block */}
                 <div className={`bg-white skew-x-[-16deg] flex items-center justify-center !transition-all !duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
-                  <span className={`font-bold skew-x-[16deg] text-black !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>W</span>
+                  <span className={`font-bold skew-x-[16deg] text-black !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[1]}</span>
                 </div>
                 {/* C - Red Block */}
                 <div className={`bg-[#44903C] skew-x-[-16deg] flex items-center justify-center !transition-all !duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
-                  <span className={`font-bold skew-x-[16deg] text-white !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>A</span>
+                  <span className={`font-bold skew-x-[16deg] text-white !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[2]}</span>
                 </div>
               </div>
               <div className="ml-3 text-center">
-                <div className={`text-white font-bold tracking-wider !transition-all !duration-300 ${isScrolled ? 'text-xs' : 'text-sm'}`}>MWA Autos</div>
+                <div className={`text-white font-bold tracking-wider !transition-all !duration-300 ${isScrolled ? 'text-xs' : 'text-sm'}`}>{displayName}</div>
                 {/* <div className={`pt-1 text-gray-300 tracking-wide transition-all duration-300 ${isScrolled ? 'text-xs hidden md:block' : 'text-xs'}`}>Prestige BMW Vehicle Sales Nottingham</div> */}
               </div>
             </Link>

@@ -1,13 +1,18 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const metadata: Metadata = {
-  title: 'Page Not Found | MYDV Autos',
-  description: 'The page you\'re looking for could not be found. Return to explore our quality used cars.',
-  robots: {
-    index: false,
-    follow: false,
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Page Not Found | ${dealership.name}`,
+    description: `The page you're looking for could not be found. Return to explore vehicles at ${dealership.name}.`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  }
 }
 
 export default function NotFound() {

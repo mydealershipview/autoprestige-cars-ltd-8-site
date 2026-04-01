@@ -6,12 +6,11 @@ import Link from 'next/link'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 import { Make, Model } from '@/utilities/types'
 import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
-import type { Page } from '@/payload-types'
 import { useWishlist } from '@/contexts/WishlistContext'
-import { ChevronDown, Search, MessageCircle, CreditCard, Camera, Video } from 'lucide-react'
+import { ChevronDown, Search, CreditCard, Camera, Video } from 'lucide-react'
 
 interface UsedCarsComponentProps {
-  listingsData?: Page | null
+  listingsData?: unknown
 }
 
 interface ListingsFilters {
@@ -33,7 +32,7 @@ type ExtendedModel = Model & {
   makeName: string
 }
 
-export default function UsedCarsComponent({ listingsData }: UsedCarsComponentProps) {
+export default function UsedCarsComponent({ listingsData: _listingsData }: UsedCarsComponentProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 

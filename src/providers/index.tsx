@@ -4,26 +4,19 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import { HeaderThemeProvider } from './HeaderTheme'
 import { ThemeProvider } from './Theme'
 import { WishlistProvider } from '@/contexts/WishlistContext'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { draftMode } from 'next/headers'
 
 export const Providers: React.FC<{
   children: React.ReactNode
 }> = async ({ children }) => {
-  const { isEnabled: draft } = await draftMode()
-  const payload = await getPayload({ config: configPromise })
-
-  const googleAnalyticsId = await payload.findGlobal({
-    slug: 'googleAnalytics',
-  })
+  const googleAnalyticsId =
+    process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || process.env.GOOGLE_ANALYTICS_ID
 
   return (
     <ThemeProvider>
       <HeaderThemeProvider>
         <WishlistProvider>
-          {process.env.NODE_ENV === 'production' && googleAnalyticsId?.googleAnalyticsId && (
-            <GoogleAnalytics gaId={googleAnalyticsId?.googleAnalyticsId} />
+          {process.env.NODE_ENV === 'production' && googleAnalyticsId && (
+            <GoogleAnalytics gaId={googleAnalyticsId} />
           )}
           {children}
         </WishlistProvider>

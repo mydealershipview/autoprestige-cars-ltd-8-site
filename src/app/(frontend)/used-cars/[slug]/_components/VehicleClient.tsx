@@ -20,9 +20,17 @@ import {
 
 interface VehicleClientProps {
   vehicle: AutoTraderVehicle
+  dealershipName: string
+  phoneNumber: string
+  emailAddress: string
 }
 
-export default function VehicleClient({ vehicle }: VehicleClientProps) {
+export default function VehicleClient({
+  vehicle,
+  dealershipName,
+  phoneNumber,
+  emailAddress,
+}: VehicleClientProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   // Modal States
@@ -165,7 +173,7 @@ export default function VehicleClient({ vehicle }: VehicleClientProps) {
           </section>
 
           <aside className="border border-white/12 bg-black p-5">
-            <p className="border-b border-red-600 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">MWA AUTOS</p>
+            <p className="border-b border-red-600 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
             <h2 className="mt-3 text-4xl font-extrabold uppercase tracking-[0.05em]">{make} {model}</h2>
 
             <div className="mt-4 grid grid-cols-2 gap-3 border-b border-white/10 pb-4">
@@ -223,7 +231,7 @@ export default function VehicleClient({ vehicle }: VehicleClientProps) {
       )}
       {showCallUs && (
         <CallUsModal
-          phoneNumber="01274 878888" // Example phone number
+          phoneNumber={phoneNumber || ''}
           vehicleMake={make}
           vehicleModel={model}
           vehicleReg={vehicle.vehicle.registration || ''}
@@ -254,7 +262,7 @@ export default function VehicleClient({ vehicle }: VehicleClientProps) {
       )}
       {showEmail && (
         <EmailModal
-          emailAddress="sales@dealership.com" // Example email
+          emailAddress={emailAddress || 'info@dealership.co.uk'}
           vehicleMake={make}
           vehicleModel={model}
           vehicleReg={vehicle.vehicle.registration || ''}

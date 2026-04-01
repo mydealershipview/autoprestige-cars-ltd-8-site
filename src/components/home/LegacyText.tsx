@@ -4,7 +4,7 @@ export function LegacyText() {
       <div className="max-w-5xl mx-auto text-center">
         
         <h2 className="text-3xl md:text-5xl lg:text-[40px] leading-tight font-light text-white tracking-widest uppercase mb-6">
-          MYDV, WHERE DISCERNING DRIVERS FIND THEIR AUTOMOTIVE LEGACY
+          WHERE DISCERNING DRIVERS FIND THEIR AUTOMOTIVE LEGACY
         </h2>
         
         <p className="text-lg md:text-xl text-zinc-300 font-medium mb-12">
@@ -13,7 +13,7 @@ export function LegacyText() {
 
         <div className="space-y-8 text-zinc-400 font-light text-base md:text-lg leading-relaxed max-w-4xl mx-auto">
           <p>
-            MYDV isn&apos;t your ordinary car dealership. We cater to a discerning clientele, those who view automobiles not just as transportation, but as a cherished extension of their refined taste. Our passion for the art of automotive design and engineering runs deep, ensuring only the most exceptional vehicles find their way into our curated collection.
+            We are not an ordinary car dealership. We cater to discerning drivers who view automobiles not just as transportation, but as a cherished extension of personal taste. Our passion for automotive design and engineering runs deep, ensuring exceptional vehicles find their way into our curated collection.
           </p>
 
           <h3 className="text-white font-medium text-lg mt-12 mb-6">

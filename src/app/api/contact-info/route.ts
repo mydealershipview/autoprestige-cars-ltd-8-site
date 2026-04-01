@@ -1,20 +1,11 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { draftMode } from 'next/headers'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
 
 export async function GET() {
   try {
-    const { isEnabled: draft } = await draftMode()
-    const payload = await getPayload({ config: configPromise })
-
-    const result = await payload.findGlobal({
-      slug: 'contactInfo',
-      draft,
-      overrideAccess: draft,
-    })
-
-    const contactData = result || null
+    const dealership = await getDealershipInfo()
+    const contactData = mapDealershipInfoToContactData(dealership)
 
     return NextResponse.json(contactData)
   } catch (error) {

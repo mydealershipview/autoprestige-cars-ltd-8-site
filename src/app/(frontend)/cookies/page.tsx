@@ -1,19 +1,24 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
 
-export const metadata: Metadata = {
-  title: 'Cookie Preferences | Template',
-  description: 'Learn about how we use cookies and manage your cookie preferences.',
-  openGraph: {
-    title: 'Cookie Preferences | Template',
-    description: 'How we use cookies and how to manage your preferences.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Cookie Preferences | ${dealership.name}`,
+    description: 'Learn about how we use cookies and manage your cookie preferences.',
+    openGraph: {
+      title: `Cookie Preferences | ${dealership.name}`,
+      description: 'How we use cookies and how to manage your preferences.',
+      type: 'website',
+      locale: 'en_GB',
+    },
+  }
 }
 
 export default function CookiesPage() {

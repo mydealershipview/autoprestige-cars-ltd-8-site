@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const [isAnimating, setIsAnimating] = useState(true)
+  const [brandText, setBrandText] = useState('DEALERSHIP')
 
   useEffect(() => {
     if (isAnimating) {
@@ -18,6 +19,28 @@ export default function Template({ children }: { children: React.ReactNode }) {
       document.body.style.overflow = ''
     }
   }, [isAnimating])
+
+  useEffect(() => {
+    const loadBrand = async () => {
+      try {
+        const response = await fetch('/api/contact-info')
+        if (!response.ok) {
+          return
+        }
+
+        const data = await response.json()
+        const name = data?.businessAddress?.name
+
+        if (typeof name === 'string' && name.trim()) {
+          setBrandText(name.toUpperCase())
+        }
+      } catch {
+        // keep fallback splash name
+      }
+    }
+
+    loadBrand()
+  }, [])
 
   return (
     <>
@@ -67,7 +90,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
               </svg>
             </motion.div>
 
-            {"TEMPLATE".split("").map((char, index) => (
+            {brandText.split('').map((char, index) => (
               <motion.span
                 key={index}
                 className="text-white text-5xl md:text-7xl font-medium tracking-[0.3em] uppercase"

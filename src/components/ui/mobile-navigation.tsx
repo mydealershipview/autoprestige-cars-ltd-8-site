@@ -18,6 +18,14 @@ interface MobileNavProps {
 export default function MobileNavigation({ navigationItems, onNavClick, contactData, isPromotionsEnabled }: MobileNavProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedDropdown, setExpandedDropdown] = useState<string | null>(null);
+  const displayName = contactData?.businessAddress?.name || 'Dealership'
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((token) => token[0]?.toUpperCase() || '')
+    .join('')
+    .padEnd(3, 'D')
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -62,17 +70,17 @@ export default function MobileNavigation({ navigationItems, onNavClick, contactD
             <div className="flex items-center">
               {/* VNC Logo Blocks */}
               <div className="bg-[#8F8F8F] skew-x-[-16deg] flex items-center justify-center w-6 h-6">
-                <span className="font-bold skew-x-[16deg] text-white text-sm">M</span>
+                <span className="font-bold skew-x-[16deg] text-white text-sm">{initials[0]}</span>
               </div>
               <div className="bg-white skew-x-[-16deg] flex items-center justify-center w-6 h-6">
-                <span className="font-bold skew-x-[16deg] text-black text-sm">W</span>
+                <span className="font-bold skew-x-[16deg] text-black text-sm">{initials[1]}</span>
               </div>
               <div className="bg-[#44903C] skew-x-[-16deg] flex items-center justify-center w-6 h-6">
-                <span className="font-bold skew-x-[16deg] text-white text-sm">A</span>
+                <span className="font-bold skew-x-[16deg] text-white text-sm">{initials[2]}</span>
               </div>
             </div>
             <div className="ml-2">
-              <div className="text-white font-bold text-xs tracking-wider">MWA Autos</div>
+              <div className="text-white font-bold text-xs tracking-wider">{displayName}</div>
             </div>
           </Link>
 

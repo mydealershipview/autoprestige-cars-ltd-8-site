@@ -2,20 +2,17 @@ import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
-import { GeistSans } from 'geist/font/sans'
 import { Montserrat } from 'next/font/google'
 import React from 'react'
 
-import { AdminBar } from '@/components/payload/AdminBar'
 import CookieConsentModal from '@/components/ui/cookie-consent-modal'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { draftMode } from 'next/headers'
 import { generateStructuredData } from '@/utilities/structuredData'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-import '@/styles/payloadStyles.css';
-import '@/styles/globals.css';
+import '@/styles/globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import Layout from '@/components/Layout'
 
@@ -28,8 +25,8 @@ const montserrat = Montserrat({
 })
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { isEnabled } = await draftMode()
-  const structuredData = generateStructuredData()
+  const dealership = await getDealershipInfo()
+  const structuredData = generateStructuredData(dealership)
 
   return (
     <html className={cn(montserrat.variable, GeistMono.variable)} lang="en-GB" suppressHydrationWarning>
@@ -46,11 +43,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <Providers>
-          <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
-            }}
-          />
           <Layout>
             {children}
           </Layout>
@@ -61,48 +53,62 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   )
 }
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getServerSideURL()),
-  title: {
-    default: 'MYDV Autos - Trusted Used Car Dealers Nottingham | Quality Pre-Owned Vehicles',
-    template: '%s | MYDV Autos - Nottingham Used Car Dealers'
-  },
-  description: 'MYDV Autos - Your reliable family-run used car dealer in Nottinghamshire. Quality used cars from Audi, BMW, Ford, Mercedes & more. Indoor showroom, FCA registered finance & part exchange welcome.',
-  keywords: 'used cars Nottingham, car dealers Nottingham, used car finance Nottingham, part exchange Nottingham, indoor car showroom Nottingham, family car dealers Nottinghamshire, MYDV Autos, FCA registered',
-  authors: [{ name: 'MYDV Autos' }],
-  creator: 'MYDV Autos',
-  publisher: 'MYDV Autos',
-  formatDetection: {
-    telephone: true,
-    email: true,
-    address: true,
-  },
-  openGraph: mergeOpenGraph({
-    title: 'MYDV Autos - Trusted Used Car Dealers Nottingham',
-    description: 'Your honest, reliable, family-run used car dealer in Nottinghamshire. Premium quality vehicles with exceptional aftercare.',
-    url: getServerSideURL(),
-    siteName: 'MYDV Autos',
-    locale: 'en_GB',
-    type: 'website',
-  }),
-  twitter: {
-    card: 'summary_large_image',
-    title: 'MYDV Autos - Trusted Used Car Dealers Nottingham',
-    description: 'Your honest, reliable, family-run used car dealer in Nottinghamshire.',
-    creator: '@MYDVautos',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+  const serverUrl = getServerSideURL()
+  const title = `${dealership.name} | Quality Used Cars`
+  const description =
+    dealership.seoText ||
+    `${dealership.name} - ${dealership.tagline || 'Trusted used cars, finance options, and friendly support.'}`
+
+  return {
+    metadataBase: new URL(serverUrl),
+    title: {
+      default: title,
+      template: `%s | ${dealership.name}`,
+    },
+    description,
+    keywords: [
+      'used cars',
+      'car finance',
+      'part exchange',
+      dealership.name,
+      dealership.address.city,
+      dealership.address.postcode,
+    ]
+      .filter(Boolean)
+      .join(', '),
+    authors: [{ name: dealership.name }],
+    creator: dealership.name,
+    publisher: dealership.name,
+    formatDetection: {
+      telephone: true,
+      email: true,
+      address: true,
+    },
+    openGraph: mergeOpenGraph({
+      title,
+      description,
+      url: serverUrl,
+      siteName: dealership.name,
+      locale: 'en_GB',
+      type: 'website',
+    }),
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  verification: {
-    google: 'google-site-verification-code-here',
-  },
+  }
 }

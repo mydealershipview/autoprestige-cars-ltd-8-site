@@ -2,14 +2,12 @@ import {
   ArrowLeft,
   Car,
 } from 'lucide-react'
-import { AutoTraderVehicle, fetchAllAutoTraderListings } from '@/utilities/autotrader'
-import { generateVehicleSlug } from '@/utilities/formatVehicleData'
+import { AutoTraderVehicle } from '@/utilities/autotrader'
 import Link from 'next/link'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { ContactData } from '@/types/contact'
 import type { Metadata } from 'next'
 import VehicleClient from './_components/VehicleClient'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
 
 
 interface VehicleResponse {
@@ -40,6 +38,9 @@ interface VehicleResponse {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
+  const dealership = await getDealershipInfo()
+  const dealershipName = dealership.name
+  const dealershipCity = dealership.address.city || 'your area'
 
   const parseSlug = (slug: string) => {
     const parts = slug.split('-')
@@ -57,12 +58,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   // Fallback metadata
   const fallbackMetadata: Metadata = {
-    title: 'Quality Used Car for Sale | MWA Autos Nottingham',
-    description: 'Discover this premium quality used car at MWA Autos in Nottingham. Expert valuations, finance options, and exceptional customer service. Visit our showroom today.',
-    keywords: 'used cars for sale, quality used cars, car dealer Nottingham, car finance, MWA Autos',
+    title: `Quality Used Car For Sale | ${dealershipName}`,
+    description: `Discover this quality used car at ${dealershipName}. Expert valuations, finance options, and customer-first support.`,
+    keywords: ['used cars for sale', 'quality used cars', `car dealer ${dealershipCity}`, dealershipName]
+      .filter(Boolean)
+      .join(', '),
     openGraph: {
-      title: 'Quality Used Car for Sale | MWA Autos',
-      description: 'Premium quality used car available at MWA Autos Nottingham. Finance options and part exchange welcome.',
+      title: `Quality Used Car For Sale | ${dealershipName}`,
+      description: `Premium quality used car available at ${dealershipName}. Finance options and part exchange welcome.`,
       type: 'website',
       locale: 'en_GB',
     },
@@ -102,8 +105,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const priceText = price ? ` for £${price.toLocaleString()}` : ''
     const mileageText = mileage ? ` with ${mileage.toLocaleString()} miles` : ''
 
-    const title = `${year ? `${year} ` : ''}${make} ${model}${priceText} | Used Cars Nottingham | MWA Autos`
-    const description = `${year ? `${year} ` : ''}${make} ${model}${mileageText}. ${fuelType ? `${fuelType} engine` : ''}${transmission ? `, ${transmission} transmission` : ''}${bodyType ? `, ${bodyType} body style` : ''}. Quality used car with finance options available at MWA Autos Nottingham.`
+    const title = `${year ? `${year} ` : ''}${make} ${model}${priceText} | Used Cars ${dealershipCity} | ${dealershipName}`
+    const description = `${year ? `${year} ` : ''}${make} ${model}${mileageText}. ${fuelType ? `${fuelType} engine` : ''}${transmission ? `, ${transmission} transmission` : ''}${bodyType ? `, ${bodyType} body style` : ''}. Quality used car with finance options available at ${dealershipName}.`
 
     const keywords = [
       `${make} ${model} for sale`,
@@ -112,18 +115,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       year ? `${year} ${make} ${model}` : '',
       fuelType ? `${fuelType} ${make}` : '',
       transmission ? `${transmission} ${make}` : '',
-      'used cars Nottingham',
-      'car finance Nottingham',
-      'MWA Autos'
+      `used cars ${dealershipCity}`,
+      `car finance ${dealershipCity}`,
+      dealershipName,
     ].filter(Boolean).join(', ')
 
     return {
-      title: title.length > 60 ? `Buy Used ${year ? `${year} ` : ''}${make} ${model} | MWA Autos Nottingham` : title,
+      title:
+        title.length > 60
+          ? `Buy Used ${year ? `${year} ` : ''}${make} ${model} | ${dealershipName}`
+          : title,
       description: description.length > 160 ? description.substring(0, 157) + '...' : description,
       keywords,
       openGraph: {
         title: `${year ? `${year} ` : ''}${make} ${model}${priceText}`,
-        description: `Premium quality ${make} ${model}${mileageText} available at MWA Autos Nottingham. Finance options and part exchange welcome.`,
+        description: `Premium quality ${make} ${model}${mileageText} available at ${dealershipName}. Finance options and part exchange welcome.`,
         type: 'website',
         locale: 'en_GB',
         images: vehicle.media?.images?.length > 0 ? [
@@ -142,7 +148,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function IndividualListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const payload = await getPayload({ config: configPromise })
+  const dealership = await getDealershipInfo()
+  const contactData = mapDealershipInfoToContactData(dealership)
 
   const parseSlug = (slug: string) => {
     const parts = slug.split('-')
@@ -154,19 +161,6 @@ export default async function IndividualListingPage({ params }: { params: Promis
     const make = parts[0]
 
     return { make, model, year, stockId }
-  }
-
-  const fetchContactInfo = async (): Promise<ContactData | null> => {
-    try {
-      const result = await payload.findGlobal({
-        slug: 'contactInfo',
-      })
-
-      return result || null
-    } catch (error) {
-      console.error('Error fetching contact info:', error)
-      return null
-    }
   }
 
   const fetchVehicleDetails = async () => {
@@ -191,12 +185,11 @@ export default async function IndividualListingPage({ params }: { params: Promis
         ...data,
         // updatedDescription: payloadResponse?.description || data.vehicle?.adverts?.retailAdverts?.description
       }
-    } catch (err) {
+    } catch (_err) {
       return null
     }
   }
 
-  const contactData = await fetchContactInfo()
   const vehicleDetails = await fetchVehicleDetails()
 
   if (!vehicleDetails) {
@@ -220,9 +213,23 @@ export default async function IndividualListingPage({ params }: { params: Promis
     )
   }
 
-  const { vehicle, similarProducts, totalSimilar } = vehicleDetails
+  const { vehicle } = vehicleDetails
+
+  const contactPhone =
+    contactData?.phoneNumbers?.find((entry) => entry.isPrimary)?.number ||
+    contactData?.phoneNumbers?.[0]?.number ||
+    ''
+  const contactEmail =
+    contactData?.emailAddresses?.find((entry) => entry.isPrimary)?.email ||
+    contactData?.emailAddresses?.[0]?.email ||
+    ''
 
   return (
-    <VehicleClient vehicle={vehicle} />
+    <VehicleClient
+      vehicle={vehicle}
+      dealershipName={dealership.name}
+      phoneNumber={contactPhone}
+      emailAddress={contactEmail}
+    />
   )
 }

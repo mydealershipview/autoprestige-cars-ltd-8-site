@@ -39,12 +39,38 @@ export default function ReservationSuccessPage() {
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [contactPhone, setContactPhone] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
 
   const status = searchParams.get('status')
   const paymentRequestId = searchParams.get('paymenRequestId') // Note: Atoa docs show this typo
   const orderId = searchParams.get('orderId')
 
   useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const response = await fetch('/api/contact-info')
+        if (!response.ok) {
+          return
+        }
+
+        const data = await response.json()
+        const primaryPhone =
+          data?.phoneNumbers?.find((entry: any) => entry?.isPrimary)?.number ||
+          data?.phoneNumbers?.[0]?.number ||
+          ''
+        const primaryEmail =
+          data?.emailAddresses?.find((entry: any) => entry?.isPrimary)?.email ||
+          data?.emailAddresses?.[0]?.email ||
+          ''
+
+        setContactPhone(primaryPhone)
+        setContactEmail(primaryEmail)
+      } catch {
+        // keep fallback contact values
+      }
+    }
+
     const fetchPaymentStatus = async () => {
       if (!paymentRequestId) {
         setError('No payment request ID found')
@@ -75,6 +101,7 @@ export default function ReservationSuccessPage() {
     }
 
     fetchPaymentStatus()
+    fetchContactInfo()
 
     // If status is PENDING, poll for updates
     if (status === 'PENDING') {
@@ -295,7 +322,7 @@ export default function ReservationSuccessPage() {
                   <CustomButton
                     variant="outline"
                     className="w-full"
-                    onClick={() => window.open('tel:447942078614')}
+                    onClick={() => window.open(`tel:${(contactPhone || '01234567890').replace(/\s+/g, '')}`)}
                   >
                     <Phone className="w-4 h-4 mr-2" />
                     Call Us
@@ -303,7 +330,7 @@ export default function ReservationSuccessPage() {
                   <CustomButton
                     variant="outline"
                     className="w-full"
-                    onClick={() => window.open('mailto:info@mydv.co.uk')}
+                    onClick={() => window.open(`mailto:${contactEmail || 'info@dealership.co.uk'}`)}
                   >
                     <Mail className="w-4 h-4 mr-2" />
                     Email Us

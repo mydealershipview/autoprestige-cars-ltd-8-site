@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -94,13 +95,17 @@ export default function TermsPage() {
   )
 }
 
-export const metadata: Metadata = {
-  title: 'Terms and Conditions | Template',
-  description: 'Read our terms and conditions for purchasing vehicles, finance agreements, and warranty coverage.',
-  openGraph: {
-    title: 'Terms and Conditions | Template',
-    description: 'Terms and conditions governing vehicle purchases, finance, and warranties.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Terms and Conditions | ${dealership.name}`,
+    description: 'Read our terms and conditions for purchasing vehicles, finance agreements, and warranty coverage.',
+    openGraph: {
+      title: `Terms and Conditions | ${dealership.name}`,
+      description: 'Terms and conditions governing vehicle purchases, finance, and warranties.',
+      type: 'website',
+      locale: 'en_GB',
+    },
+  }
 }

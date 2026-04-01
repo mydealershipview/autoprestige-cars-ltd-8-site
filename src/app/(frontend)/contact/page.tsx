@@ -1,30 +1,26 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { draftMode } from 'next/headers'
-import { Phone, Mail, MapPin, Printer, Clock, Facebook, Instagram, Globe } from 'lucide-react'
+import { Phone, Mail, MapPin, Globe } from 'lucide-react'
 import ContactForm from './_components/ContactForm'
-import type { ContactData } from '@/types/contact'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
 
-export const metadata: Metadata = {
-  title: 'Contact Us | Template',
-  description:
-    'Get in touch with us. Find our contact details, opening hours, and send us a message directly.',
-  openGraph: {
-    title: 'Contact Us | Template',
-    description: 'Get in touch — call, email, or visit us in person.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Contact Us | ${dealership.name}`,
+    description:
+      dealership.seoText ||
+      `Get in touch with ${dealership.name}. Find our contact details, opening hours, and send us a message.`,
+    openGraph: {
+      title: `Contact Us | ${dealership.name}`,
+      description: `Get in touch with ${dealership.name} by phone, email, or in person.`,
+      type: 'website',
+      locale: 'en_GB',
+    },
+  }
 }
-
-// Opening hours — update in CMS or as a separate global if needed
-const openingHours = [
-  { day: 'Mon – Fri', hours: '09:00 am – 06:00 pm' },
-  { day: 'Sat', hours: '10:00 am – 05:00 pm' },
-  { day: 'Sun', hours: 'By Appointment Only' },
-]
 
 const platformIcon = (platform: string) => {
   switch (platform) {
@@ -60,26 +56,19 @@ const platformIcon = (platform: string) => {
 }
 
 export default async function ContactPage() {
-  const { isEnabled: draft } = await draftMode()
-  const payload = await getPayload({ config: configPromise })
+  const dealership = await getDealershipInfo()
+  const contactData = mapDealershipInfoToContactData(dealership)
 
-  let contactData: ContactData | null = null
-  try {
-    contactData = await payload.findGlobal({
-      slug: 'contactInfo',
-      draft,
-      overrideAccess: draft,
-    })
-  } catch {
-    // render with no contact data
-  }
+  const openingHours = [
+    { day: 'Mon - Fri', hours: dealership.openingHours.weekdays || '09:00 am - 06:00 pm' },
+    { day: 'Sat', hours: dealership.openingHours.saturday || '10:00 am - 05:00 pm' },
+    { day: 'Sun', hours: dealership.openingHours.sunday || 'By Appointment Only' },
+  ]
 
   const phoneNumbers = contactData?.phoneNumbers ?? []
   const emailAddresses = contactData?.emailAddresses ?? []
   const address = contactData?.businessAddress
   const socialLinks = (contactData?.socialLinks ?? []).filter((l) => l.isActive !== false)
-
-  const primaryPhone = phoneNumbers.find((p) => p.isPrimary) ?? phoneNumbers[0]
 
   return (
     <div className="bg-black text-white min-h-screen">

@@ -1,18 +1,23 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import ServiceBookingForm from './_components/ServiceBookingForm'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const metadata: Metadata = {
-  title: 'Our Services | Template',
-  description:
-    'Discover our range of specialist automotive services including alloy wheel refurbishment, privacy glass, full vehicle resprays, and custom styling. Book your service today.',
-  openGraph: {
-    title: 'Our Services | Template',
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Our Services | ${dealership.name}`,
     description:
-      'Expert automotive services including alloy wheels, privacy glass, resprays and custom styling. Book online today.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+      'Discover our range of specialist automotive services including alloy wheel refurbishment, privacy glass, full vehicle resprays, and custom styling. Book your service today.',
+    openGraph: {
+      title: `Our Services | ${dealership.name}`,
+      description:
+        'Expert automotive services including alloy wheels, privacy glass, resprays and custom styling. Book online today.',
+      type: 'website',
+      locale: 'en_GB',
+    },
+  }
 }
 
 const services = [

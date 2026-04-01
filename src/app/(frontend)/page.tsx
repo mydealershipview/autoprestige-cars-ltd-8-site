@@ -1,128 +1,82 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { draftMode } from 'next/headers'
 import { ChevronRight } from 'lucide-react'
 import { AnimatedCard } from '@/components/AnimatedCard'
 import Link from 'next/link'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const metadata: Metadata = {
-  title: 'MYDV Autos - Trusted Used Car Dealers Nottingham | Quality Pre-Owned Vehicles',
-  description: 'MYDV Autos - Your reliable family-run used car dealer in Nottinghamshire. Quality used cars from Audi, BMW, Ford, Mercedes & more. Indoor showroom, FCA registered finance & part exchange welcome.',
-  keywords: 'used cars Nottingham, car dealers Nottingham, used car finance Nottingham, part exchange Nottingham, indoor car showroom Nottingham, family car dealers Nottinghamshire, quality used cars, FCA registered, Audi, BMW, Ford, Mercedes, Vauxhall',
-  openGraph: {
-    title: 'MYDV Autos - Trusted Used Car Dealers Nottingham',
-    description: 'Your honest, reliable, family-run used car dealer in Nottinghamshire. Premium quality vehicles with exceptional aftercare.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+const buildHomeSchema = (dealership: Awaited<ReturnType<typeof getDealershipInfo>>) => {
+  const sameAs = Object.values(dealership.social).filter(Boolean)
+
+  return {
+    __html: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'AutoDealer',
+      name: dealership.name,
+      description:
+        dealership.seoText ||
+        `${dealership.name} is a trusted used car dealership offering quality pre-owned vehicles.`,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: [dealership.address.line1, dealership.address.line2].filter(Boolean).join(', '),
+        addressLocality: dealership.address.city,
+        postalCode: dealership.address.postcode,
+        addressCountry: dealership.address.country || 'GB',
+      },
+      telephone: dealership.phone,
+      email: dealership.email,
+      sameAs,
+      serviceType: ['Used Car Sales', 'Car Finance', 'Part Exchange'],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Used Cars',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Car',
+              name: 'Quality Used Cars',
+            },
+          },
+        ],
+      },
+    }),
+  }
 }
 
-const script = {
-  __html: JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "AutoDealer",
-    "name": "MYDV Autos",
-    "description": "Family-run used car dealer in Nottinghamshire offering quality pre-owned vehicles with exceptional customer service",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Nottingham",
-      "addressRegion": "Nottinghamshire",
-      "addressCountry": "GB"
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+  const title = `${dealership.name} | Quality Pre-Owned Vehicles`
+  const description =
+    dealership.seoText || `${dealership.name} - ${dealership.tagline || 'Trusted used car specialists.'}`
+
+  return {
+    title,
+    description,
+    keywords: [
+      'used cars',
+      'car dealers',
+      'used car finance',
+      'part exchange',
+      dealership.name,
+      dealership.address.city,
+    ]
+      .filter(Boolean)
+      .join(', '),
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: 'en_GB',
     },
-    "areaServed": ["Nottingham", "Nottinghamshire", "Derby", "Leicester", "Mansfield", "Birmingham"],
-    "makesOffered": ["Audi", "BMW", "Citroen", "Ford", "Hyundai", "Land Rover", "Mercedes", "Skoda", "Vauxhall", "Volvo"],
-    "serviceType": ["Used Car Sales", "Car Finance", "Part Exchange", "Vehicle Delivery"],
-    "specialties": ["Indoor Showroom", "FCA Registered Finance", "Quality Assurance", "Family-Run Business"],
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Used Cars",
-      "itemListElement": [
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Car",
-            "name": "Quality Used Cars"
-          }
-        }
-      ]
-    }
-  })
+  }
 }
 
 const Home = async () => {
-  const { isEnabled: draft } = await draftMode()
-  const payload = await getPayload({ config: configPromise })
-
-  const fetchAvailableMakesAndModels = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/available-makes-models`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const data = await response.json()
-      return data
-    } catch (err) {
-      console.error('Failed to fetch available makes and models:', err)
-      return { makes: [], models: [] }
-    }
-  }
-
-  const queryHomePage = async () => {
-    try {
-      const result = await payload.find({
-        collection: 'pages',
-        draft,
-        limit: 1,
-        pagination: false,
-        overrideAccess: draft,
-        where: {
-          template: {
-            equals: 'homepage',
-          },
-          slug: {
-            equals: 'homepage'
-          }
-        },
-      })
-      return result.docs[0]
-      // const result = await fetch('http://localhost:3000/api/pages?depth=2&draft=false&locale=undefined')
-      // const data = await result.json()
-      // const filteredDocs = data.docs.filter(doc => {
-      //   return doc.template === "homepage" && doc.slug === "homepage"
-      //   // console.log(doc.content)
-      // })
-      // console.log("🚀 ~ queryHomePage ~ filteredDocs:", filteredDocs[0].content)
-
-    } catch (error) {
-      console.error('Error fetching homepage:', error)
-      return null
-    }
-  }
-
-  let promotionsPage = null
-  try {
-    promotionsPage = await payload.find({
-      collection: 'pages',
-      draft,
-      limit: 1,
-      pagination: false,
-      overrideAccess: draft,
-      where: {
-        template: {
-          equals: 'promotions',
-        },
-      },
-    })
-  } catch (error) {
-    console.error('Error fetching promotions page:', error)
-  }
-
-  const data = await fetchAvailableMakesAndModels()
-  const homePage = await queryHomePage()
-  const homeContent = homePage?.content
-  const promotions = promotionsPage?.docs?.[0]?.promotionsContent
+  const dealership = await getDealershipInfo()
+  const script = buildHomeSchema(dealership)
+  const displayName = dealership.name || 'Dealership'
+  const displayTagline = dealership.tagline || 'Trusted used vehicles and support'
 
   return (
     <main className="relative min-h-screen w-full overflow-x-hidden bg-black text-white">
@@ -167,10 +121,10 @@ const Home = async () => {
             
             <div className="flex flex-col">
               <h1 className="text-3xl lg:text-4xl font-black tracking-widest uppercase mb-1 drop-shadow-lg">
-                TEMPLATE
+                {displayName}
               </h1>
               <p className="text-sm lg:text-base text-gray-200 tracking-widest font-medium uppercase drop-shadow-md">
-                &quot;Living the dream, driving the dream&quot;
+                {displayTagline}
               </p>
             </div>
           </div>
@@ -277,7 +231,7 @@ const Home = async () => {
             </h2>
           </div>
           <p className="text-base text-gray-300 font-medium mb-6">
-            Sell your sport or prestige car directly to TEMPLATE
+            Sell your sport or prestige car directly to {displayName}
           </p>
           <Link href="/sell" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 transition-colors uppercase gap-2">
             GET A QUOTE <ChevronRight className="h-4 w-4 text-red-500" />
@@ -290,7 +244,7 @@ const Home = async () => {
         <div className="absolute inset-0 z-0">
           <img 
             src="/car_5.jpg" 
-            alt="Welcome to TEMPLATE" 
+            alt={`Welcome to ${displayName}`} 
             className="w-full h-full object-cover"
           />
         </div>
@@ -300,11 +254,11 @@ const Home = async () => {
           <div className="flex items-center mb-3">
             <div className="w-6 h-5 bg-red-600 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
-              WELCOME TO TEMPLATE
+              WELCOME TO {displayName.toUpperCase()}
             </h2>
           </div>
           <p className="text-base text-gray-300 font-medium mb-6 leading-relaxed">
-            TEMPLATE specialise in supplying super cars, prestige cars and sports cars with the looks and performance specifically designed to take your breath away
+            {displayName} specialises in supplying prestige and performance vehicles with standout design and confidence-inspiring performance.
           </p>
           <Link href="/about" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 transition-colors uppercase gap-2">
             READ MORE <ChevronRight className="h-4 w-4 text-red-500" />

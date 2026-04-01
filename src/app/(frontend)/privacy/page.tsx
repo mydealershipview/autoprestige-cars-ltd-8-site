@@ -1,19 +1,23 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy | Template',
-  description: 'Learn how we protect your personal data and privacy. Our commitment to GDPR compliance and transparent data handling.',
-  openGraph: {
-    title: 'Privacy Policy | Template',
-    description: 'Our commitment to protecting your privacy and personal data.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Privacy Policy | ${dealership.name}`,
+    description: 'Learn how we protect your personal data and privacy. Our commitment to GDPR compliance and transparent data handling.',
+    openGraph: {
+      title: `Privacy Policy | ${dealership.name}`,
+      description: 'Our commitment to protecting your privacy and personal data.',
+      type: 'website',
+      locale: 'en_GB',
+    },
+  }
 }
 
 export default function PrivacyPage() {

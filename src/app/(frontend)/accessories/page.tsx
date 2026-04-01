@@ -1,11 +1,20 @@
 import React from 'react'
+import type { Metadata } from 'next'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const metadata = {
-  title: 'Accessories | MYDV autos',
-  description: 'Riviera Automotive can take your vehicle to the next level with our available accessories, including alloys, body kits and exhausts.',
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Accessories | ${dealership.name}`,
+    description:
+      'Discover available accessories including alloys, body kits, and exhaust options to personalise your vehicle.',
+  }
 }
 
-export default function AccessoriesPage() {
+export default async function AccessoriesPage() {
+  const dealership = await getDealershipInfo()
+
   return (
     <main className="min-h-screen bg-[#111111] text-white pt-24 pb-20">
       {/* Hero Section */}
@@ -26,7 +35,7 @@ export default function AccessoriesPage() {
               Accessories
             </h1>
             <p className="text-sm text-zinc-300 leading-relaxed font-light text-center md:text-left">
-              Riviera Automotive can take your vehicle to the next level with our available accessories, including alloys, body kits, and exhausts.
+              {`${dealership.name} can take your vehicle to the next level with available accessories, including alloys, body kits, and exhausts.`}
             </p>
           </div>
         </div>
@@ -37,26 +46,26 @@ export default function AccessoriesPage() {
         
         <div className="mb-16 border-b border-white/10 pb-16">
           <p className="text-sm text-zinc-400 font-light mb-16">
-            Discover the full range of accessories available for your vehicle at Riviera Automotive
+            Discover the full range of accessories available for your vehicle at our dealership
           </p>
 
           <h2 className="text-xl md:text-2xl tracking-widest uppercase mb-2">
             Alloys
           </h2>
           <h3 className="text-sm md:text-base text-zinc-200 tracking-wider uppercase mb-6">
-            Elevate your vehicle with Riviera Automotive alloys
+            Elevate your vehicle with premium alloys
           </h3>
           <p className="text-sm text-zinc-400 font-light mb-4">
-            Experience the pinnacle of automotive elegance with Riviera Automotive&apos;s premium alloy wheels. Crafted with meticulous attention to detail, our wheels are designed to enhance the prestige and sophistication of your vehicle.
+            Experience a premium finish with alloy wheel options designed to enhance the look and road presence of your vehicle.
           </p>
           <p className="text-sm text-zinc-400 font-light mb-4">
             Whether you own a luxury SUV like the Range Rover or a high-performance sports car, Riviera alloys offer a perfect blend of style and durability. Our extensive range features a variety of designs, from classic five-spoke patterns to contemporary multi-spoke configurations, ensuring you find the ideal match for your taste.
           </p>
           <p className="text-sm text-zinc-400 font-light mb-4">
-            Beyond aesthetics, Riviera wheels are engineered to deliver exceptional performance. Precisely machined and rigorously tested, our alloys provide superior strength, handling, and ride quality.
+            Beyond aesthetics, quality wheel options can support confident handling and ride comfort when matched correctly to your setup.
           </p>
           <p className="text-sm text-zinc-400 font-light">
-            Invest in Riviera Automotive alloys and elevate your vehicle to new heights of luxury and style.
+            Choose alloy upgrades that suit your style and usage requirements.
           </p>
           {/* Note: Wheels button excluded as requested */}
         </div>
@@ -66,16 +75,16 @@ export default function AccessoriesPage() {
             Body Kits
           </h2>
           <h3 className="text-sm md:text-base text-zinc-200 tracking-wider uppercase mb-6">
-            Enhance your vehicle&apos;s aesthetic with Riviera Automotive body kits
+            Enhance your vehicle&apos;s aesthetic with tailored body kits
           </h3>
           <p className="text-sm text-zinc-400 font-light mb-4">
-            Elevate your vehicle&apos;s appearance with Riviera Automotive&apos;s high-quality body kits. Crafted from durable polyurethane plastic, our kits offer superior strength and longevity compared to traditional fibreglass options.
+            Enhance your vehicle&apos;s appearance with high-quality body kit options selected for durability and finish.
           </p>
           <p className="text-sm text-zinc-400 font-light mb-4">
             To complete the transformation, complement your body kit with our selection of premium alloy wheels, tires, and interior accessories.
           </p>
           <p className="text-sm text-zinc-400 font-light">
-            Contact our team today to learn more about how Riviera Automotive can help you achieve your desired vehicle aesthetic.
+            Contact our team today to learn more about how we can help you achieve your desired vehicle aesthetic.
           </p>
         </div>
 
@@ -84,16 +93,16 @@ export default function AccessoriesPage() {
             Exhausts
           </h2>
           <h3 className="text-sm md:text-base text-zinc-200 tracking-wider uppercase mb-6">
-            Experience unparalleled performance with Riviera Automotive exhaust systems
+            Experience improved sound and response with upgraded exhaust systems
           </h3>
           <p className="text-sm text-zinc-400 font-light mb-4">
-            Riviera Automotive is dedicated to crafting exhaust systems that deliver exceptional power, captivating sound, and unmatched versatility. Our valvetronic systems, meticulously engineered with precision and innovation, set a new standard for performance and sound quality.
+            Exhaust upgrades can deliver sharper response, refined sound, and a more engaging drive when installed correctly.
           </p>
           <p className="text-sm text-zinc-400 font-light mb-4">
-            Drawing on the expertise of our German and Japanese engineers, Riviera Automotive is at the forefront of exhaust system design and manufacturing. With a commitment to excellence, we have established ourselves as a leading provider of high-performance exhaust systems in the automotive aftermarket.
+            Our team can recommend suitable setups based on your vehicle, intended usage, and sound preference.
           </p>
           <p className="text-sm text-zinc-400 font-light">
-            Discover the difference that a Riviera Automotive exhaust system can make for your vehicle.
+            Discover the difference that the right exhaust setup can make for your vehicle.
           </p>
         </div>
 

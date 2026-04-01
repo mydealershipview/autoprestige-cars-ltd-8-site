@@ -1,12 +1,19 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const metadata: Metadata = {
-  title: 'Complaints Policy | MYDV autos',
-  description: 'View the complaints handling procedure and policy for MYDV autos.',
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Complaints Policy | ${dealership.name}`,
+    description: `View the complaints handling procedure and policy for ${dealership.name}.`,
+  }
 }
 
-export default function ComplaintsPage() {
+export default async function ComplaintsPage() {
+  const dealership = await getDealershipInfo()
+
   return (
     <main className="min-h-screen bg-[#111111] text-white pt-32 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
@@ -16,7 +23,7 @@ export default function ComplaintsPage() {
         
         <div className="space-y-8 text-zinc-300 font-light leading-relaxed text-sm md:text-base">
           <p>
-            At MYDV autos, we strive to ensure that all of our customers receive the highest standard of service. If you are unhappy with the service you have received or the vehicle you have purchased, we want to hear about it so that we can put things right. We take all complaints very seriously and view them as an opportunity to improve our business.
+            {`At ${dealership.name}, we strive to ensure that all customers receive a high standard of service. If you are unhappy with the service you have received or the vehicle you purchased, we want to hear from you so we can put things right.`}
           </p>
           
           <h2 className="text-xl tracking-widest uppercase font-semibold text-white mt-12 mb-6">How to make a complaint</h2>

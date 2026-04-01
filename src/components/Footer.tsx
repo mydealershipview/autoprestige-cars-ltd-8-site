@@ -4,23 +4,29 @@ import { Phone, MapPin, Clock, MessageCircle, Facebook, Instagram } from "lucide
 import { ContactData } from "@/types/contact"
 import { Make, Model } from "@/utilities/types"
 import Link from "next/link"
+import type { OpeningHours } from "@/types/dealership"
 
 interface FooterProps {
   contactData?: ContactData | null
+  dealershipName?: string
+  openingHours?: OpeningHours
   makes: Make[]
   models: Model[]
 }
 
-export default function Footer({ contactData }: FooterProps) {
+export default function Footer({ contactData, dealershipName, openingHours }: FooterProps) {
   const primaryPhone = contactData?.phoneNumbers?.find(p => p.isPrimary) ?? contactData?.phoneNumbers?.[0]
   const primaryEmail = contactData?.emailAddresses?.find(e => e.isPrimary) ?? contactData?.emailAddresses?.[0]
   const address = contactData?.businessAddress
+  const displayName = dealershipName || address?.name || 'Dealership'
 
-  const phone = primaryPhone?.number ?? '01484 480777'
-  const email = primaryEmail?.email ?? 'sales@s-s-c.co.uk'
+  const phone = primaryPhone?.number ?? 'Phone available on request'
+  const email = primaryEmail?.email ?? 'Email available on request'
+  const phoneHref = primaryPhone?.number ? `tel:${primaryPhone.number.replace(/\s/g, '')}` : '#'
+  const emailHref = primaryEmail?.email ? `mailto:${primaryEmail.email}` : '#'
   const addressLine = address
     ? [address.name, address.street, address.city && address.postcode ? `${address.city}, ${address.postcode}` : address.city ?? address.postcode].filter(Boolean).join(', ')
-    : 'EEHAD House, Northgate, Huddersfield, HD1 6AP'
+    : 'Address details available on request'
 
   const socialLinks = (contactData?.socialLinks ?? []).filter(s => s.isActive !== false)
 
@@ -41,13 +47,13 @@ export default function Footer({ contactData }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full mb-16 px-4 lg:px-0">
           {/* Contact Details */}
           <div className="flex flex-col gap-6 items-center md:items-start md:border-r border-white/10 md:pr-12">
-            <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-4 w-full justify-center md:justify-start group">
+            <a href={phoneHref} className="flex items-center gap-4 w-full justify-center md:justify-start group">
               <div className="flex items-center justify-center w-10 h-10 border border-white/20 group-hover:border-red-600 transition-colors shrink-0">
                 <Phone className="h-4 w-4 text-white" />
               </div>
               <div className="text-white font-semibold tracking-wider text-xl">{phone}</div>
             </a>
-            <a href={`mailto:${email}`} className="flex items-center gap-4 w-full justify-center md:justify-start group">
+            <a href={emailHref} className="flex items-center gap-4 w-full justify-center md:justify-start group">
               <div className="flex items-center justify-center w-10 h-10 border border-white/20 group-hover:border-red-600 transition-colors shrink-0">
                 <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -72,9 +78,9 @@ export default function Footer({ contactData }: FooterProps) {
                 <Clock className="h-4 w-4 text-white" />
               </div>
               <div className="text-white/80 text-xs leading-relaxed tracking-wider space-y-1">
-                <div>Mon - Fri: 09:00 am - 06:00 pm</div>
-                <div>Sat: 10:00 am - 05:00 pm</div>
-                <div>Sun: By Appointment Only</div>
+                <div>{openingHours?.weekdays || 'Monday - Friday: 9:00 am - 6:00 pm'}</div>
+                <div>{openingHours?.saturday || 'Saturday: 9:00 am - 5:00 pm'}</div>
+                <div>{openingHours?.sunday || 'Sunday: By Appointment'}</div>
               </div>
             </div>
           </div>
@@ -124,7 +130,7 @@ export default function Footer({ contactData }: FooterProps) {
 
         {/* Bottom Legal Links */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-500 tracking-wider">
-          <span>© {new Date().getFullYear()} Template</span>
+          <span>© {new Date().getFullYear()} {displayName}</span>
           <span className="hidden md:inline">|</span>
           <Link href="/terms" className="hover:text-red-500 transition-colors uppercase border-b border-red-800 pb-0.5">Terms &amp; Conditions</Link>
           <span className="hidden md:inline">|</span>

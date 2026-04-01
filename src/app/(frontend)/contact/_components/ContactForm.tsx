@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Send } from 'lucide-react'
+import type { WebhookData } from '@/types/webhook'
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -18,26 +19,72 @@ export default function ContactForm() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const splitFullName = (fullName: string): { firstName: string; lastName: string } => {
+    const trimmed = fullName.trim()
+    if (!trimmed) {
+      return { firstName: '', lastName: '' }
+    }
+
+    const parts = trimmed.split(/\s+/)
+    const firstName = parts[0] || ''
+    const lastName = parts.slice(1).join(' ')
+
+    return { firstName, lastName }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setError(null)
 
     try {
-      const res = await fetch('/api/contact', {
+      const { firstName, lastName } = splitFullName(formData.fullName)
+
+      const payload: WebhookData = {
+        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+        enquiryType: 'general-contact',
+        personal: {
+          title: null,
+          firstName,
+          lastName,
+          email: formData.email,
+          phoneNumber: formData.phone,
+          gender: null,
+          countryOfOrigin: null,
+          dateOfBirth: null,
+          maritalStatus: null,
+          dependents: null,
+          address: null,
+        },
+        vehicle: null,
+        userVehicle: null,
+        findYourNextCar: {
+          enquiryType: 'general-enquiry',
+          vehiclePreferences: null,
+        },
+        testDrive: null,
+        employment: null,
+        finance: null,
+        bank: null,
+        notes: formData.message || 'General contact enquiry submitted from contact page.',
+      }
+
+      const res = await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
 
       if (!res.ok) {
-        throw new Error('Failed to send message. Please try again.')
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data?.error || 'Failed to send message. Please try again.')
       }
 
       setSubmitted(true)
       setFormData({ fullName: '', email: '', phone: '', message: '' })
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+      setError(message)
     } finally {
       setIsSubmitting(false)
     }

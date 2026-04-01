@@ -3,13 +3,14 @@ import type { Metadata } from 'next/types'
 import { CollectionArchive } from '@/components/payload/CollectionArchive'
 import { PageRange } from '@/components/payload/PageRange'
 import { Pagination } from '@/components/payload/Pagination'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 import { notFound } from 'next/navigation'
+import { getStaticPosts, paginateStaticPosts } from '@/data/staticPosts'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
 export const revalidate = 600
+const PAGE_SIZE = 12
 
 type Args = {
   params: Promise<{
@@ -19,19 +20,16 @@ type Args = {
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { pageNumber } = await paramsPromise
-  const payload = await getPayload({ config: configPromise })
 
   const sanitizedPageNumber = Number(pageNumber)
 
   if (!Number.isInteger(sanitizedPageNumber)) notFound()
 
-  const posts = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 12,
-    page: sanitizedPageNumber,
-    overrideAccess: false,
-  })
+  const posts = paginateStaticPosts(sanitizedPageNumber, PAGE_SIZE)
+
+  if (sanitizedPageNumber > posts.totalPages || sanitizedPageNumber < 1) {
+    notFound()
+  }
 
   return (
     <div className="pt-24 pb-24">
@@ -64,19 +62,17 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { pageNumber } = await paramsPromise
+  const dealership = await getDealershipInfo()
+
   return {
-    title: `Payload Website Template Posts Page ${pageNumber || ''}`,
+    title: `Posts Page ${pageNumber || ''} | ${dealership.name}`,
   }
 }
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const { totalDocs } = await payload.count({
-    collection: 'posts',
-    overrideAccess: false,
-  })
+  const totalDocs = getStaticPosts().length
 
-  const totalPages = Math.ceil(totalDocs / 10)
+  const totalPages = Math.max(1, Math.ceil(totalDocs / PAGE_SIZE))
 
   const pages: { pageNumber: string }[] = []
 

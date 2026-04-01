@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { CheckCircle } from 'lucide-react'
+import type { WebhookData } from '@/types/webhook'
 
 interface FormState {
   registration: string
@@ -38,6 +39,19 @@ export default function ServiceBookingForm() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const splitFullName = (fullName: string): { firstName: string; lastName: string } => {
+    const trimmed = fullName.trim()
+    if (!trimmed) {
+      return { firstName: '', lastName: '' }
+    }
+
+    const parts = trimmed.split(/\s+/)
+    const firstName = parts[0] || ''
+    const lastName = parts.slice(1).join(' ')
+
+    return { firstName, lastName }
+  }
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
@@ -50,10 +64,65 @@ export default function ServiceBookingForm() {
     setError(null)
 
     try {
-      const res = await fetch('/api/services', {
+      const { firstName, lastName } = splitFullName(formData.fullName)
+
+      const payload: WebhookData = {
+        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+        enquiryType: 'book-appointment',
+        personal: {
+          title: null,
+          firstName,
+          lastName,
+          email: formData.email,
+          phoneNumber: formData.phone,
+          gender: null,
+          countryOfOrigin: null,
+          dateOfBirth: null,
+          maritalStatus: null,
+          dependents: null,
+          address: null,
+        },
+        vehicle: {
+          stockId: null,
+          make: formData.makeModel || null,
+          model: null,
+          registration: formData.registration || null,
+          mileage: formData.mileage || null,
+          year: null,
+          recentValuations: null,
+          price: null,
+          initialDeposit: null,
+          loanTerm: null,
+          apr: null,
+          amountToFinance: null,
+          monthlyPayment: null,
+        },
+        userVehicle: null,
+        findYourNextCar: null,
+        testDrive: {
+          isTestDrive: false,
+          testDriveDate: formData.preferredDate || null,
+          testDriveTime: formData.preferredTime || null,
+          additionalRequirements: formData.furtherDetails || null,
+        },
+        employment: null,
+        finance: null,
+        bank: null,
+        notes: [
+          'Service booking request submitted from services page.',
+          formData.makeModel ? `Make/Model: ${formData.makeModel}` : '',
+          formData.preferredDate ? `Preferred Date: ${formData.preferredDate}` : '',
+          formData.preferredTime ? `Preferred Time: ${formData.preferredTime}` : '',
+          formData.furtherDetails ? `Further Details: ${formData.furtherDetails}` : '',
+        ]
+          .filter(Boolean)
+          .join(' | '),
+      }
+
+      const res = await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
 
       if (!res.ok) {

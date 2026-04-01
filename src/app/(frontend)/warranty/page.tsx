@@ -1,17 +1,22 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const metadata: Metadata = {
-  title: 'RAC Warranty | Template',
-  description:
-    'Every eligible vehicle we sell includes an RAC Warranty. 3-month maintenance and repair cover, 12 months free RAC Breakdown Cover, Car Data Check and no excess to pay.',
-  openGraph: {
-    title: 'RAC Warranty | Template',
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `RAC Warranty | ${dealership.name}`,
     description:
-      'Comprehensive RAC warranty protection with every eligible vehicle sold. Peace of mind driving from day one.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+      'Every eligible vehicle we sell includes an RAC Warranty. 3-month maintenance and repair cover, 12 months free RAC Breakdown Cover, Car Data Check and no excess to pay.',
+    openGraph: {
+      title: `RAC Warranty | ${dealership.name}`,
+      description:
+        'Comprehensive RAC warranty protection with every eligible vehicle sold. Peace of mind driving from day one.',
+      type: 'website',
+      locale: 'en_GB',
+    },
+  }
 }
 
 const warrantyFeatures = [

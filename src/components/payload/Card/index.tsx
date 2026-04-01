@@ -4,11 +4,26 @@ import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
 import React, { Fragment } from 'react'
 
-import type { Post } from '@/payload-types'
-
 import { Media } from '@/components/payload/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = {
+  slug?: string | null
+  categories?:
+    | Array<
+        | string
+        | {
+            id?: string | null
+            title?: string | null
+          }
+      >
+    | null
+  meta?: {
+    title?: string | null
+    image?: unknown
+    description?: string | null
+  } | null
+  title?: string | null
+}
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -39,7 +54,9 @@ export const Card: React.FC<{
     >
       <div className="relative w-full ">
         {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
+        {Boolean(metaImage) && typeof metaImage !== 'string' && (
+          <Media resource={metaImage as any} size="33vw" />
+        )}
       </div>
       <div className="p-4">
         {showCategories && hasCategories && (

@@ -1,14 +1,15 @@
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+const parseAffiliateIdsFromEnv = (): string[] => {
+  const raw =
+    process.env.AUTOTRADER_AFFILIATE_IDS ||
+    process.env.AFFILIATE_IDS ||
+    process.env.AUTOTRADER_ADVERTISER_ID ||
+    process.env.NEXT_PUBLIC_DEALER_AFFILIATE_ID ||
+    ''
 
-// Define the affiliate ID type
-interface AffiliateIdDoc {
-  id: string
-  dealerAffiliateId: string
-  isActive: boolean
-  description?: string
-  createdAt: string
-  updatedAt: string
+  return raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
 }
 
 /**
@@ -16,46 +17,20 @@ interface AffiliateIdDoc {
  * Falls back to environment variable if no active ID is found
  */
 export async function getActiveAffiliateId(): Promise<string> {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    
-    const result = await payload.findGlobal({
-      slug: 'affiliateId',
-    })
-
-    if (result?.affiliateIds?.length && result.affiliateIds.length > 0) {
-      const doc = result.affiliateIds[0] as AffiliateIdDoc
-      return doc.dealerAffiliateId
-    }
-
-    // Fallback to environment variable
-    return process.env.NEXT_PUBLIC_DEALER_AFFILIATE_ID || '43697'
-  } catch (error) {
-    console.error('Error fetching active affiliate ID:', error)
-    // Fallback to environment variable
-    return process.env.NEXT_PUBLIC_DEALER_AFFILIATE_ID || '43697'
-  }
+  const ids = parseAffiliateIdsFromEnv()
+  return ids[0] || '43697'
 }
 
 /**
  * Get all affiliate IDs from the database
  */
 export async function getAllAffiliateIds(): Promise<Array<{ id: string; dealerAffiliateId: string; isActive: boolean; description?: string }>> {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    
-    const result = await payload.findGlobal({
-      slug: 'affiliateId',
-    })
+  const ids = parseAffiliateIdsFromEnv()
 
-    return result?.affiliateIds?.map((doc: any) => ({
-      id: doc.id,
-      dealerAffiliateId: doc.dealerAffiliateId,
-      isActive: doc.isActive || false,
-      description: doc.description,
-    })) || []
-  } catch (error) {
-    console.error('Error fetching affiliate IDs:', error)
-    return []
-  }
+  return ids.map((dealerAffiliateId, index) => ({
+    id: `env-${index + 1}`,
+    dealerAffiliateId,
+    isActive: index === 0,
+    description: 'Loaded from environment variable',
+  }))
 }

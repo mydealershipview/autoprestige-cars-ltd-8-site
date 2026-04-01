@@ -3,29 +3,16 @@ import type { Metadata } from 'next/types'
 import { CollectionArchive } from '@/components/payload/CollectionArchive'
 import { PageRange } from '@/components/payload/PageRange'
 import { Pagination } from '@/components/payload/Pagination'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
+import { paginateStaticPosts } from '@/data/staticPosts'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
 
 export default async function Page() {
-  const payload = await getPayload({ config: configPromise })
-
-  const posts = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 12,
-    overrideAccess: false,
-    select: {
-      title: true,
-      slug: true,
-      categories: true,
-      meta: true,
-    },
-  })
+  const posts = paginateStaticPosts(1, 12)
 
   return (
     <div className="pt-24 pb-24">
@@ -56,8 +43,10 @@ export default async function Page() {
   )
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
   return {
-    title: `Payload Website Template Posts`,
+    title: `Posts | ${dealership.name}`,
   }
 }

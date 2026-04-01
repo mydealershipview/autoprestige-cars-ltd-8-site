@@ -1,38 +1,13 @@
 import type { Metadata } from 'next'
-
-import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
-import { PayloadRedirects } from '@/components/payload/PayloadRedirects'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
-import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
-import RichText from '@/components/payload/RichText'
-
-import type { Post } from '@/payload-types'
-
-import { PostHero } from '@/heros/PostHero'
-import { generateMeta } from '@/utilities/generateMeta'
+import React from 'react'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import PageClient from './page.client'
-import { LivePreviewListener } from '@/components/payload/LivePreviewListener'
+import { findStaticPostBySlug, getStaticPosts } from '@/data/staticPosts'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const posts = await payload.find({
-    collection: 'posts',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
-  })
-
-  return params
+  return getStaticPosts().map((post) => ({ slug: post.slug }))
 }
 
 type Args = {
@@ -42,34 +17,54 @@ type Args = {
 }
 
 export default async function Post({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  const url = '/posts/' + slug
-  const post = await queryPostBySlug({ slug })
+  const post = findStaticPostBySlug(slug)
 
-  if (!post) return <PayloadRedirects url={url} />
+  if (!post) {
+    notFound()
+  }
+
+  const related = getStaticPosts()
+    .filter((candidate) => candidate.slug !== post.slug)
+    .slice(0, 3)
 
   return (
-    <article className="pt-16 pb-16">
+    <article className="pt-24 pb-20">
       <PageClient />
 
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
+      <div className="container max-w-4xl">
+        <p className="text-xs uppercase tracking-[0.16em] text-zinc-400 mb-4">
+          {(post.categories || [])
+            .map((category) => (typeof category === 'object' ? category.title : ''))
+            .filter(Boolean)
+            .join(', ') || 'Article'}
+        </p>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4">{post.title}</h1>
+        <p className="text-sm text-zinc-500 mb-10">{new Date(post.publishedAt).toLocaleDateString('en-GB')}</p>
 
-      {draft && <LivePreviewListener />}
-
-      <PostHero post={post} />
-
-      <div className="flex flex-col items-center gap-4 pt-8">
-        <div className="container">
-          <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
-            <RelatedPosts
-              className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
-            />
-          )}
+        <div className="space-y-6 text-zinc-200 leading-8">
+          {post.content.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
         </div>
+
+        {related.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-xl font-semibold mb-4">Related Posts</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {related.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/posts/${item.slug}`}
+                  className="border border-white/20 p-4 hover:border-red-500 transition-colors"
+                >
+                  <h3 className="font-semibold text-white mb-2">{item.title}</h3>
+                  <p className="text-sm text-zinc-400">{item.meta?.description}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </article>
   )
@@ -77,28 +72,17 @@ export default async function Post({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const post = await queryPostBySlug({ slug })
+  const post = findStaticPostBySlug(slug)
+  const dealership = await getDealershipInfo()
 
-  return generateMeta({ doc: post })
+  if (!post) {
+    return {
+      title: `Post | ${dealership.name}`,
+    }
+  }
+
+  return {
+    title: `${post.title} | ${dealership.name}`,
+    description: post.meta?.description || dealership.seoText,
+  }
 }
-
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
-
-  const payload = await getPayload({ config: configPromise })
-
-  const result = await payload.find({
-    collection: 'posts',
-    draft,
-    limit: 1,
-    overrideAccess: draft,
-    pagination: false,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return result.docs?.[0] || null
-})

@@ -1,17 +1,22 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const metadata: Metadata = {
-  title: 'Customer Reviews & Testimonials | Template',
-  description:
-    'Read genuine customer reviews and testimonials. See what our customers say about our quality vehicles, exceptional service, and professional team.',
-  openGraph: {
-    title: 'Customer Reviews & Testimonials | Template',
-    description: 'Read what our customers say — real testimonials from real buyers.',
-    type: 'website',
-    locale: 'en_GB',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const dealership = await getDealershipInfo()
+
+  return {
+    title: `Customer Reviews & Testimonials | ${dealership.name}`,
+    description:
+      'Read genuine customer reviews and testimonials. See what our customers say about our quality vehicles, exceptional service, and professional team.',
+    openGraph: {
+      title: `Customer Reviews & Testimonials | ${dealership.name}`,
+      description: 'Read what our customers say - real testimonials from real buyers.',
+      type: 'website',
+      locale: 'en_GB',
+    },
+  }
 }
 
 const testimonials = [
