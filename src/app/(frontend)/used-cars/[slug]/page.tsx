@@ -194,16 +194,17 @@ export default async function IndividualListingPage({ params }: { params: Promis
 
   if (!vehicleDetails) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center max-w-lg mx-auto px-4">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-6">
-            <Car className="h-8 w-8 text-gray-600" />
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-8 h-7 bg-red-600 -skew-x-[24deg]" />
+            <Car className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-4">Vehicle Not Found</h1>
-          <p className="text-slate-600 mb-8">{'The vehicle you\'re looking for could not be found.'}</p>
+          <h1 className="text-2xl font-black tracking-widest uppercase text-white mb-4">Vehicle Not Found</h1>
+          <p className="text-white/60 text-sm mb-8">{'The vehicle you\'re looking for could not be found.'}</p>
           <Link
             href="/used-cars"
-            className="bg-[#44903C] hover:bg-[#44903C]/90 text-white cursor-pointer rounded-lg px-2 py-1 md:px-4 md:py-2 flex items-center justify-center"
+            className="inline-flex items-center justify-center px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-sm font-bold tracking-widest uppercase transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Listings
