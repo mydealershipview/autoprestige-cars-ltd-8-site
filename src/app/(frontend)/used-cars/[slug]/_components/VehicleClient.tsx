@@ -53,12 +53,14 @@ export default function VehicleClient({
   })
   const hasImages = images.length > 0
   const activeImage = hasImages ? images[activeImageIndex].href : '/placeholder.svg'
-  const secondaryImage = hasImages && images.length > 1
-    ? images[(activeImageIndex + 1) % images.length].href
+  const secondaryImage = hasImages && activeImageIndex + 1 < images.length
+    ? images[activeImageIndex + 1].href
     : null
 
-  const nextImage = () => setActiveImageIndex((prev) => (prev + 1) % images.length)
-  const prevImage = () => setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+  const nextImage = () => setActiveImageIndex((prev) => (prev + 2 >= images.length ? 0 : prev + 2))
+  const prevImage = () => setActiveImageIndex((prev) =>
+    prev < 2 ? (images.length % 2 === 0 ? images.length - 2 : images.length - 1) : prev - 2
+  )
 
   const calculateMonthlyPayment = (priceValue: number | null) => {
     if (!priceValue || priceValue <= 0) return 'N/A'
@@ -95,7 +97,18 @@ export default function VehicleClient({
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 overflow-hidden border border-white/15 lg:grid-cols-2">
+        <div className="relative grid grid-cols-1 overflow-hidden border border-white/15 lg:grid-cols-2">
+            {hasImages && images.length > 1 && (
+              <>
+                <button onClick={prevImage} className="absolute left-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button onClick={nextImage} className="absolute right-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
+
           <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px]">
             {hasImages ? (
               <img src={activeImage} alt={`${make} ${model}`} className="h-full w-full object-cover" />
@@ -105,19 +118,10 @@ export default function VehicleClient({
               </div>
             )}
 
-            {hasImages && images.length > 1 && (
-              <>
-                <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              </>
-            )}
-
             <div className="absolute bottom-3 left-3 bg-black/70 px-2 py-1 text-xs font-semibold text-zinc-200">
-              {images.length > 0 ? `${activeImageIndex + 1} / ${images.length}` : '0 / 0'}
+              {images.length > 0
+                ? `${activeImageIndex + 1}–${Math.min(activeImageIndex + 2, images.length)} / ${images.length}`
+                : '0 / 0'}
             </div>
           </div>
 
@@ -137,7 +141,7 @@ export default function VehicleClient({
             {images.map((img, idx) => (
               <button
                 key={idx}
-                onClick={() => setActiveImageIndex(idx)}
+                onClick={() => setActiveImageIndex(idx % 2 === 0 ? idx : idx - 1)}
                 className={`relative h-20 w-30 shrink-0 overflow-hidden border ${
                   idx === activeImageIndex ? 'border-red-500' : 'border-white/20'
                 }`}
