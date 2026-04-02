@@ -7,7 +7,7 @@ import { AutoTraderVehicle } from '@/utilities/autotrader'
 import { Make, Model } from '@/utilities/types'
 import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
 import { useWishlist } from '@/contexts/WishlistContext'
-import { ChevronDown, Search, CreditCard, Camera, Video } from 'lucide-react'
+import { ChevronDown, Search, CreditCard, Camera, Video, SlidersHorizontal, X } from 'lucide-react'
 
 interface UsedCarsComponentProps {
   listingsData?: unknown
@@ -364,6 +364,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     'w-full bg-[#1f232a] border border-[#4a4f58] rounded-none px-4 py-3 text-sm text-white focus:outline-none focus:border-[#646b76] appearance-none'
 
   const [financeMode, setFinanceMode] = useState<'price' | 'monthly'>('price')
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   const priceOptions = [
     { label: 'Any', value: '' },
@@ -467,15 +468,23 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
       {/* Page header */}
       <div className="text-center py-9 border-b border-white/10">
-        <h1 className="text-4xl font-extrabold tracking-[0.2em] uppercase">Our Showroom</h1>
+        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-[0.2em] uppercase">Our Showroom</h1>
         <p className="text-sm tracking-[0.15em] text-gray-400 mt-2 uppercase font-medium">
           {loading ? '...' : `${totalResults} Vehicles for Sale`}
         </p>
       </div>
 
+      {/* Mobile filter backdrop */}
+      {mobileFiltersOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          onClick={() => setMobileFiltersOpen(false)}
+        />
+      )}
+
       <div className="flex min-h-[calc(100vh-120px)]">
         {/* ── Sidebar ── */}
-        <aside className="w-52 shrink-0 border-r border-white/10 bg-[#0d0d0d] flex flex-col sticky top-0 h-screen overflow-y-auto scrollbar-thin">
+        <aside className={`${mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky inset-y-0 left-0 z-50 lg:z-auto w-72 lg:w-52 shrink-0 border-r border-white/10 bg-[#0d0d0d] flex flex-col top-0 h-screen overflow-y-auto scrollbar-thin transition-transform duration-300`}>
           {/* Header */}
           <div className="px-5 pt-5 pb-4 border-b border-white/10 flex items-start justify-between">
             <div>
@@ -484,14 +493,23 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 {loading ? '...' : `${totalResults} Available`}
               </p>
             </div>
-            {hasActiveFilters && (
+            <div className="flex items-center gap-2">
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearFilters}
+                  className="text-[10px] text-red-400 hover:text-red-300 transition-colors mt-0.5 uppercase tracking-wide"
+                >
+                  Clear
+                </button>
+              )}
               <button
-                onClick={handleClearFilters}
-                className="text-[10px] text-red-400 hover:text-red-300 transition-colors mt-0.5 uppercase tracking-wide"
+                onClick={() => setMobileFiltersOpen(false)}
+                className="lg:hidden text-gray-400 hover:text-white transition-colors"
+                aria-label="Close filters"
               >
-                Clear
+                <X className="w-4 h-4" />
               </button>
-            )}
+            </div>
           </div>
 
           {/* Manufacturer */}
@@ -709,12 +727,21 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
         {/* ── Main content ── */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Search + Sort bar */}
-          <div className="flex items-center gap-3 px-5 py-3 border-b border-white/10 bg-[#111111]">
-            <div className="relative flex-1">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-[#111111]">
+            <button
+              onClick={() => setMobileFiltersOpen(true)}
+              className="lg:hidden flex items-center gap-1.5 bg-[#1a1a1a] border border-white/10 px-3 py-2.5 text-white shrink-0 hover:border-white/30 transition-colors"
+              aria-label="Open filters"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              <span className="text-xs font-bold tracking-wide uppercase">Filters</span>
+              {hasActiveFilters && <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />}
+            </button>
+            <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search for a make, model or colour"
+                placeholder="Search make, model or colour"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#1a1a1a] border border-white/10 rounded pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white/30"
@@ -723,7 +750,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <select
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => handleSortDropdownChange(e.target.value)}
-              className="bg-[#1a1a1a] border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 min-w-[210px] shrink-0"
+              className="bg-[#1a1a1a] border border-white/10 rounded px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 shrink-0 w-30 sm:w-auto sm:min-w-45"
             >
               <option value="price-desc">Price Highest to Lowest</option>
               <option value="price-asc">Price Lowest to Highest</option>
@@ -752,7 +779,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           <div className="flex-1 p-4">
             {/* Loading skeleton */}
             {loading && (
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="bg-[#1a1a1a] rounded overflow-hidden animate-pulse">
                     <div className="h-44 bg-white/10" />
@@ -798,7 +825,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             {/* Vehicle grid */}
             {!loading && !error && filteredListings.length > 0 && (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredListings.map((vehicle) => {
                     const stockId = vehicle.metadata?.stockId || ''
                     const slug = generateVehicleSlug(vehicle)
