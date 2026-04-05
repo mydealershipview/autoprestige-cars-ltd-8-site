@@ -850,9 +850,13 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                       vehicle.vehicle?.standard?.transmissionType ||
                       ''
                     const vehicleHighlights =
-                      vehicle.highlights?.length
-                        ? vehicle.highlights.join('+')
-                        : ''
+                      (vehicle.highlights ?? [])
+                        .map((highlight) => {
+                          if (typeof highlight === 'string') return highlight
+                          return highlight?.highlight || ''
+                        })
+                        .filter(Boolean)
+                        .join('+')
                     const vehiclePrice =
                       vehicle.adverts?.forecourtPrice?.amountGBP ??
                       vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP ??
@@ -876,7 +880,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                           <img
                             src={imageUrl}
                             alt={`${vehicleMake} ${vehicleModel}`}
-                            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="h-full w-full object-contain object-center bg-black group-hover:scale-[1.02] transition-transform duration-500"
                           />
                           {/* Photo / video count */}
                           {imageCount > 0 && (

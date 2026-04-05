@@ -9,6 +9,9 @@ const navItems = [
   { label: "HOME", href: "/" },
   { label: "SHOWROOM", href: "/used-cars" },
   { label: "SERVICES", href: "/services" },
+  { label: "REG PLATES", href: "/reg-plates" },
+  { label: "VALUATION", href: "/valuation" },
+  { label: "PROFILE", href: "/profile" },
   { label: "WARRANTY", href: "/warranty" },
   { label: "REVIEWS", href: "/reviews" },
   { label: "CONTACT US", href: "/contact" },
@@ -31,6 +34,26 @@ export default function HomeHeader({
   logoUrl,
 }: HomeHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const requiredSidebarItems = [
+    { label: 'REG PLATES', href: '/reg-plates', insertIndex: 3 },
+    { label: 'VALUATION', href: '/valuation', insertIndex: 4 },
+    { label: 'PROFILE', href: '/profile', insertIndex: 5 },
+  ]
+
+  const sidebarNavItems = requiredSidebarItems.reduce((items, requiredItem) => {
+    if (items.some((item) => item.href === requiredItem.href)) {
+      return items
+    }
+
+    const next = [...items]
+    next.splice(Math.min(requiredItem.insertIndex, next.length), 0, {
+      label: requiredItem.label,
+      href: requiredItem.href,
+    })
+
+    return next
+  }, navItems)
 
   const displayName = dealershipName?.trim() || 'Dealership'
   const displayTagline = dealershipTagline?.trim() || 'Trusted used vehicles and service'
@@ -146,7 +169,7 @@ export default function HomeHeader({
 
         {/* Nav Links */}
         <ul className="flex flex-col px-10 py-8 gap-1 flex-1">
-          {navItems.map((item, i) => (
+          {sidebarNavItems.map((item, i) => (
             <li key={item.href}>
               <Link
                 href={item.href}

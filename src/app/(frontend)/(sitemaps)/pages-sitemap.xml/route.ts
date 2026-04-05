@@ -57,6 +57,24 @@ const getPagesSitemap = unstable_cache(
         changefreq: 'weekly' as const,
         priority: 0.7,
       },
+      {
+        loc: `${SITE_URL}/valuation`,
+        lastmod: dateFallback,
+        changefreq: 'weekly' as const,
+        priority: 0.8,
+      },
+      {
+        loc: `${SITE_URL}/reg-plates`,
+        lastmod: dateFallback,
+        changefreq: 'weekly' as const,
+        priority: 0.8,
+      },
+      {
+        loc: `${SITE_URL}/profile`,
+        lastmod: dateFallback,
+        changefreq: 'monthly' as const,
+        priority: 0.6,
+      },
       // Customer experience pages
       {
         loc: `${SITE_URL}/reviews-and-customer-experience`,
