@@ -23,7 +23,7 @@ export default function NotFound() {
           <h1 className="text-8xl md:text-9xl font-black tracking-[0.2em] text-white/5 mx-auto">404</h1>
         </div>
         <h2 className="text-2xl md:text-4xl font-black tracking-widest uppercase mb-4 flex items-center justify-center gap-3">
-          <div className="w-6 h-5 bg-red-600 -skew-x-[24deg] inline-block shrink-0" />
+          <div className="w-6 h-5 bg-blue-500 -skew-x-[24deg] inline-block shrink-0" />
           Page Not Found
         </h2>
         <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-md mx-auto">
@@ -33,7 +33,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-8 py-3 bg-red-600 text-white text-sm font-bold tracking-widest uppercase hover:bg-red-700 !transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 bg-blue-500 text-white text-sm font-bold tracking-widest uppercase hover:bg-blue-600 !transition-colors"
           >
             Go Home
           </Link>

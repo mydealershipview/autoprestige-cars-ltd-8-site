@@ -197,14 +197,14 @@ export default async function IndividualListingPage({ params }: { params: Promis
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center max-w-lg mx-auto px-4">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-8 h-7 bg-red-600 -skew-x-[24deg]" />
+            <div className="w-8 h-7 bg-blue-500 -skew-x-[24deg]" />
             <Car className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-2xl font-black tracking-widest uppercase text-white mb-4">Vehicle Not Found</h1>
           <p className="text-white/60 text-sm mb-8">{'The vehicle you\'re looking for could not be found.'}</p>
           <Link
             href="/used-cars"
-            className="inline-flex items-center justify-center px-8 py-3 bg-red-600 hover:bg-red-700 text-white text-sm font-bold tracking-widest uppercase !transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold tracking-widest uppercase !transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Listings

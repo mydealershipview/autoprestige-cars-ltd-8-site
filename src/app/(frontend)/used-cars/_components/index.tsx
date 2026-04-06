@@ -339,7 +339,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
       >
         <span
           className={`text-sm font-semibold tracking-wide uppercase ${
-            isActive ? 'text-red-500' : 'text-white'
+            isActive ? 'text-blue-400' : 'text-white'
           }`}
         >
           {label}
@@ -497,7 +497,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               {hasActiveFilters && (
                 <button
                   onClick={handleClearFilters}
-                  className="text-[10px] text-red-400 hover:text-red-300 !transition-colors mt-0.5 uppercase tracking-wide"
+                  className="text-[10px] text-blue-300 hover:text-blue-200 !transition-colors mt-0.5 uppercase tracking-wide"
                 >
                   Clear
                 </button>
@@ -735,7 +735,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="text-xs font-bold tracking-wide uppercase">Filters</span>
-              {hasActiveFilters && <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />}
+              {hasActiveFilters && <span className="w-1.5 h-1.5 bg-blue-400 rounded-full" />}
             </button>
             <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 pointer-events-none" />
@@ -797,7 +797,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             {/* Error */}
             {!loading && error && (
               <div className="flex flex-col items-center justify-center py-24 text-center">
-                <p className="text-red-400 font-medium mb-2">Failed to load listings</p>
+                <p className="text-blue-300 font-medium mb-2">Failed to load listings</p>
                 <p className="text-gray-500 text-sm mb-5">{error}</p>
                 <button
                   onClick={() => fetchListings(currentPage, filters, sortBy, sortOrder)}
@@ -915,7 +915,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               fill={inWishlist ? 'currentColor' : 'none'}
                               stroke="currentColor"
                               strokeWidth={1.5}
-                              className={`h-3.5 w-3.5 ${inWishlist ? 'text-red-500' : 'text-white'}`}
+                              className={`h-3.5 w-3.5 ${inWishlist ? 'text-blue-400' : 'text-white'}`}
                             >
                               <path
                                 strokeLinecap="round"
@@ -960,7 +960,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                                 <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
                                   Monthly Price
                                 </p>
-                                <p className="text-sm font-bold text-red-500 leading-tight">{monthlyPrice}</p>
+                                <p className="text-sm font-bold text-blue-400 leading-tight">{monthlyPrice}</p>
                               </div>
                             )}
                           </div>
@@ -1020,7 +1020,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               onClick={(e) => e.stopPropagation()}
                               className="flex items-center justify-center gap-1 py-2 border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors"
                             >
-                              <CreditCard className="w-3 h-3 text-red-400" />
+                              <CreditCard className="w-3 h-3 text-blue-300" />
                               Finance
                             </Link>
                           </div>
@@ -1029,7 +1029,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                         {/* MORE button */}
                         <Link
                           href={`/used-cars/${slug}`}
-                          className="block text-center bg-red-600 hover:bg-red-500 !transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
+                          className="block text-center bg-blue-500 hover:bg-blue-400 !transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
                         >
                           More &rsaquo;
                         </Link>

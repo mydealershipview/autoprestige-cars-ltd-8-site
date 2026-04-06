@@ -29,7 +29,7 @@ const initialState: FormState = {
 }
 
 const inputClass =
-  'w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors text-sm'
+  'w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-blue-400 !transition-colors text-sm'
 
 const labelClass = 'block text-xs font-semibold tracking-widest text-white/70 uppercase mb-2'
 
@@ -143,7 +143,7 @@ export default function ServiceBookingForm() {
   if (submitted) {
     return (
       <div className="text-center py-16">
-        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-2xl font-black tracking-wider text-white uppercase mb-2">
@@ -155,7 +155,7 @@ export default function ServiceBookingForm() {
         </p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-6 text-red-500 hover:text-red-400 text-sm font-semibold tracking-wider uppercase underline"
+          className="mt-6 text-blue-400 hover:text-blue-300 text-sm font-semibold tracking-wider uppercase underline"
         >
           Submit Another Request
         </button>
@@ -170,12 +170,12 @@ export default function ServiceBookingForm() {
         <h3 className="text-sm font-black tracking-widest uppercase text-white mb-1">
           Vehicle Details
         </h3>
-        <div className="h-[2px] w-full bg-red-600 mb-6" />
+        <div className="h-[2px] w-full bg-blue-500 mb-6" />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label htmlFor="registration" className={labelClass}>
-              Vehicle Reg <span className="text-red-500">*</span>
+              Vehicle Reg <span className="text-blue-400">*</span>
             </label>
             <input
               id="registration"
@@ -206,7 +206,7 @@ export default function ServiceBookingForm() {
 
           <div>
             <label htmlFor="mileage" className={labelClass}>
-              Mileage <span className="text-red-500">*</span>
+              Mileage <span className="text-blue-400">*</span>
             </label>
             <input
               id="mileage"
@@ -227,12 +227,12 @@ export default function ServiceBookingForm() {
         <h3 className="text-sm font-black tracking-widest uppercase text-white mb-1">
           Personal Details
         </h3>
-        <div className="h-[2px] w-full bg-red-600 mb-6" />
+        <div className="h-[2px] w-full bg-blue-500 mb-6" />
 
         <div className="space-y-4">
           <div>
             <label htmlFor="fullName" className={labelClass}>
-              Full Name <span className="text-red-500">*</span>
+              Full Name <span className="text-blue-400">*</span>
             </label>
             <input
               id="fullName"
@@ -248,7 +248,7 @@ export default function ServiceBookingForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="email" className={labelClass}>
-                Email Address <span className="text-red-500">*</span>
+                Email Address <span className="text-blue-400">*</span>
               </label>
               <input
                 id="email"
@@ -262,7 +262,7 @@ export default function ServiceBookingForm() {
             </div>
             <div>
               <label htmlFor="phone" className={labelClass}>
-                Phone Number <span className="text-red-500">*</span>
+                Phone Number <span className="text-blue-400">*</span>
               </label>
               <input
                 id="phone"
@@ -283,13 +283,13 @@ export default function ServiceBookingForm() {
         <h3 className="text-sm font-black tracking-widest uppercase text-white mb-1">
           Booking Request
         </h3>
-        <div className="h-[2px] w-full bg-red-600 mb-6" />
+        <div className="h-[2px] w-full bg-blue-500 mb-6" />
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="preferredDate" className={labelClass}>
-                Preferred Date <span className="text-red-500">*</span>
+                Preferred Date <span className="text-blue-400">*</span>
               </label>
               <input
                 id="preferredDate"
@@ -334,7 +334,7 @@ export default function ServiceBookingForm() {
       </div>
 
       {error && (
-        <p className="text-red-400 text-sm text-center border border-red-500/30 px-4 py-3">
+        <p className="text-blue-300 text-sm text-center border border-blue-400/30 px-4 py-3">
           {error}
         </p>
       )}
@@ -345,7 +345,7 @@ export default function ServiceBookingForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
+          className="bg-blue-500 hover:bg-blue-600 disabled:opacity-60 text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
         >
           {isSubmitting ? 'Submitting…' : 'Submit'}
         </button>

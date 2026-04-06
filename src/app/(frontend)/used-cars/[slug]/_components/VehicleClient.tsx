@@ -143,7 +143,7 @@ export default function VehicleClient({
                 key={idx}
                 onClick={() => setActiveImageIndex(idx % 2 === 0 ? idx : idx - 1)}
                 className={`relative h-20 w-30 shrink-0 overflow-hidden border ${
-                  idx === activeImageIndex ? 'border-red-500' : 'border-white/20'
+                  idx === activeImageIndex ? 'border-blue-400' : 'border-white/20'
                 }`}
               >
                 <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
@@ -173,7 +173,7 @@ export default function VehicleClient({
           </section>
 
           <aside className="border border-white/12 bg-black p-5">
-            <p className="border-b border-red-600 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
+            <p className="border-b border-blue-500 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
             <h2 className="mt-3 text-4xl font-extrabold uppercase tracking-[0.05em]">{make} {model}</h2>
 
             <div className="mt-4 grid grid-cols-2 gap-3 border-b border-white/10 pb-4">
@@ -183,7 +183,7 @@ export default function VehicleClient({
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Monthly Price</p>
-                <p className="text-3xl font-bold text-red-500">{price ? calculateMonthlyPayment(price) : 'N/A'}</p>
+                <p className="text-3xl font-bold text-blue-400">{price ? calculateMonthlyPayment(price) : 'N/A'}</p>
                 {wasPrice && <p className="mt-1 text-xs text-zinc-400 line-through">Was £{new Intl.NumberFormat('en-GB').format(wasPrice)}</p>}
               </div>
             </div>
@@ -201,13 +201,13 @@ export default function VehicleClient({
               <button onClick={() => setShowEmail(true)} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-200">
                 Enquire Now
               </button>
-              <button onClick={() => setShowFinance(true)} className="w-full bg-red-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-red-700">
+              <button onClick={() => setShowFinance(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
                 Apply For Finance
               </button>
               <button onClick={() => setShowCallUs(true)} className="w-full bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
                 Chat
               </button>
-              <button onClick={() => setShowReserve(true)} className="w-full bg-red-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-red-700">
+              <button onClick={() => setShowReserve(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
                 Reserve
               </button>
               <button onClick={() => setShowPartExchange(true)} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/10">

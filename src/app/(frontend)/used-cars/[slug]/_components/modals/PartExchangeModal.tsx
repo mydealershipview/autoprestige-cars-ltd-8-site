@@ -146,7 +146,7 @@ export default function PartExchangeModal({
               </div>
             </div>
 
-            {submitError && <p className="text-sm text-red-400">{submitError}</p>}
+            {submitError && <p className="text-sm text-blue-300">{submitError}</p>}
 
             <button disabled={isSubmitting} type="submit" className="w-full bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 !transition-colors shrink-0 disabled:opacity-60 disabled:cursor-not-allowed">
               {isSubmitting ? 'Submitting...' : 'Submit Request'}

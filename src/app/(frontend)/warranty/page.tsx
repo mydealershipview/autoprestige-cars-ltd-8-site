@@ -48,9 +48,9 @@ const warrantyFeatures = [
 
 const AccentBar = () => (
   <div className="flex items-center justify-center gap-0 mx-auto w-32 mt-3">
-    <div className="h-[3px] flex-1 bg-red-600" />
-    <div className="w-4 h-4 bg-red-600 rotate-45 -mx-1" />
-    <div className="h-[3px] flex-1 bg-red-600" />
+    <div className="h-[3px] flex-1 bg-blue-500" />
+    <div className="w-4 h-4 bg-blue-500 rotate-45 -mx-1" />
+    <div className="h-[3px] flex-1 bg-blue-500" />
   </div>
 )
 
@@ -62,10 +62,10 @@ const FeatureCard = ({ feature }: { feature: (typeof warrantyFeatures)[number] }
     />
     <div className="absolute inset-0 bg-black/70 group-hover:bg-black/55 !transition-colors !duration-300" />
     <div className="relative z-10">
-      <h3 className="text-base md:text-lg font-black tracking-widest uppercase text-red-500 mb-2">
+      <h3 className="text-base md:text-lg font-black tracking-widest uppercase text-blue-400 mb-2">
         {feature.title}
       </h3>
-      <div className="h-[2px] w-12 bg-red-600 mx-auto mb-4" />
+      <div className="h-[2px] w-12 bg-blue-500 mx-auto mb-4" />
       <p className="text-white/80 text-sm leading-relaxed max-w-xs mx-auto">
         {feature.description}
       </p>
@@ -98,7 +98,7 @@ export default function WarrantyPage() {
       {/* ─── PROUD RAC DEALER ─── */}
       <section className="py-14 text-center px-4">
         <h2 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-3 flex items-center justify-center gap-3 flex-wrap">
-          <div className="w-5 h-5 bg-red-600 rotate-45 inline-block shrink-0" />
+          <div className="w-5 h-5 bg-blue-500 rotate-45 inline-block shrink-0" />
           We&apos;re Proud to Be an RAC Dealer
         </h2>
         <AccentBar />
@@ -113,7 +113,7 @@ export default function WarrantyPage() {
       {/* ─── EVERY VEHICLE COMES WITH ─── */}
       <section className="pb-4 text-center px-4">
         <h2 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-2 flex items-center justify-center gap-3 flex-wrap">
-          <div className="w-5 h-5 bg-red-600 rotate-45 inline-block shrink-0" />
+          <div className="w-5 h-5 bg-blue-500 rotate-45 inline-block shrink-0" />
           Every Vehicle Sold Comes With:
         </h2>
         <AccentBar />

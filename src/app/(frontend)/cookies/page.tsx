@@ -28,7 +28,7 @@ export default function CookiesPage() {
         <h1 className="text-3xl font-black tracking-widest uppercase mb-2">
           Cookie Preferences
         </h1>
-        <div className="w-12 h-1 bg-red-600 mb-8" />
+        <div className="w-12 h-1 bg-blue-500 mb-8" />
 
         <div className="prose prose-invert prose-sm max-w-none space-y-6 text-white/80">
           <section>
@@ -97,9 +97,9 @@ export default function CookiesPage() {
             <h2 className="text-lg font-bold tracking-wider uppercase text-white mb-2">More Information</h2>
             <p>
               For more information about how we handle your personal data, please see our{' '}
-              <Link href="/privacy" className="text-red-500 underline hover:text-red-400">Privacy Policy</Link>.
+              <Link href="/privacy" className="text-blue-400 underline hover:text-blue-300">Privacy Policy</Link>.
               If you have questions, please{' '}
-              <Link href="/contact" className="text-red-500 underline hover:text-red-400">contact us</Link>.
+              <Link href="/contact" className="text-blue-400 underline hover:text-blue-300">contact us</Link>.
             </p>
           </section>
         </div>

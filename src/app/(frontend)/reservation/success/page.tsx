@@ -115,7 +115,7 @@ export default function ReservationSuccessPage() {
       case 'COMPLETED':
         return <CheckCircle className="w-16 h-16 text-green-600" />
       case 'FAILED':
-        return <XCircle className="w-16 h-16 text-red-600" />
+        return <XCircle className="w-16 h-16 text-blue-500" />
       case 'PENDING':
         return <Clock className="w-16 h-16 text-yellow-600 animate-pulse" />
       case 'EXPIRED':
@@ -130,7 +130,7 @@ export default function ReservationSuccessPage() {
       case 'COMPLETED':
         return 'text-green-600'
       case 'FAILED':
-        return 'text-red-600'
+        return 'text-blue-500'
       case 'PENDING':
         return 'text-yellow-600'
       case 'EXPIRED':
@@ -189,7 +189,7 @@ export default function ReservationSuccessPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-white shadow-xl p-8">
           <div className="text-center">
-            <XCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
+            <XCircle className="w-16 h-16 text-blue-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-slate-900 mb-2">Error</h2>
             <p className="text-gray-600 mb-6">{error || 'Unable to load payment details'}</p>
             <Link href="/">

@@ -39,7 +39,7 @@ const initialState: ValuationFormState = {
 }
 
 const inputClass =
-  'w-full bg-transparent border border-white/20 text-white placeholder-white/35 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors text-sm'
+  'w-full bg-transparent border border-white/20 text-white placeholder-white/35 px-4 py-3 focus:outline-none focus:border-blue-400 !transition-colors text-sm'
 
 const labelClass = 'block text-xs font-semibold tracking-widest text-white/70 uppercase mb-2'
 
@@ -156,7 +156,7 @@ export default function ValuationForm() {
   if (submitted) {
     return (
       <div className="text-center py-12 md:py-16">
-        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-5">
+        <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-5">
           <CheckCircle className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-2xl font-black tracking-wider text-white uppercase mb-2">
@@ -167,7 +167,7 @@ export default function ValuationForm() {
         </p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-6 text-red-500 hover:text-red-400 text-sm font-semibold tracking-wider uppercase underline"
+          className="mt-6 text-blue-400 hover:text-blue-300 text-sm font-semibold tracking-wider uppercase underline"
         >
           Submit Another Request
         </button>
@@ -179,11 +179,11 @@ export default function ValuationForm() {
     <form onSubmit={handleSubmit} className="space-y-8">
       <div>
         <h3 className="text-sm font-black tracking-widest uppercase text-white mb-1">Personal Details</h3>
-        <div className="h-[2px] w-full bg-red-600 mb-6" />
+        <div className="h-[2px] w-full bg-blue-500 mb-6" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="firstName" className={labelClass}>
-              First Name <span className="text-red-500">*</span>
+              First Name <span className="text-blue-400">*</span>
             </label>
             <input
               id="firstName"
@@ -197,7 +197,7 @@ export default function ValuationForm() {
           </div>
           <div>
             <label htmlFor="lastName" className={labelClass}>
-              Last Name <span className="text-red-500">*</span>
+              Last Name <span className="text-blue-400">*</span>
             </label>
             <input
               id="lastName"
@@ -211,7 +211,7 @@ export default function ValuationForm() {
           </div>
           <div>
             <label htmlFor="email" className={labelClass}>
-              Email Address <span className="text-red-500">*</span>
+              Email Address <span className="text-blue-400">*</span>
             </label>
             <input
               id="email"
@@ -225,7 +225,7 @@ export default function ValuationForm() {
           </div>
           <div>
             <label htmlFor="phone" className={labelClass}>
-              Phone Number <span className="text-red-500">*</span>
+              Phone Number <span className="text-blue-400">*</span>
             </label>
             <input
               id="phone"
@@ -254,11 +254,11 @@ export default function ValuationForm() {
 
       <div>
         <h3 className="text-sm font-black tracking-widest uppercase text-white mb-1">Your Vehicle Details</h3>
-        <div className="h-[2px] w-full bg-red-600 mb-6" />
+        <div className="h-[2px] w-full bg-blue-500 mb-6" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="registration" className={labelClass}>
-              Registration <span className="text-red-500">*</span>
+              Registration <span className="text-blue-400">*</span>
             </label>
             <input
               id="registration"
@@ -273,7 +273,7 @@ export default function ValuationForm() {
           </div>
           <div>
             <label htmlFor="mileage" className={labelClass}>
-              Mileage <span className="text-red-500">*</span>
+              Mileage <span className="text-blue-400">*</span>
             </label>
             <input
               id="mileage"
@@ -288,7 +288,7 @@ export default function ValuationForm() {
           </div>
           <div>
             <label htmlFor="make" className={labelClass}>
-              Make <span className="text-red-500">*</span>
+              Make <span className="text-blue-400">*</span>
             </label>
             <input
               id="make"
@@ -302,7 +302,7 @@ export default function ValuationForm() {
           </div>
           <div>
             <label htmlFor="model" className={labelClass}>
-              Model <span className="text-red-500">*</span>
+              Model <span className="text-blue-400">*</span>
             </label>
             <input
               id="model"
@@ -347,7 +347,7 @@ export default function ValuationForm() {
         <h3 className="text-sm font-black tracking-widest uppercase text-white mb-1">
           Next Vehicle (Optional)
         </h3>
-        <div className="h-[2px] w-full bg-red-600 mb-6" />
+        <div className="h-[2px] w-full bg-blue-500 mb-6" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="interestedMake" className={labelClass}>Interested Make</label>
@@ -387,7 +387,7 @@ export default function ValuationForm() {
       </div>
 
       {error && (
-        <p className="text-red-400 text-sm border border-red-500/30 px-4 py-3">{error}</p>
+        <p className="text-blue-300 text-sm border border-blue-400/30 px-4 py-3">{error}</p>
       )}
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -395,7 +395,7 @@ export default function ValuationForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black tracking-widest uppercase px-8 py-3 !transition-colors text-sm"
+          className="bg-blue-500 hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black tracking-widest uppercase px-8 py-3 !transition-colors text-sm"
         >
           {isSubmitting ? 'Submitting...' : 'Request Valuation'}
         </button>

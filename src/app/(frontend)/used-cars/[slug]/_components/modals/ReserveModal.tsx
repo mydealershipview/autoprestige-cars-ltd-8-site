@@ -118,7 +118,7 @@ export default function ReserveModal({
           </div>
 
           {submitError && (
-            <p className="text-sm text-red-400">{submitError}</p>
+            <p className="text-sm text-blue-300">{submitError}</p>
           )}
 
           <div className="flex items-start gap-3 mt-6">

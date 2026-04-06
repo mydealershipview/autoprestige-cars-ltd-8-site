@@ -93,14 +93,14 @@ export default function ContactForm() {
   if (submitted) {
     return (
       <div className="text-center py-12">
-        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
           <Send className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-2xl font-black tracking-wider text-white uppercase mb-2">Message Sent!</h3>
         <p className="text-white/60">Thank you for getting in touch. We&apos;ll get back to you shortly.</p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-6 text-red-500 hover:text-red-400 text-sm font-semibold tracking-wider uppercase underline"
+          className="mt-6 text-blue-400 hover:text-blue-300 text-sm font-semibold tracking-wider uppercase underline"
         >
           Send Another Message
         </button>
@@ -113,7 +113,7 @@ export default function ContactForm() {
       {/* Full Name */}
       <div>
         <label htmlFor="fullName" className="block text-sm font-semibold tracking-wider text-white/80 uppercase mb-2">
-          Full Name <span className="text-red-500">*</span>
+          Full Name <span className="text-blue-400">*</span>
         </label>
         <input
           id="fullName"
@@ -122,7 +122,7 @@ export default function ContactForm() {
           required
           value={formData.fullName}
           onChange={handleChange}
-          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors"
+          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-blue-400 !transition-colors"
           placeholder=""
         />
       </div>
@@ -131,7 +131,7 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="email" className="block text-sm font-semibold tracking-wider text-white/80 uppercase mb-2">
-            Email Address <span className="text-red-500">*</span>
+            Email Address <span className="text-blue-400">*</span>
           </label>
           <input
             id="email"
@@ -140,13 +140,13 @@ export default function ContactForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors"
+            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-blue-400 !transition-colors"
             placeholder=""
           />
         </div>
         <div>
           <label htmlFor="phone" className="block text-sm font-semibold tracking-wider text-white/80 uppercase mb-2">
-            Phone Number <span className="text-red-500">*</span>
+            Phone Number <span className="text-blue-400">*</span>
           </label>
           <input
             id="phone"
@@ -155,7 +155,7 @@ export default function ContactForm() {
             required
             value={formData.phone}
             onChange={handleChange}
-            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors"
+            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-blue-400 !transition-colors"
             placeholder=""
           />
         </div>
@@ -172,13 +172,13 @@ export default function ContactForm() {
           rows={5}
           value={formData.message}
           onChange={handleChange}
-          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors resize-none"
+          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-blue-400 !transition-colors resize-none"
           placeholder="Please enter a message here"
         />
       </div>
 
       {error && (
-        <p className="text-red-400 text-sm font-semibold">{error}</p>
+        <p className="text-blue-300 text-sm font-semibold">{error}</p>
       )}
 
       {/* Footer */}
@@ -189,7 +189,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
+          className="bg-blue-500 hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
         >
           {isSubmitting ? 'Sending...' : 'Submit'}
         </button>

@@ -88,9 +88,9 @@ export default async function ContactPage() {
           </h1>
           {/* Red accent bar */}
           <div className="flex items-center justify-center gap-0 mx-auto w-32">
-            <div className="h-[3px] flex-1 bg-red-600" />
-            <div className="w-4 h-4 bg-red-600 rotate-45 -mx-1" />
-            <div className="h-[3px] flex-1 bg-red-600" />
+            <div className="h-[3px] flex-1 bg-blue-500" />
+            <div className="w-4 h-4 bg-blue-500 rotate-45 -mx-1" />
+            <div className="h-[3px] flex-1 bg-blue-500" />
           </div>
         </div>
       </section>
@@ -98,7 +98,7 @@ export default async function ContactPage() {
       {/* ─── GET IN TOUCH ─── */}
       <section className="py-12 text-center px-4">
         <h2 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-3 flex items-center justify-center gap-3 flex-wrap">
-          <div className="w-5 h-5 bg-red-600 rotate-45 inline-block shrink-0" />
+          <div className="w-5 h-5 bg-blue-500 rotate-45 inline-block shrink-0" />
           Get In Touch With Us
         </h2>
         <p className="text-white/60 max-w-2xl mx-auto text-sm leading-relaxed">
@@ -124,7 +124,7 @@ export default async function ContactPage() {
           {/* ── Contact Details ── */}
           <div>
             <h3 className="text-lg font-black tracking-widest uppercase mb-1">Contact Details</h3>
-            <div className="h-[2px] w-16 bg-red-600 mb-6" />
+            <div className="h-[2px] w-16 bg-blue-500 mb-6" />
 
             <div className="space-y-3">
               {phoneNumbers.length > 0 ? (
@@ -134,8 +134,8 @@ export default async function ContactPage() {
                     href={`tel:${p.number.replace(/\s/g, '')}`}
                     className="flex items-center gap-3 group"
                   >
-                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-red-500 !transition-colors">
-                      <Phone size={15} className="text-white/60 group-hover:text-red-500 !transition-colors" />
+                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-blue-400 !transition-colors">
+                      <Phone size={15} className="text-white/60 group-hover:text-blue-400 !transition-colors" />
                     </span>
                     <span className="text-sm text-white/80 group-hover:text-white !transition-colors tracking-wider">
                       {p.label ? `${p.label}: ` : 'Tel: '}{p.number}
@@ -174,7 +174,7 @@ export default async function ContactPage() {
           {/* ── Send Us an Email ── */}
           <div>
             <h3 className="text-lg font-black tracking-widest uppercase mb-1">Send Us an Email</h3>
-            <div className="h-[2px] w-16 bg-red-600 mb-6" />
+            <div className="h-[2px] w-16 bg-blue-500 mb-6" />
 
             <div className="space-y-3">
               {emailAddresses.length > 0 ? (
@@ -184,8 +184,8 @@ export default async function ContactPage() {
                     href={`mailto:${e.email}`}
                     className="flex items-center gap-3 group"
                   >
-                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-red-500 !transition-colors">
-                      <Mail size={15} className="text-white/60 group-hover:text-red-500 !transition-colors" />
+                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-blue-400 !transition-colors">
+                      <Mail size={15} className="text-white/60 group-hover:text-blue-400 !transition-colors" />
                     </span>
                     <span className="text-sm text-white/80 group-hover:text-white !transition-colors tracking-wider">
                       {e.label}
@@ -206,7 +206,7 @@ export default async function ContactPage() {
           {/* ── Opening Hours + Social ── */}
           <div>
             <h3 className="text-lg font-black tracking-widest uppercase mb-1">Opening Hours</h3>
-            <div className="h-[2px] w-16 bg-red-600 mb-6" />
+            <div className="h-[2px] w-16 bg-blue-500 mb-6" />
 
             <table className="w-full text-sm mb-8">
               <tbody>
@@ -230,7 +230,7 @@ export default async function ContactPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={s.platform}
-                      className="w-9 h-9 border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500 hover:text-red-500 !transition-colors"
+                      className="w-9 h-9 border border-white/20 flex items-center justify-center text-white/60 hover:border-blue-400 hover:text-blue-400 !transition-colors"
                     >
                       {platformIcon(s.platform)}
                     </a>

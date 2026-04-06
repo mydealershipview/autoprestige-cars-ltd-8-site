@@ -54,14 +54,14 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-[1480px] px-4 pt-28 pb-16">
-        <div className="mb-8 border border-red-900/40 bg-zinc-950 px-4 py-3 text-sm text-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="mb-8 border border-blue-800/40 bg-zinc-950 px-4 py-3 text-sm text-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <p>
             Telephone: <span className="font-semibold text-white">{REG_PLATES_PHONE}</span> Mobile:{' '}
             <span className="font-semibold text-white">{REG_PLATES_MOBILE}</span>
           </p>
           <Link
             href="/contact"
-            className="inline-flex w-fit items-center bg-red-600 hover:bg-red-700 !transition-colors px-5 py-2 font-semibold text-white"
+            className="inline-flex w-fit items-center bg-blue-500 hover:bg-blue-600 !transition-colors px-5 py-2 font-semibold text-white"
           >
             Make an Enquiry
           </Link>
@@ -72,7 +72,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
 
           <Link
             href="/reg-plates"
-            className="inline-block border border-red-900/60 bg-black px-4 py-2 text-sm font-semibold text-white/90 hover:text-white hover:border-red-600 !transition-colors"
+            className="inline-block border border-blue-800/60 bg-black px-4 py-2 text-sm font-semibold text-white/90 hover:text-white hover:border-blue-500 !transition-colors"
           >
             {'<<< Go Back'}
           </Link>
@@ -84,7 +84,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
 
           <p className="mt-6 text-lg text-white/80">
             Alternatively call us on{' '}
-            <a href={`tel:${REG_PLATES_PHONE.replace(/\s+/g, '')}`} className="text-red-500 hover:underline">
+            <a href={`tel:${REG_PLATES_PHONE.replace(/\s+/g, '')}`} className="text-blue-400 hover:underline">
               {REG_PLATES_PHONE}
             </a>
           </p>

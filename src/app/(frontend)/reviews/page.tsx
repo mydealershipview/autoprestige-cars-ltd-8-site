@@ -126,7 +126,7 @@ export default function ReviewsPage() {
           <h1 className="text-5xl md:text-7xl font-black tracking-[0.2em] uppercase mb-4">
             TESTIMONIALS
           </h1>
-          <div className="w-16 h-1 bg-red-600 mx-auto" />
+          <div className="w-16 h-1 bg-blue-500 mx-auto" />
         </div>
       </div>
 
@@ -149,10 +149,10 @@ export default function ReviewsPage() {
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="border border-white/20 p-8 flex flex-col items-center text-center hover:border-red-600 !transition-colors !duration-300"
+              className="border border-white/20 p-8 flex flex-col items-center text-center hover:border-blue-500 !transition-colors !duration-300"
             >
               <StarRating count={t.rating} />
-              <div className="w-12 h-0.5 bg-red-600 mb-5" />
+              <div className="w-12 h-0.5 bg-blue-500 mb-5" />
               <p className="text-white/85 text-sm leading-relaxed flex-1 mb-6">{t.text}</p>
               <p className="font-black tracking-widest text-sm uppercase">{t.name}</p>
             </div>
@@ -166,7 +166,7 @@ export default function ReviewsPage() {
             href="https://g.page/r/review"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold tracking-widest uppercase text-sm px-8 py-4 !transition-colors"
+            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold tracking-widest uppercase text-sm px-8 py-4 !transition-colors"
           >
             Leave a Google Review
           </a>

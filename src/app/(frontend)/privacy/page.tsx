@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         <h1 className="text-3xl font-black tracking-widest uppercase mb-2">
           Privacy Policy
         </h1>
-        <div className="w-12 h-1 bg-red-600 mb-8" />
+        <div className="w-12 h-1 bg-blue-500 mb-8" />
 
         <div className="prose prose-invert prose-sm max-w-none space-y-6 text-white/80">
           <section>

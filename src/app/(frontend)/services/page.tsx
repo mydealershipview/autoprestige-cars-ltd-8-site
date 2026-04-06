@@ -64,7 +64,7 @@ const ServiceCard = ({ service }: { service: (typeof services)[number] }) => (
       <h3 className="text-base md:text-lg font-black tracking-widest uppercase text-white mb-2">
         {service.title}
       </h3>
-      <div className="h-[2px] w-12 bg-red-600 mx-auto mb-4" />
+      <div className="h-[2px] w-12 bg-blue-500 mx-auto mb-4" />
       <p className="text-white/75 text-sm leading-relaxed max-w-xs mx-auto">
         {service.description}
       </p>
@@ -74,9 +74,9 @@ const ServiceCard = ({ service }: { service: (typeof services)[number] }) => (
 
 const AccentBar = () => (
   <div className="flex items-center justify-center gap-0 mx-auto w-32 mt-3">
-    <div className="h-[3px] flex-1 bg-red-600" />
-    <div className="w-4 h-4 bg-red-600 rotate-45 -mx-1" />
-    <div className="h-[3px] flex-1 bg-red-600" />
+    <div className="h-[3px] flex-1 bg-blue-500" />
+    <div className="w-4 h-4 bg-blue-500 rotate-45 -mx-1" />
+    <div className="h-[3px] flex-1 bg-blue-500" />
   </div>
 )
 
@@ -105,7 +105,7 @@ export default function ServicesPage() {
       {/* ─── INTRO ─── */}
       <section className="py-14 text-center px-4">
         <h2 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-3 flex items-center justify-center gap-3 flex-wrap">
-          <div className="w-5 h-5 bg-red-600 rotate-45 inline-block shrink-0" />
+          <div className="w-5 h-5 bg-blue-500 rotate-45 inline-block shrink-0" />
           Get The Best Possible Service
         </h2>
         <p className="text-white/60 max-w-2xl mx-auto text-sm leading-relaxed mb-3">

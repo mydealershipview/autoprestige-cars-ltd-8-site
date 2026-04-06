@@ -117,7 +117,7 @@ const Home = async () => {
         <div className="absolute bottom-0 left-0 w-full z-20 flex items-center justify-between pb-8 pt-16 px-6 lg:px-12 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none">
           <div className="flex items-start pointer-events-auto">
             {/* Logo mark */}
-            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-red-600 mr-4 -skew-x-[24deg] mt-1"></div>
+            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-blue-500 mr-4 -skew-x-[24deg] mt-1"></div>
             
             <div className="flex flex-col">
               <h1 className="text-3xl lg:text-4xl font-black tracking-widest uppercase mb-1 drop-shadow-lg">
@@ -144,7 +144,7 @@ const Home = async () => {
         {/* Content Box */}
         <AnimatedCard>
           <div className="flex items-center mb-3">
-            <div className="w-6 h-5 bg-red-600 mr-3 -skew-x-[24deg]"></div>
+            <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
               ONLINE <br/> SHOWROOM
             </h2>
@@ -152,8 +152,8 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6">
             Browse our selection of hand-picked prestige and performance cars
           </p>
-          <Link href="/used-cars" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 !transition-colors uppercase gap-2">
-            BROWSE SHOWROOM <ChevronRight className="h-4 w-4 text-red-500" />
+          <Link href="/used-cars" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+            BROWSE SHOWROOM <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
       </section>
@@ -171,7 +171,7 @@ const Home = async () => {
         {/* Content Box */}
         <AnimatedCard>
           <div className="flex items-center mb-3">
-            <div className="w-6 h-5 bg-red-600 mr-3 -skew-x-[24deg]"></div>
+            <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
               CAR FINANCE
             </h2>
@@ -179,8 +179,8 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6">
             Finance your next dream car with our packages
           </p>
-          <Link href="/finance" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 !transition-colors uppercase gap-2">
-            APPLY TODAY! <ChevronRight className="h-4 w-4 text-red-500" />
+          <Link href="/finance" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+            APPLY TODAY! <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
       </section>
@@ -198,7 +198,7 @@ const Home = async () => {
         {/* Content Box */}
         <AnimatedCard>
           <div className="flex items-center mb-3">
-            <div className="w-6 h-5 bg-red-600 mr-3 -skew-x-[24deg]"></div>
+            <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
               RAC WARRANTY
             </h2>
@@ -206,8 +206,8 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6">
             Protect your car with the UK&apos;s leading warranty provider
           </p>
-          <Link href="/warranty" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 !transition-colors uppercase gap-2">
-            VIEW PACKAGES <ChevronRight className="h-4 w-4 text-red-500" />
+          <Link href="/warranty" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+            VIEW PACKAGES <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
       </section>
@@ -225,7 +225,7 @@ const Home = async () => {
         {/* Content Box */}
         <AnimatedCard>
           <div className="flex items-center mb-3">
-            <div className="w-6 h-5 bg-red-600 mr-3 -skew-x-[24deg]"></div>
+            <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
               SELL YOUR CAR
             </h2>
@@ -233,8 +233,8 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6">
             Sell your sport or prestige car directly to {displayName}
           </p>
-          <Link href="/sell" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 !transition-colors uppercase gap-2">
-            GET A QUOTE <ChevronRight className="h-4 w-4 text-red-500" />
+          <Link href="/sell" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+            GET A QUOTE <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
       </section>
@@ -252,7 +252,7 @@ const Home = async () => {
         {/* Content Box */}
         <AnimatedCard>
           <div className="flex items-center mb-3">
-            <div className="w-6 h-5 bg-red-600 mr-3 -skew-x-[24deg]"></div>
+            <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
               WELCOME TO {displayName.toUpperCase()}
             </h2>
@@ -260,8 +260,8 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6 leading-relaxed">
             {displayName} specialises in supplying prestige and performance vehicles with standout design and confidence-inspiring performance.
           </p>
-          <Link href="/about" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-red-500 !transition-colors uppercase gap-2">
-            READ MORE <ChevronRight className="h-4 w-4 text-red-500" />
+          <Link href="/about" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+            READ MORE <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
       </section>

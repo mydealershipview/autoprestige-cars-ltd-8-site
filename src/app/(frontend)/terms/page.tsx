@@ -13,7 +13,7 @@ export default function TermsPage() {
         <h1 className="text-3xl font-black tracking-widest uppercase mb-2">
           Terms &amp; Conditions
         </h1>
-        <div className="w-12 h-1 bg-red-600 mb-8" />
+        <div className="w-12 h-1 bg-blue-500 mb-8" />
 
         <div className="prose prose-invert prose-sm max-w-none space-y-6 text-white/80">
           <section>
@@ -81,7 +81,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold tracking-wider uppercase text-white mb-2">8. Contact</h2>
             <p>
               If you have any questions about these terms, please contact us via the details on our{' '}
-              <Link href="/contact" className="text-red-500 underline hover:text-red-400">
+              <Link href="/contact" className="text-blue-400 underline hover:text-blue-300">
                 Contact Us
               </Link>{' '}
               page.

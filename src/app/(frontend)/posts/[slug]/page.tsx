@@ -56,7 +56,7 @@ export default async function Post({ params: paramsPromise }: Args) {
                 <Link
                   key={item.slug}
                   href={`/posts/${item.slug}`}
-                  className="border border-white/20 p-4 hover:border-red-500 !transition-colors"
+                  className="border border-white/20 p-4 hover:border-blue-400 !transition-colors"
                 >
                   <h3 className="font-semibold text-white mb-2">{item.title}</h3>
                   <p className="text-sm text-zinc-400">{item.meta?.description}</p>

@@ -26,7 +26,7 @@ export default function RegPlatesPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-[1480px] px-4 pt-28 pb-16">
-        <div className="mb-8 border border-red-900/40 bg-zinc-950 px-4 py-3 text-sm text-white/85">
+        <div className="mb-8 border border-blue-800/40 bg-zinc-950 px-4 py-3 text-sm text-white/85">
           <p>
             Telephone: <span className="font-semibold text-white">{REG_PLATES_PHONE}</span> Mobile:{' '}
             <span className="font-semibold text-white">{REG_PLATES_MOBILE}</span>
@@ -43,7 +43,7 @@ export default function RegPlatesPage() {
             <Link
               key={plate.slug}
               href={`/reg-plates/${plate.slug}`}
-              className="group border border-white/10 bg-[#111111] hover:border-red-600/50 !transition-colors min-h-[420px] p-4 flex flex-col"
+              className="group border border-white/10 bg-[#111111] hover:border-blue-500/50 !transition-colors min-h-[420px] p-4 flex flex-col"
             >
               <div className="flex-1" />
               <h2 className="text-center text-4xl font-black tracking-wide uppercase text-white">
@@ -52,7 +52,7 @@ export default function RegPlatesPage() {
               <p className="mt-4 text-center text-white/75 leading-relaxed text-lg">
                 {REG_PLATES_TEASER}
               </p>
-              <span className="mt-6 w-full bg-red-600 group-hover:bg-red-700 !transition-colors text-white text-center font-semibold tracking-wide py-3">
+              <span className="mt-6 w-full bg-blue-500 group-hover:bg-blue-600 !transition-colors text-white text-center font-semibold tracking-wide py-3">
                 More Details
               </span>
             </Link>

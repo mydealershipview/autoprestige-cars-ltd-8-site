@@ -33,7 +33,7 @@ export default function ProfilePage() {
         <h1 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-2">
           SEE AUTOPRESTIGE PROFILE - USED PRESTIGE CAR DEALER
         </h1>
-        <div className="w-16 h-1 bg-red-600 mb-10" />
+        <div className="w-16 h-1 bg-blue-500 mb-10" />
 
         <div className="space-y-10 text-white/80">
           <section className="space-y-3">
@@ -84,12 +84,12 @@ export default function ProfilePage() {
               <p className="text-sm uppercase tracking-wider text-white/60 mb-1">Telephone:</p>
               <a
                 href="tel:01274488500"
-                className="text-lg font-semibold text-white hover:text-red-500 !transition-colors"
+                className="text-lg font-semibold text-white hover:text-blue-400 !transition-colors"
               >
                 01274 488500
               </a>
               <div className="mt-4">
-                <Link href="/contact" className="text-red-500 hover:text-red-400 underline text-sm">
+                <Link href="/contact" className="text-blue-400 hover:text-blue-300 underline text-sm">
                   Contact Us &gt;
                 </Link>
               </div>
@@ -111,7 +111,7 @@ export default function ProfilePage() {
                   href="https://www.google.com/maps/search/?api=1&query=Rosse+Street+Bradford+West+Yorkshire+BD8+9AS"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-red-500 hover:text-red-400 underline text-sm"
+                  className="text-blue-400 hover:text-blue-300 underline text-sm"
                 >
                   Get Directions &gt;
                 </a>
@@ -133,11 +133,11 @@ export default function ProfilePage() {
           <section className="border-t border-white/10 pt-10 space-y-3 text-sm leading-relaxed">
             <p>Autoprestige Cars - cars</p>
             <p>
-              <Link href="/privacy" className="text-red-500 hover:text-red-400 underline">
+              <Link href="/privacy" className="text-blue-400 hover:text-blue-300 underline">
                 Privacy Policy
               </Link>{' '}
               |{' '}
-              <Link href="/cookies" className="text-red-500 hover:text-red-400 underline">
+              <Link href="/cookies" className="text-blue-400 hover:text-blue-300 underline">
                 Cookie Policy
               </Link>
             </p>

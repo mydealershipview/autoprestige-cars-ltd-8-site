@@ -120,7 +120,7 @@ export default function EmailModal({
           {emailAddress}
         </div>
 
-        {submitError && <p className="text-sm text-red-400 mb-4">{submitError}</p>}
+        {submitError && <p className="text-sm text-blue-300 mb-4">{submitError}</p>}
 
         <div className="flex gap-4">
           <button 

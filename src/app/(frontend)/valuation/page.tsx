@@ -53,7 +53,7 @@ export default async function ValuationPage() {
         <div className="absolute inset-0 bg-black/65" />
 
         <div className="relative z-10 text-center px-4 max-w-3xl">
-          <p className="text-xs md:text-sm tracking-[0.3em] uppercase text-red-500 mb-4 font-semibold">
+          <p className="text-xs md:text-sm tracking-[0.3em] uppercase text-blue-400 mb-4 font-semibold">
             Value Your Car Online
           </p>
           <h1 className="text-4xl md:text-6xl font-black tracking-[0.16em] uppercase text-white mb-5">
@@ -65,9 +65,9 @@ export default async function ValuationPage() {
           </p>
 
           <div className="flex items-center justify-center gap-0 mx-auto w-36 mt-8">
-            <div className="h-[3px] flex-1 bg-red-600" />
-            <div className="w-4 h-4 bg-red-600 rotate-45 -mx-1" />
-            <div className="h-[3px] flex-1 bg-red-600" />
+            <div className="h-[3px] flex-1 bg-blue-500" />
+            <div className="w-4 h-4 bg-blue-500 rotate-45 -mx-1" />
+            <div className="h-[3px] flex-1 bg-blue-500" />
           </div>
         </div>
       </section>
@@ -89,19 +89,19 @@ export default async function ValuationPage() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[0.95fr,1.25fr] gap-8">
           <aside className="border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-8 h-fit">
             <h2 className="text-xl font-black tracking-widest uppercase mb-3">Before You Submit</h2>
-            <div className="h-[2px] w-16 bg-red-600 mb-6" />
+            <div className="h-[2px] w-16 bg-blue-500 mb-6" />
 
             <ul className="space-y-3 text-sm text-white/75 leading-relaxed">
               <li className="flex gap-3">
-                <span className="text-red-500">01.</span>
+                <span className="text-blue-400">01.</span>
                 Include accurate mileage and registration for a more precise first estimate.
               </li>
               <li className="flex gap-3">
-                <span className="text-red-500">02.</span>
+                <span className="text-blue-400">02.</span>
                 Mention service history or recent work in the notes box.
               </li>
               <li className="flex gap-3">
-                <span className="text-red-500">03.</span>
+                <span className="text-blue-400">03.</span>
                 Add your preferred contact details so we can reach you quickly.
               </li>
             </ul>
@@ -110,7 +110,7 @@ export default async function ValuationPage() {
               <p className="text-xs uppercase tracking-widest text-white/60 mb-2">Need help now?</p>
               <a
                 href={dealership.phone ? `tel:${dealership.phone.replace(/\s+/g, '')}` : '#'}
-                className="text-white font-semibold tracking-wide hover:text-red-500 !transition-colors"
+                className="text-white font-semibold tracking-wide hover:text-blue-400 !transition-colors"
               >
                 {dealership.phone || 'Call our team'}
               </a>
