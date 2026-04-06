@@ -23,7 +23,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
     <>
       {isAnimating && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0a0a0a]"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#1F2328]"
           initial={{ y: 0 }}
           animate={{ y: "-100%" }}
           transition={{
