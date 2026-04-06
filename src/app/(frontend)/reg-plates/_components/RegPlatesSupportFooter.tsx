@@ -15,12 +15,12 @@ export default function RegPlatesSupportFooter() {
           <p className="text-sm uppercase tracking-widest text-white/65 mb-1">Telephone:</p>
           <a
             href={`tel:${REG_PLATES_PHONE.replace(/\s+/g, '')}`}
-            className="text-3xl font-semibold text-white hover:text-red-500 transition-colors"
+            className="text-3xl font-semibold text-white hover:text-red-500 !transition-colors"
           >
             {REG_PLATES_PHONE}
           </a>
           <div className="mt-4">
-            <Link href="/contact" className="text-white/85 hover:text-red-500 transition-colors">
+            <Link href="/contact" className="text-white/85 hover:text-red-500 !transition-colors">
               Contact Us &gt;
             </Link>
           </div>
@@ -39,7 +39,7 @@ export default function RegPlatesSupportFooter() {
               href="https://www.google.com/maps/search/?api=1&query=Rosse+Street+Bradford+West+Yorkshire+BD8+9AS"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/85 hover:text-red-500 transition-colors"
+              className="text-white/85 hover:text-red-500 !transition-colors"
             >
               Get Directions &gt;
             </a>
@@ -60,11 +60,11 @@ export default function RegPlatesSupportFooter() {
       <div className="px-8 py-10 space-y-4 text-sm text-white/70">
         <p className="text-white/80">Autoprestige Cars - cars</p>
         <p>
-          <Link href="/privacy" className="hover:text-red-500 transition-colors">
+          <Link href="/privacy" className="hover:text-red-500 !transition-colors">
             Privacy Policy
           </Link>{' '}
           |{' '}
-          <Link href="/cookies" className="hover:text-red-500 transition-colors">
+          <Link href="/cookies" className="hover:text-red-500 !transition-colors">
             Cookie Policy
           </Link>
         </p>

@@ -134,10 +134,10 @@ export default async function ContactPage() {
                     href={`tel:${p.number.replace(/\s/g, '')}`}
                     className="flex items-center gap-3 group"
                   >
-                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-red-500 transition-colors">
-                      <Phone size={15} className="text-white/60 group-hover:text-red-500 transition-colors" />
+                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-red-500 !transition-colors">
+                      <Phone size={15} className="text-white/60 group-hover:text-red-500 !transition-colors" />
                     </span>
-                    <span className="text-sm text-white/80 group-hover:text-white transition-colors tracking-wider">
+                    <span className="text-sm text-white/80 group-hover:text-white !transition-colors tracking-wider">
                       {p.label ? `${p.label}: ` : 'Tel: '}{p.number}
                     </span>
                   </a>
@@ -184,10 +184,10 @@ export default async function ContactPage() {
                     href={`mailto:${e.email}`}
                     className="flex items-center gap-3 group"
                   >
-                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-red-500 transition-colors">
-                      <Mail size={15} className="text-white/60 group-hover:text-red-500 transition-colors" />
+                    <span className="w-9 h-9 border border-white/20 flex items-center justify-center shrink-0 group-hover:border-red-500 !transition-colors">
+                      <Mail size={15} className="text-white/60 group-hover:text-red-500 !transition-colors" />
                     </span>
-                    <span className="text-sm text-white/80 group-hover:text-white transition-colors tracking-wider">
+                    <span className="text-sm text-white/80 group-hover:text-white !transition-colors tracking-wider">
                       {e.label}
                     </span>
                   </a>
@@ -230,7 +230,7 @@ export default async function ContactPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={s.platform}
-                      className="w-9 h-9 border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500 hover:text-red-500 transition-colors"
+                      className="w-9 h-9 border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500 hover:text-red-500 !transition-colors"
                     >
                       {platformIcon(s.platform)}
                     </a>

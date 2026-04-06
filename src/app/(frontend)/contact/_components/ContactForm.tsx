@@ -122,7 +122,7 @@ export default function ContactForm() {
           required
           value={formData.fullName}
           onChange={handleChange}
-          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
+          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors"
           placeholder=""
         />
       </div>
@@ -140,7 +140,7 @@ export default function ContactForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
+            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors"
             placeholder=""
           />
         </div>
@@ -155,7 +155,7 @@ export default function ContactForm() {
             required
             value={formData.phone}
             onChange={handleChange}
-            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
+            className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors"
             placeholder=""
           />
         </div>
@@ -172,7 +172,7 @@ export default function ContactForm() {
           rows={5}
           value={formData.message}
           onChange={handleChange}
-          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors resize-none"
+          className="w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors resize-none"
           placeholder="Please enter a message here"
         />
       </div>
@@ -189,7 +189,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black tracking-widest uppercase px-10 py-3 transition-colors text-sm"
+          className="bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
         >
           {isSubmitting ? 'Sending...' : 'Submit'}
         </button>

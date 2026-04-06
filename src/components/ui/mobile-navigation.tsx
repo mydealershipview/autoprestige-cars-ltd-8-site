@@ -128,12 +128,12 @@ export default function MobileNavigation({ navigationItems, onNavClick, contactD
                             }
                           }}
                         >
-                          <span className="text-lg font-medium text-slate-900 hover:text-[#44903C] transition-colors">
+                          <span className="text-lg font-medium text-slate-900 hover:text-[#44903C] !transition-colors">
                             {item.label}
                           </span>
                           {item.hasDropdown && (
                             <ChevronDown
-                              className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${expandedDropdown === item.label ? 'rotate-180' : ''
+                              className={`h-5 w-5 text-gray-500 !transition-transform !duration-200 ${expandedDropdown === item.label ? 'rotate-180' : ''
                                 }`}
                             />
                           )}
@@ -154,7 +154,7 @@ export default function MobileNavigation({ navigationItems, onNavClick, contactD
                                   <a
                                     key={dropdownItem.label}
                                     href={dropdownItem.href}
-                                    className="block py-2 text-base text-gray-600 hover:text-[#44903C] transition-colors"
+                                    className="block py-2 text-base text-gray-600 hover:text-[#44903C] !transition-colors"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                   >
                                     {dropdownItem.label}

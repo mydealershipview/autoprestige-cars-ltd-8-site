@@ -117,14 +117,14 @@ export default function CallUsModal({
         <div className="flex gap-4">
           <button 
             onClick={onClose}
-            className="flex-1 border border-white/30 text-white px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-white/10 transition-colors"
+            className="flex-1 border border-white/30 text-white px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-white/10 !transition-colors"
           >
             Cancel
           </button>
           <button 
             disabled={isSubmitting || !firstName || !lastName || !email || !phone}
             onClick={handleCall}
-            className="flex-1 bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex-1 bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 !transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : 'Call Now'}
           </button>

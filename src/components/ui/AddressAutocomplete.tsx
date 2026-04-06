@@ -114,7 +114,7 @@ export default function AddressAutocomplete({
           onKeyDown={handleInputKeyDown}
           placeholder={placeholder}
           required={required}
-          className={`w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#44903C]/30 focus:border-[#44903C] transition-all duration-200 ${className}`}
+          className={`w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#44903C]/30 focus:border-[#44903C] !transition-all !duration-200 ${className}`}
         />
 
         {/* Map Pin Icon */}
@@ -137,7 +137,7 @@ export default function AddressAutocomplete({
             <div
               key={prediction.place_id}
               onClick={() => handleSuggestionClick(prediction)}
-              className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+              className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 !transition-colors"
             >
               <div className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />

@@ -60,7 +60,7 @@ export function Services() {
               <button
                 key={service.id}
                 onClick={() => setActiveIndex(index)}
-                className={`transition-colors duration-300 flex items-center gap-2 ${
+                className={`!transition-colors !duration-300 flex items-center gap-2 ${
                   activeIndex === index ? 'text-white font-medium' : 'hover:text-zinc-300 font-light'
                 }`}
               >
@@ -80,13 +80,13 @@ export function Services() {
             <img 
               src={activeService.image} 
               alt={activeService.title}
-              className="w-full h-full object-cover transition-opacity duration-500 ease-in-out"
+              className="w-full h-full object-cover !transition-opacity !duration-500 ease-in-out"
             />
             
             {/* Left Absolute navigation button */}
             <button 
               onClick={prevService}
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-black p-3 md:p-4 z-10 transition-colors"
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-black p-3 md:p-4 z-10 !transition-colors"
             >
               <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
             </button>
@@ -105,7 +105,7 @@ export function Services() {
               
               {/* <Link 
                 href={activeService.link}
-                className="bg-white text-black px-8 py-4 text-xs md:text-sm font-bold tracking-[0.2em] uppercase hover:bg-zinc-200 transition-colors flex items-center gap-2"
+                className="bg-white text-black px-8 py-4 text-xs md:text-sm font-bold tracking-[0.2em] uppercase hover:bg-zinc-200 !transition-colors flex items-center gap-2"
               >
                 FIND OUT MORE 
                 <ChevronsRight className="w-4 h-4 ml-1" />
@@ -115,7 +115,7 @@ export function Services() {
             {/* Right arrow for next (Desktop) */}
             <button 
               onClick={nextService}
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-black p-3 md:p-4 z-10 transition-colors hidden lg:block"
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-black p-3 md:p-4 z-10 !transition-colors hidden lg:block"
             >
               <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
             </button>

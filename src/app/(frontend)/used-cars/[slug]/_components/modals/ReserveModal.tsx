@@ -63,7 +63,7 @@ export default function ReserveModal({
       <div className="w-full max-w-lg bg-[#161616] border border-white/10 p-6 shadow-2xl overflow-y-auto max-h-dvh">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-light tracking-widest uppercase">Reserve Vehicle</h2>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white text-sm uppercase tracking-widest transition-colors">
+          <button onClick={onClose} className="text-zinc-400 hover:text-white text-sm uppercase tracking-widest !transition-colors">
             Close
           </button>
         </div>
@@ -128,7 +128,7 @@ export default function ReserveModal({
             </label>
           </div>
 
-          <button disabled={isSubmitting} type="submit" className="w-full bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 transition-colors mt-6 disabled:opacity-60 disabled:cursor-not-allowed">
+          <button disabled={isSubmitting} type="submit" className="w-full bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 !transition-colors mt-6 disabled:opacity-60 disabled:cursor-not-allowed">
             {isSubmitting ? 'Submitting...' : 'Confirm Reservation'}
           </button>
         </form>

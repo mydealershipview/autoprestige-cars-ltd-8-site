@@ -33,13 +33,13 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-8 py-3 bg-red-600 text-white text-sm font-bold tracking-widest uppercase hover:bg-red-700 transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 bg-red-600 text-white text-sm font-bold tracking-widest uppercase hover:bg-red-700 !transition-colors"
           >
             Go Home
           </Link>
           <Link
             href="/used-cars"
-            className="inline-flex items-center justify-center px-8 py-3 bg-transparent border border-white/20 text-white text-sm font-bold tracking-widest uppercase hover:bg-white/10 transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 bg-transparent border border-white/20 text-white text-sm font-bold tracking-widest uppercase hover:bg-white/10 !transition-colors"
           >
             Browse Showroom
           </Link>

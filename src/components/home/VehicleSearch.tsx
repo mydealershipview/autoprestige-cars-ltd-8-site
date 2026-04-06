@@ -18,7 +18,7 @@ export function VehicleSearch({ makes = [], models = [] }: VehicleSearchProps) {
           
           {/* Make Setup */}
           <div className="relative">
-            <select className="bg-transparent border border-zinc-700/60 text-zinc-300 text-sm p-4 w-full appearance-none focus:outline-none focus:border-white transition-colors cursor-pointer">
+            <select className="bg-transparent border border-zinc-700/60 text-zinc-300 text-sm p-4 w-full appearance-none focus:outline-none focus:border-white !transition-colors cursor-pointer">
               <option value="" className="text-black">Any Make</option>
               {makes?.map((item: any, i) => {
                 const makeName = typeof item === 'string' ? item : (item?.name || item?.title || 'Unknown Make')
@@ -35,7 +35,7 @@ export function VehicleSearch({ makes = [], models = [] }: VehicleSearchProps) {
           
           {/* Model Setup */}
           <div className="relative">
-            <select className="bg-transparent border border-zinc-700/60 text-zinc-600 text-sm p-4 w-full appearance-none focus:outline-none focus:border-white transition-colors cursor-pointer disabled:opacity-50">
+            <select className="bg-transparent border border-zinc-700/60 text-zinc-600 text-sm p-4 w-full appearance-none focus:outline-none focus:border-white !transition-colors cursor-pointer disabled:opacity-50">
               <option value="" className="text-black">Any Model</option>
               {/* Models mapped based on make selection normally */}
             </select>
@@ -49,7 +49,7 @@ export function VehicleSearch({ makes = [], models = [] }: VehicleSearchProps) {
           <div>
             <button 
               type="button" 
-              className="w-full bg-white text-black text-[13px] font-bold tracking-[0.15em] uppercase p-4 hover:bg-zinc-200 transition-colors flex items-center justify-center gap-3"
+              className="w-full bg-white text-black text-[13px] font-bold tracking-[0.15em] uppercase p-4 hover:bg-zinc-200 !transition-colors flex items-center justify-center gap-3"
             >
               <Search className="w-[18px] h-[18px]" />
               Search

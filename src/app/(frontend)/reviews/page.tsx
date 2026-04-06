@@ -149,7 +149,7 @@ export default function ReviewsPage() {
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="border border-white/20 p-8 flex flex-col items-center text-center hover:border-red-600 transition-colors duration-300"
+              className="border border-white/20 p-8 flex flex-col items-center text-center hover:border-red-600 !transition-colors !duration-300"
             >
               <StarRating count={t.rating} />
               <div className="w-12 h-0.5 bg-red-600 mb-5" />
@@ -166,7 +166,7 @@ export default function ReviewsPage() {
             href="https://g.page/r/review"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold tracking-widest uppercase text-sm px-8 py-4 transition-colors"
+            className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold tracking-widest uppercase text-sm px-8 py-4 !transition-colors"
           >
             Leave a Google Review
           </a>

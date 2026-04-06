@@ -75,7 +75,7 @@ export function FeaturedCars() {
                 <img 
                   src={car.img} 
                   alt={`${car.make} ${car.model}`} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                  className="w-full h-full object-cover group-hover:scale-105 !transition-transform !duration-700 opacity-90 group-hover:opacity-100"
                 />
               </Link>
 
@@ -83,7 +83,7 @@ export function FeaturedCars() {
               <div className="p-6 md:p-8 flex flex-col flex-grow text-center">
                 
                 {/* Title */}
-                <Link href={`/used-cars/${car.id}`} className="mb-4 block text-white hover:text-zinc-300 transition-colors">
+                <Link href={`/used-cars/${car.id}`} className="mb-4 block text-white hover:text-zinc-300 !transition-colors">
                   <h3 className="text-[13px] md:text-sm font-light tracking-widest uppercase leading-relaxed">
                     {car.make} {car.model} <br />
                     {car.trim}
@@ -120,7 +120,7 @@ export function FeaturedCars() {
             <button
               key={idx}
               onClick={() => setActiveIndex(idx)}
-              className={`rounded-full transition-all duration-300 ${
+              className={`rounded-full !transition-all !duration-300 ${
                 activeIndex === idx 
                   ? 'w-2.5 h-2.5 bg-transparent border-[1.5px] border-white' 
                   : 'w-1.5 h-1.5 bg-zinc-600 hover:bg-zinc-400'

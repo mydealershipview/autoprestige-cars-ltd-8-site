@@ -78,7 +78,7 @@ export default function ContactModal({ isOpen, onClose, onButtonClick, phoneNumb
                         <a
                           key={phoneNumber.number}
                           href={`tel:${phoneNumber.number}`}
-                          className="block text-gray-700 hover:text-primary transition-colors"
+                          className="block text-gray-700 hover:text-primary !transition-colors"
                         >
                           {phoneNumber.number}
                         </a>
@@ -96,7 +96,7 @@ export default function ContactModal({ isOpen, onClose, onButtonClick, phoneNumb
                       <a
                         key={emailAddress.email}
                         href={`mailto:${emailAddress.email}`}
-                        className="text-sm text-gray-700 hover:text-primary transition-colors break-all"
+                        className="text-sm text-gray-700 hover:text-primary !transition-colors break-all"
                       >
                         {emailAddress.email}
                       </a>

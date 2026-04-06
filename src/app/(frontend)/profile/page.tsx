@@ -84,7 +84,7 @@ export default function ProfilePage() {
               <p className="text-sm uppercase tracking-wider text-white/60 mb-1">Telephone:</p>
               <a
                 href="tel:01274488500"
-                className="text-lg font-semibold text-white hover:text-red-500 transition-colors"
+                className="text-lg font-semibold text-white hover:text-red-500 !transition-colors"
               >
                 01274 488500
               </a>

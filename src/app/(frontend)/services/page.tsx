@@ -56,10 +56,10 @@ const services = [
 const ServiceCard = ({ service }: { service: (typeof services)[number] }) => (
   <div className="relative flex flex-col items-center justify-center text-center px-10 py-16 overflow-hidden min-h-[340px] group">
     <div
-      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+      className="absolute inset-0 bg-cover bg-center !transition-transform !duration-700 group-hover:scale-105"
       style={{ backgroundImage: `url('${service.image}')` }}
     />
-    <div className="absolute inset-0 bg-black/65 group-hover:bg-black/50 transition-colors duration-300" />
+    <div className="absolute inset-0 bg-black/65 group-hover:bg-black/50 !transition-colors !duration-300" />
     <div className="relative z-10">
       <h3 className="text-base md:text-lg font-black tracking-widest uppercase text-white mb-2">
         {service.title}

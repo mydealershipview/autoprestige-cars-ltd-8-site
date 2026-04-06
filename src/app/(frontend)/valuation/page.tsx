@@ -110,7 +110,7 @@ export default async function ValuationPage() {
               <p className="text-xs uppercase tracking-widest text-white/60 mb-2">Need help now?</p>
               <a
                 href={dealership.phone ? `tel:${dealership.phone.replace(/\s+/g, '')}` : '#'}
-                className="text-white font-semibold tracking-wide hover:text-red-500 transition-colors"
+                className="text-white font-semibold tracking-wide hover:text-red-500 !transition-colors"
               >
                 {dealership.phone || 'Call our team'}
               </a>

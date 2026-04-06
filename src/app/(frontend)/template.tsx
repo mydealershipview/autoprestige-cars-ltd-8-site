@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react'
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const [isAnimating, setIsAnimating] = useState(true)
-  const [brandText, setBrandText] = useState('DEALERSHIP')
+  // const [brandText, setBrandText] = useState('DEALERSHIP')
+  const [brandText, setBrandText] = useState('AUTOPRESTIGE')
 
   useEffect(() => {
     if (isAnimating) {
@@ -32,7 +33,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
         const name = data?.businessAddress?.name
 
         if (typeof name === 'string' && name.trim()) {
-          setBrandText(name.toUpperCase())
+          // setBrandText(name.toUpperCase())
         }
       } catch {
         // keep fallback splash name

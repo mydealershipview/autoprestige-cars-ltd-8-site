@@ -43,7 +43,7 @@ export default function RegPlatesPage() {
             <Link
               key={plate.slug}
               href={`/reg-plates/${plate.slug}`}
-              className="group border border-white/10 bg-[#111111] hover:border-red-600/50 transition-colors min-h-[420px] p-4 flex flex-col"
+              className="group border border-white/10 bg-[#111111] hover:border-red-600/50 !transition-colors min-h-[420px] p-4 flex flex-col"
             >
               <div className="flex-1" />
               <h2 className="text-center text-4xl font-black tracking-wide uppercase text-white">
@@ -52,7 +52,7 @@ export default function RegPlatesPage() {
               <p className="mt-4 text-center text-white/75 leading-relaxed text-lg">
                 {REG_PLATES_TEASER}
               </p>
-              <span className="mt-6 w-full bg-red-600 group-hover:bg-red-700 transition-colors text-white text-center font-semibold tracking-wide py-3">
+              <span className="mt-6 w-full bg-red-600 group-hover:bg-red-700 !transition-colors text-white text-center font-semibold tracking-wide py-3">
                 More Details
               </span>
             </Link>

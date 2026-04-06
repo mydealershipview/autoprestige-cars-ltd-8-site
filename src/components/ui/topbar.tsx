@@ -41,7 +41,7 @@ export default function TopBar({ contactData }: TopBarProps) {
 
   return (
     <motion.div
-      className={`hidden lg:block fixed top-0 left-0 right-0 z-50 !transition-all !duration-300 ${isScrolled
+      className={`hidden lg:block fixed top-0 left-0 right-0 z-50 !!transition-all !!duration-300 ${isScrolled
         ? 'bg-black/60 backdrop-blur-sm py-2'
         : 'bg-black/30 backdrop-blur-sm py-3'
         }`}
@@ -74,21 +74,21 @@ export default function TopBar({ contactData }: TopBarProps) {
             <Link href='/' className="flex flex-col items-center gap-2">
               <div className="flex items-center">
                 {/* Y - Green Block */}
-                <div className={` bg-[#8F8F8F] skew-x-[-16deg] flex items-center justify-center !transition-all !duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
-                  <span className={`font-bold skew-x-[16deg] text-white !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[0]}</span>
+                <div className={` bg-[#8F8F8F] skew-x-[-16deg] flex items-center justify-center !!transition-all !!duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
+                  <span className={`font-bold skew-x-[16deg] text-white !!transition-all !!duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[0]}</span>
                 </div>
                 {/* N - Blue Block */}
-                <div className={`bg-white skew-x-[-16deg] flex items-center justify-center !transition-all !duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
-                  <span className={`font-bold skew-x-[16deg] text-black !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[1]}</span>
+                <div className={`bg-white skew-x-[-16deg] flex items-center justify-center !!transition-all !!duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
+                  <span className={`font-bold skew-x-[16deg] text-black !!transition-all !!duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[1]}</span>
                 </div>
                 {/* C - Red Block */}
-                <div className={`bg-[#44903C] skew-x-[-16deg] flex items-center justify-center !transition-all !duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
-                  <span className={`font-bold skew-x-[16deg] text-white !transition-all !duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[2]}</span>
+                <div className={`bg-[#44903C] skew-x-[-16deg] flex items-center justify-center !!transition-all !!duration-300 ${isScrolled ? 'w-11 h-9' : 'w-[4.5rem] h-14'}`}>
+                  <span className={`font-bold skew-x-[16deg] text-white !!transition-all !!duration-300 ${isScrolled ? 'text-lg' : 'text-4xl'}`}>{initials[2]}</span>
                 </div>
               </div>
               <div className="ml-3 text-center">
-                <div className={`text-white font-bold tracking-wider !transition-all !duration-300 ${isScrolled ? 'text-xs' : 'text-sm'}`}>{displayName}</div>
-                {/* <div className={`pt-1 text-gray-300 tracking-wide transition-all duration-300 ${isScrolled ? 'text-xs hidden md:block' : 'text-xs'}`}>Prestige BMW Vehicle Sales Nottingham</div> */}
+                <div className={`text-white font-bold tracking-wider !!transition-all !!duration-300 ${isScrolled ? 'text-xs' : 'text-sm'}`}>{displayName}</div>
+                {/* <div className={`pt-1 text-gray-300 tracking-wide !transition-all !duration-300 ${isScrolled ? 'text-xs hidden md:block' : 'text-xs'}`}>Prestige BMW Vehicle Sales Nottingham</div> */}
               </div>
             </Link>
           </motion.div>

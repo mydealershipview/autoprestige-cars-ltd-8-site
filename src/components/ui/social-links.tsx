@@ -43,9 +43,9 @@ export default function SocialLinks({ variant = 'header', className = '', contac
   }
 
   const linkClasses = {
-    header: "p-2 bg-white/10 rounded-lg hover:bg-[#44903C] transition-colors text-white",
-    mobile: "p-3 bg-gray-100 rounded-lg hover:bg-[#44903C] hover:text-white transition-colors text-gray-600",
-    footer: "p-2 bg-gray-800 rounded-lg hover:bg-[#44903C] transition-colors text-white"
+    header: "p-2 bg-white/10 rounded-lg hover:bg-[#44903C] !transition-colors text-white",
+    mobile: "p-3 bg-gray-100 rounded-lg hover:bg-[#44903C] hover:text-white !transition-colors text-gray-600",
+    footer: "p-2 bg-gray-800 rounded-lg hover:bg-[#44903C] !transition-colors text-white"
   }
 
   return (

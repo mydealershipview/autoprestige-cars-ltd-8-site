@@ -35,7 +35,7 @@ export function LegacyText() {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <button className="text-white font-semibold text-lg tracking-wider hover:text-zinc-300 transition-colors">
+          <button className="text-white font-semibold text-lg tracking-wider hover:text-zinc-300 !transition-colors">
             Read More
           </button>
         </div>

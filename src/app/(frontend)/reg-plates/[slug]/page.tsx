@@ -61,7 +61,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
           </p>
           <Link
             href="/contact"
-            className="inline-flex w-fit items-center bg-red-600 hover:bg-red-700 transition-colors px-5 py-2 font-semibold text-white"
+            className="inline-flex w-fit items-center bg-red-600 hover:bg-red-700 !transition-colors px-5 py-2 font-semibold text-white"
           >
             Make an Enquiry
           </Link>
@@ -72,7 +72,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
 
           <Link
             href="/reg-plates"
-            className="inline-block border border-red-900/60 bg-black px-4 py-2 text-sm font-semibold text-white/90 hover:text-white hover:border-red-600 transition-colors"
+            className="inline-block border border-red-900/60 bg-black px-4 py-2 text-sm font-semibold text-white/90 hover:text-white hover:border-red-600 !transition-colors"
           >
             {'<<< Go Back'}
           </Link>

@@ -33,7 +33,7 @@ const CustomButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
     type = 'button',
     ...props
   }, ref) => {
-    const baseClasses = "cursor-pointer inline-flex items-center justify-center font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none"
+    const baseClasses = "cursor-pointer inline-flex items-center justify-center font-medium !transition-all !duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none"
 
     const variants = {
       primary: gradient

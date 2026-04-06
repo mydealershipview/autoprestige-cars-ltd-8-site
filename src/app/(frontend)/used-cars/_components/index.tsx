@@ -335,7 +335,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     <div className="border-b border-white/10">
       <button
         onClick={() => toggleSection(sectionKey)}
-        className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-white/5 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-white/5 !transition-colors"
       >
         <span
           className={`text-sm font-semibold tracking-wide uppercase ${
@@ -345,7 +345,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           {label}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-gray-400 transition-transform ${
+          className={`w-4 h-4 text-gray-400 !transition-transform ${
             openSections[sectionKey] ? 'rotate-180' : ''
           }`}
         />
@@ -484,7 +484,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
       <div className="flex min-h-[calc(100vh-120px)]">
         {/* ── Sidebar ── */}
-        <aside className={`${mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky inset-y-0 left-0 z-50 lg:z-auto w-72 lg:w-52 shrink-0 border-r border-white/10 bg-[#0d0d0d] flex flex-col top-0 h-screen overflow-y-auto scrollbar-thin transition-transform duration-300`}>
+        <aside className={`${mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky inset-y-0 left-0 z-50 lg:z-auto w-72 lg:w-52 shrink-0 border-r border-white/10 bg-[#0d0d0d] flex flex-col top-0 h-screen overflow-y-auto scrollbar-thin !transition-transform !duration-300`}>
           {/* Header */}
           <div className="px-5 pt-5 pb-4 border-b border-white/10 flex items-start justify-between">
             <div>
@@ -497,14 +497,14 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               {hasActiveFilters && (
                 <button
                   onClick={handleClearFilters}
-                  className="text-[10px] text-red-400 hover:text-red-300 transition-colors mt-0.5 uppercase tracking-wide"
+                  className="text-[10px] text-red-400 hover:text-red-300 !transition-colors mt-0.5 uppercase tracking-wide"
                 >
                   Clear
                 </button>
               )}
               <button
                 onClick={() => setMobileFiltersOpen(false)}
-                className="lg:hidden text-gray-400 hover:text-white transition-colors"
+                className="lg:hidden text-gray-400 hover:text-white !transition-colors"
                 aria-label="Close filters"
               >
                 <X className="w-4 h-4" />
@@ -552,7 +552,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 <button
                   type="button"
                   onClick={() => setFinanceMode('price')}
-                  className={`h-11 text-sm font-extrabold uppercase tracking-[0.08em] transition-colors ${
+                  className={`h-11 text-sm font-extrabold uppercase tracking-[0.08em] !transition-colors ${
                     financeMode === 'price' ? 'bg-[#ff1010] text-white' : 'bg-[#3a0505] text-white/90 hover:bg-[#4a0808]'
                   }`}
                 >
@@ -561,7 +561,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 <button
                   type="button"
                   onClick={() => setFinanceMode('monthly')}
-                  className={`h-11 text-sm font-extrabold uppercase tracking-[0.08em] transition-colors ${
+                  className={`h-11 text-sm font-extrabold uppercase tracking-[0.08em] !transition-colors ${
                     financeMode === 'monthly' ? 'bg-[#ff1010] text-white' : 'bg-[#3a0505] text-white/90 hover:bg-[#4a0808]'
                   }`}
                 >
@@ -730,7 +730,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-[#111111]">
             <button
               onClick={() => setMobileFiltersOpen(true)}
-              className="lg:hidden flex items-center gap-1.5 bg-[#1a1a1a] border border-white/10 px-3 py-2.5 text-white shrink-0 hover:border-white/30 transition-colors"
+              className="lg:hidden flex items-center gap-1.5 bg-[#1a1a1a] border border-white/10 px-3 py-2.5 text-white shrink-0 hover:border-white/30 !transition-colors"
               aria-label="Open filters"
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -801,7 +801,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 <p className="text-gray-500 text-sm mb-5">{error}</p>
                 <button
                   onClick={() => fetchListings(currentPage, filters, sortBy, sortOrder)}
-                  className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 transition-colors"
+                  className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 !transition-colors"
                 >
                   Try Again
                 </button>
@@ -815,7 +815,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 <p className="text-gray-500 text-sm mb-5">Try adjusting your filters</p>
                 <button
                   onClick={handleClearFilters}
-                  className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 transition-colors"
+                  className="px-6 py-2.5 bg-white text-black rounded font-semibold text-sm hover:bg-gray-100 !transition-colors"
                 >
                   Clear Filters
                 </button>
@@ -873,18 +873,22 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     return (
                       <div
                         key={stockId || slug}
-                        className="bg-[#1a1a1a] flex flex-col overflow-hidden group"
+                        className="bg-[#1a1a1a] flex flex-col overflow-hidden group max-w-[400px] md:max-w-[450px] mx-auto md:mx-0"
                       >
                         {/* Image */}
-                        <div className="relative h-44 overflow-hidden bg-black">
+                        <div className="relative h-64 md:h-54 overflow-hidden ">
+                          <div
+                            className="absolute inset-0 bg-center bg-cover blur-xl scale-110"
+                            style={{ backgroundImage: `url(${imageUrl})` }}
+                          />
                           <img
                             src={imageUrl}
                             alt={`${vehicleMake} ${vehicleModel}`}
-                            className="h-full w-full object-contain object-center bg-black group-hover:scale-[1.02] transition-transform duration-500"
+                            className="h-full w-full z-10 relative object-contain object-center group-hover:scale-[1.02] !transition-transform !duration-500"
                           />
                           {/* Photo / video count */}
                           {imageCount > 0 && (
-                            <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                            <div className="absolute z-20 top-2 left-2 flex items-center gap-1.5">
                               <span className="flex items-center gap-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-medium">
                                 <Camera className="w-3 h-3" />
                                 {imageCount}
@@ -902,7 +906,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               e.preventDefault()
                               // toggleWishlist(stockId)
                             }}
-                            className="absolute top-2 right-2 p-1.5 rounded bg-black/60 hover:bg-black/80 transition-colors"
+                            className="absolute top-2 z-20 right-2 p-1.5 rounded bg-black/60 hover:bg-black/80 !transition-colors"
                             aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
                           >
                             <svg
@@ -997,7 +1001,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="flex items-center justify-center gap-1 py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 transition-colors"
+                              className="flex items-center justify-center gap-1 py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors"
                             >
                               <svg viewBox="0 0 24 24" className="w-3 h-3 fill-[#25D366]">
                                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
@@ -1007,14 +1011,14 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             <Link
                               href={`/reservation?stockId=${stockId}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="flex items-center justify-center py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 transition-colors"
+                              className="flex items-center justify-center py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors"
                             >
                               Reserve
                             </Link>
                             <Link
                               href={`/finance?stockId=${stockId}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="flex items-center justify-center gap-1 py-2 border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 transition-colors"
+                              className="flex items-center justify-center gap-1 py-2 border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors"
                             >
                               <CreditCard className="w-3 h-3 text-red-400" />
                               Finance
@@ -1025,7 +1029,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                         {/* MORE button */}
                         <Link
                           href={`/used-cars/${slug}`}
-                          className="block text-center bg-red-600 hover:bg-red-500 transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
+                          className="block text-center bg-red-600 hover:bg-red-500 !transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
                         >
                           More &rsaquo;
                         </Link>
@@ -1040,7 +1044,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 rounded border border-white/10 text-sm text-gray-400 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 rounded border border-white/10 text-sm text-gray-400 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed !transition-colors"
                     >
                       Previous
                     </button>
@@ -1059,7 +1063,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`w-9 h-9 rounded border text-sm transition-colors ${
+                          className={`w-9 h-9 rounded border text-sm !transition-colors ${
                             currentPage === page
                               ? 'border-white bg-white text-black font-semibold'
                               : 'border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
@@ -1072,7 +1076,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2 rounded border border-white/10 text-sm text-gray-400 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 rounded border border-white/10 text-sm text-gray-400 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed !transition-colors"
                     >
                       Next
                     </button>

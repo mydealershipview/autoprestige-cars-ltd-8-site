@@ -29,7 +29,7 @@ const initialState: FormState = {
 }
 
 const inputClass =
-  'w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 transition-colors text-sm'
+  'w-full bg-transparent border border-white/20 text-white placeholder-white/30 px-4 py-3 focus:outline-none focus:border-red-500 !transition-colors text-sm'
 
 const labelClass = 'block text-xs font-semibold tracking-widest text-white/70 uppercase mb-2'
 
@@ -345,7 +345,7 @@ export default function ServiceBookingForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-black tracking-widest uppercase px-10 py-3 transition-colors text-sm"
+          className="bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
         >
           {isSubmitting ? 'Submitting…' : 'Submit'}
         </button>

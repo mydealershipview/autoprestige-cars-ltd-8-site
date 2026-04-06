@@ -77,7 +77,7 @@ export default function PartExchangeModal({
       <div className="w-full max-w-2xl bg-[#161616] border border-white/10 p-6 md:p-8 shadow-2xl flex flex-col max-h-full">
         <div className="flex justify-between items-center mb-6 shrink-0">
           <h2 className="text-xl font-light tracking-widest uppercase">Part Exchange Valuation</h2>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white text-sm uppercase tracking-widest transition-colors">
+          <button onClick={onClose} className="text-zinc-400 hover:text-white text-sm uppercase tracking-widest !transition-colors">
             Close
           </button>
         </div>
@@ -148,7 +148,7 @@ export default function PartExchangeModal({
 
             {submitError && <p className="text-sm text-red-400">{submitError}</p>}
 
-            <button disabled={isSubmitting} type="submit" className="w-full bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 transition-colors shrink-0 disabled:opacity-60 disabled:cursor-not-allowed">
+            <button disabled={isSubmitting} type="submit" className="w-full bg-white text-black px-4 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-zinc-200 !transition-colors shrink-0 disabled:opacity-60 disabled:cursor-not-allowed">
               {isSubmitting ? 'Submitting...' : 'Submit Request'}
             </button>
           </form>
