@@ -853,7 +853,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                       (vehicle.highlights ?? [])
                         .map((highlight) => {
                           if (typeof highlight === 'string') return highlight
-                          return highlight?.highlight || ''
+                          return (highlight as any)?.highlight || ''
                         })
                         .filter(Boolean)
                         .join('+')
