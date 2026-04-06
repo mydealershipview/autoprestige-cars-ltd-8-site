@@ -22,6 +22,7 @@ interface VehicleClientProps {
   vehicle: AutoTraderVehicle
   dealershipName: string
   phoneNumber: string
+  whatsappNumber: string
   emailAddress: string
 }
 
@@ -29,6 +30,7 @@ export default function VehicleClient({
   vehicle,
   dealershipName,
   phoneNumber,
+  whatsappNumber,
   emailAddress,
 }: VehicleClientProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
@@ -86,6 +88,13 @@ export default function VehicleClient({
     { label: 'Doors', value: vehicle.vehicle.doors ? vehicle.vehicle.doors.toString() : 'N/A' },
     { label: 'Mileage', value: vehicle.vehicle.odometerReadingMiles ? `${new Intl.NumberFormat('en-GB').format(vehicle.vehicle.odometerReadingMiles)} mi` : 'N/A' },
   ]
+
+  const handleWhatsapp = () => {
+    const message = `Hello, I'm interested in the ${make} ${model} ${vehicle.vehicle.registration ? `(${vehicle.vehicle.registration})` : ''}. Could you please provide more information?`
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
+
+    window.open(whatsappUrl, '_blank')
+  }
 
   return (
     <main className="min-h-screen bg-black text-white pt-22 pb-20">
@@ -204,7 +213,7 @@ export default function VehicleClient({
               <button onClick={() => setShowFinance(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
                 Apply For Finance
               </button>
-              <button onClick={() => setShowCallUs(true)} className="w-full bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
+              <button onClick={handleWhatsapp} className="w-full bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
                 Chat
               </button>
               <button onClick={() => setShowReserve(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">

@@ -122,8 +122,8 @@ export default function HomeHeader({
                   <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z" />
                 </svg>
               </a>
-              <div className="h-10 w-[1px] bg-white/20"></div>
-              <a href={socialUrl('instagram')} target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1">
+              {/* <div className="h-10 w-[1px] bg-white/20"></div> */}
+              {/* <a href={socialUrl('instagram')} target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -135,7 +135,7 @@ export default function HomeHeader({
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M11.69 2.5a5.1 5.1 0 0 0 -5.02 5.25c0 .35 .04 .7 .1 1c-1.39 .36 -2.62 1.34 -2.62 2.76 0 .42 .19 .78 .52 1.05 .33 .26 .81 .45 1.38 .52 0 .91 -1.48 1.46 -2.31 1.76 -.19 .07 -.24 .3 -.1 .43 .08 .07 .18 .11 .29 .11 .9 0 2.27 -.36 3.63 0 1.02 .27 1.5 1.53 1.84 2a2.33 2.33 0 0 0 4.6 0c.34 -.47 .82 -1.73 1.84 -2 1.36 -.36 2.73 0 3.63 0 .1 0 .21 -.04 .29 -.11 .14 -.13 .09 -.36 -.1 -.43 -.83 -.3 -2.31 -.85 -2.31 -1.76 .57 -.07 1.05 -.26 1.38 -.52 .33 -.27 .52 -.63 .52 -1.05 0 -1.42 -1.23 -2.4 -2.62 -2.76 .06 -.3 .1 -.65 .1 -1a5.1 5.1 0 0 0 -5.02 -5.25z"></path>
                 </svg>
-              </a>
+              </a> */}
               <div className="h-10 w-[1px] bg-white/20"></div>
             </div>
           </div>
@@ -152,8 +152,8 @@ export default function HomeHeader({
 
       {/* Slide-in Navigation Sidebar */}
       <nav
-        className={`fixed top-0 right-0 z-40 h-full w-full sm:w-[420px] bg-black flex flex-col transform !transition-transform !duration-300 ease-in-out ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 left-0 z-40 h-full w-full sm:w-[420px] bg-black flex flex-col transform !transition-transform !duration-300 ease-in-out ${
+          menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Sidebar Header */}

@@ -220,6 +220,11 @@ export default async function IndividualListingPage({ params }: { params: Promis
     contactData?.phoneNumbers?.find((entry) => entry.isPrimary)?.number ||
     contactData?.phoneNumbers?.[0]?.number ||
     ''
+
+  const whatsappNumber =
+    contactData?.whatsappNumber || contactData?.phoneNumbers?.find((entry) => entry.isPrimary)?.number ||
+    contactData?.phoneNumbers?.[0]?.number ||
+    ''
   const contactEmail =
     contactData?.emailAddresses?.find((entry) => entry.isPrimary)?.email ||
     contactData?.emailAddresses?.[0]?.email ||
@@ -230,6 +235,7 @@ export default async function IndividualListingPage({ params }: { params: Promis
       vehicle={vehicle}
       dealershipName={dealership.name}
       phoneNumber={contactPhone}
+      whatsappNumber={whatsappNumber}
       emailAddress={contactEmail}
     />
   )
