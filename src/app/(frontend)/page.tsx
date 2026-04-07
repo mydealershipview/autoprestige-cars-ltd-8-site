@@ -233,7 +233,7 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6">
             Sell your sport or prestige car directly to {displayName}
           </p>
-          <Link href="/sell" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+          <Link href="/valuation" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
             GET A QUOTE <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
@@ -260,7 +260,7 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6 leading-relaxed">
             {displayName} specialises in supplying prestige and performance vehicles with standout design and confidence-inspiring performance.
           </p>
-          <Link href="/about" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+          <Link href="/profile" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
             READ MORE <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>

@@ -54,10 +54,10 @@ export default async function ValuationPage() {
 
         <div className="relative z-10 text-center px-4 max-w-3xl">
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase text-blue-400 mb-4 font-semibold">
-            Value Your Car Online
+            Vehicle Valuation
           </p>
           <h1 className="text-4xl md:text-6xl font-black tracking-[0.16em] uppercase text-white mb-5">
-            Vehicle Valuation
+            Sell Your Car
           </h1>
           <p className="text-white/70 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
             Share your vehicle details and our team at {dealership.name} will contact you with a
