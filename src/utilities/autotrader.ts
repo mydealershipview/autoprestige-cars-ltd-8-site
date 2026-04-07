@@ -26,6 +26,7 @@ interface AutoTraderListingResponse {
 }
 
 interface AutoTraderVehicle {
+  registration?: string
   forecourtPrice?: {
     amountGBP: number | null
   }

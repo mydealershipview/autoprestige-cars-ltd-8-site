@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -59,10 +59,87 @@ export default function VehicleClient({
     ? images[activeImageIndex + 1].href
     : null
 
+  const getVehicleImageUrl = (vehicle: AutoTraderVehicle): string => {
+    if (vehicle.media?.images && vehicle.media.images.length > 0) {
+      const exteriorImages = vehicle.media.images
+      const imagesToUse = exteriorImages.length > 0 ? exteriorImages : vehicle.media.images.filter((img: any) =>
+        !img.classificationTags?.some((tag: any) => tag.label === 'Promotional Material')
+      )
+
+      if (imagesToUse.length > 0) {
+        return imagesToUse[0].href // Return first actual vehicle image
+      }
+    }
+    // Fallback to default image if no vehicle images found
+    return 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&crop=center'
+  }
+
   const nextImage = () => setActiveImageIndex((prev) => (prev + 2 >= images.length ? 0 : prev + 2))
   const prevImage = () => setActiveImageIndex((prev) =>
     prev < 2 ? (images.length % 2 === 0 ? images.length - 2 : images.length - 1) : prev - 2
   )
+
+  const vehicleImageUrl = getVehicleImageUrl(vehicle)
+
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=F3LL6p5XArX4mc1udA'
+    script.async = true
+    document.head.appendChild(script)
+
+    const setupCalculator = () => {
+      const button = document.getElementById('cw_standalone_calculate_button')
+      if (button && (window as any).codeweavers) {
+        button.onclick = function () {
+          loadPlugin()
+        }
+        loadPlugin() // Auto-load on initial load
+      } else {
+        setTimeout(setupCalculator, 100)
+      }
+    }
+
+    const loadPlugin = () => {
+      if ((window as any).codeweavers) {
+        (window as any).codeweavers.main({
+          pluginContentDivId: 'codeweavers-plugin',
+          vehicle: {
+            type: 'Car',
+            cashPrice: price?.toString() || "0", // AUTO-POPULATED WITH VEHICLE PRICE
+            mileage: vehicle?.vehicle?.odometerReadingMiles || "0",
+            isNew: "false",
+            identifierType: '',
+            identifier: " ",
+            imageUrl: vehicleImageUrl, // UPDATED: Use actual vehicle image instead of default
+            linkBackUrl: "https://www.autoprestigecars.co.uk/",
+            registration: {
+              number: vehicle.vehicle?.registration || vehicle?.registration || "NOVEHICLE",
+              date: vehicle?.vehicle?.firstRegistrationDate || "2000-01-01",
+            }
+          },
+          defaultParameters: {
+            deposit: {
+              defaultValue: 10,
+              defaultType: "Percentage"
+            },
+            term: {
+              defaultValue: 60,
+            },
+            annualMileage: {
+              defaultValue: 10000,
+            },
+          },
+        })
+      }
+    }
+
+    script.onload = setupCalculator
+
+    return () => {
+      document.head.removeChild(script)
+    }
+  }, [price, vehicleImageUrl])
 
   const calculateMonthlyPayment = (priceValue: number | null) => {
     if (!priceValue || priceValue <= 0) return 'N/A'
@@ -179,6 +256,15 @@ export default function VehicleClient({
             ) : (
               <p className="text-sm text-zinc-400">Description coming soon.</p>
             )}
+
+            <div id='cw_standalone_calculate_button' className='mt-10'>
+              <div style={{ width: '100%' }}>
+                <div
+                  id="codeweavers-plugin"
+                  className="rounded-xl overflow-hidden bg-white/5 min-h-[400px]"
+                ></div>
+              </div>
+            </div>
           </section>
 
           <aside className="border border-white/12 bg-black p-5">
@@ -210,7 +296,11 @@ export default function VehicleClient({
               <button onClick={() => setShowEmail(true)} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-200">
                 Enquire Now
               </button>
-              <button onClick={() => setShowFinance(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
+              {/* <button onClick={() => setShowFinance(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600"> */}
+              <button onClick={() => {
+                const section = document.getElementById("cw_standalone_calculate_button");
+                section?.scrollIntoView({ behavior: "smooth" });
+              }} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
                 Apply For Finance
               </button>
               <button onClick={handleWhatsapp} className="w-full bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
