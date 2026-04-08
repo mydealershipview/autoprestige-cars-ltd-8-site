@@ -145,7 +145,7 @@ export default function VehicleClient({
     if (!priceValue || priceValue <= 0) return 'N/A'
     const deposit = priceValue * 0.1
     const loanAmount = priceValue - deposit
-    const monthlyRate = 0.099 / 12
+    const monthlyRate = 0.089 / 12
     const numPayments = 60
     const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1)
     return new Intl.NumberFormat('en-GB', {
@@ -277,9 +277,30 @@ export default function VehicleClient({
                 <p className="text-4xl font-bold text-white">{price ? `£${new Intl.NumberFormat('en-GB').format(price)}` : 'POA'}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Monthly Price</p>
-                <p className="text-3xl font-bold text-blue-400">{price ? calculateMonthlyPayment(price) : 'N/A'}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Monthly</p>
+                  <span className="text-[9px] uppercase tracking-wider text-teal-400 font-bold">Soft Search</span>
+                </div>
+                <p className="text-3xl font-bold text-blue-400">{price ? `${calculateMonthlyPayment(price)}/mo` : 'N/A'}</p>
                 {wasPrice && <p className="mt-1 text-xs text-zinc-400 line-through">Was £{new Intl.NumberFormat('en-GB').format(wasPrice)}</p>}
+                {price && (
+                  <p className="mt-1.5 text-[12px] font-medium text-zinc-200 leading-snug">
+                    For illustration only &middot;{' '}
+                    <Link
+                      href={`/finance?${new URLSearchParams({
+                        price: price.toString(),
+                        ...(vehicle.vehicle?.odometerReadingMiles ? { mileage: vehicle.vehicle.odometerReadingMiles.toString() } : {}),
+                        imageUrl: vehicleImageUrl,
+                        ...(vehicle.vehicle?.registration ? { registration: vehicle.vehicle.registration } : {}),
+                        ...(vehicle.vehicle?.firstRegistrationDate ? { firstRegistrationDate: vehicle.vehicle.firstRegistrationDate } : {}),
+                        ...(vehicle.metadata?.stockId ? { stockId: vehicle.metadata.stockId } : {}),
+                      }).toString()}`}
+                      className="text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      Get Quotes
+                    </Link>
+                  </p>
+                )}
               </div>
             </div>
 

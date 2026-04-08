@@ -267,9 +267,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     if (!price || price <= 0) return 'N/A'
     const deposit = price * 0.1
     const principal = price - deposit
-    // 8.9% APR, 48 months
+    // 8.9% APR, 60 months
     const monthlyRate = Math.pow(1.089, 1 / 12) - 1
-    const n = 48
+    const n = 60
     const monthly = (principal * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1)
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
@@ -865,6 +865,17 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     const monthlyPrice = calculateMonthlyPayment(vehiclePrice)
                     const mileageStr = formatMileage(vehicleMileage)
 
+                    const vehicleRegistration = vehicle.vehicle?.registration || ''
+                    const vehicleFirstRegDate = vehicle.vehicle?.firstRegistrationDate || ''
+                    const financeUrlParams = new URLSearchParams()
+                    if (vehiclePrice) financeUrlParams.set('price', vehiclePrice.toString())
+                    if (vehicleMileage) financeUrlParams.set('mileage', vehicleMileage.toString())
+                    financeUrlParams.set('imageUrl', imageUrl)
+                    if (vehicleRegistration) financeUrlParams.set('registration', vehicleRegistration)
+                    if (vehicleFirstRegDate) financeUrlParams.set('firstRegistrationDate', vehicleFirstRegDate)
+                    if (stockId) financeUrlParams.set('stockId', stockId)
+                    const financeUrl = `/finance?${financeUrlParams.toString()}`
+
                     const whatsappMsg = encodeURIComponent(
                       `Hi, I'm interested in the ${vehicleYear || ''} ${vehicleMake} ${vehicleModel}. Stock ID: ${stockId}`,
                     )
@@ -957,10 +968,25 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             </div>
                             {vehiclePrice && monthlyPrice !== 'N/A' && (
                               <div>
-                                <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
-                                  Monthly Price
+                                <div className="flex items-center gap-1.5">
+                                  <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                                    Monthly
+                                  </p>
+                                  <span className="text-[8px] uppercase tracking-wider text-teal-400 font-bold">
+                                    Soft Search
+                                  </span>
+                                </div>
+                                <p className="text-sm font-bold text-blue-400 leading-tight">{monthlyPrice}/mo</p>
+                                <p className="text-[8px] text-gray-200 font-medium leading-tight mt-0.5">
+                                  For illustration only ·{' '}
+                                  <Link
+                                    href={financeUrl}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="text-blue-400 hover:text-blue-300 !transition-colors"
+                                  >
+                                    Get Quotes
+                                  </Link>
                                 </p>
-                                <p className="text-sm font-bold text-blue-400 leading-tight">{monthlyPrice}</p>
                               </div>
                             )}
                           </div>
