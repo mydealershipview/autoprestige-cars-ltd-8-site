@@ -108,7 +108,7 @@ const Home = async () => {
           playsInline
           poster="/hero-poster.png"
         >
-          {/* <source src="/hero_video_low.mp4" type="video/mp4" media="(max-width: 1024px)" /> */}
+          <source src="/hero_mobile.mp4" type="video/mp4" media="(max-width: 768px)" />
           <source src="/hero_video.mp4" type="video/mp4" />
         </video>
         
