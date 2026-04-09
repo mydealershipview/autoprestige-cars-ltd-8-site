@@ -108,8 +108,15 @@ const Home = async () => {
           playsInline
           poster="/hero-poster.png"
         >
+          {/* <source src="/hero_mobile.webm" type="video/webm" media="(max-width: 768px)" />
+          <source src="/hero_video.mp4" type="video/mp4" /> */}
+
+          <source src="/hero_mobile.webm" type="video/webm" media="(max-width: 768px)" />
+          {/* Mobile MP4 fallback */}
           <source src="/hero_mobile.mp4" type="video/mp4" media="(max-width: 768px)" />
-          <source src="/hero_video.mp4" type="video/mp4" />
+
+          {/* Desktop */}
+          <source src="/hero_desktop.mp4" type="video/mp4" />
         </video>
         
         {/* Dark overlay for readability */}
