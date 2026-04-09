@@ -106,6 +106,7 @@ const Home = async () => {
           loop
           muted
           playsInline
+          poster="/hero-poster.png"
         >
           {/* <source src="/hero_video_low.mp4" type="video/mp4" media="(max-width: 1024px)" /> */}
           <source src="/hero_video.mp4" type="video/mp4" />
