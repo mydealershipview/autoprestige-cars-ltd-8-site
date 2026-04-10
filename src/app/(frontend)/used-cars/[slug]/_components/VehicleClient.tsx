@@ -6,7 +6,7 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
-  Download,
+  MessageCircle,
 } from 'lucide-react'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 
@@ -240,9 +240,6 @@ export default function VehicleClient({
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.3fr_0.7fr]">
           <section className="border border-white/12 bg-black p-6 md:p-8">
-            <p className="mb-3 text-xs uppercase tracking-[0.18em] text-zinc-400">
-              More About {make} {model}
-            </p>
             <h1 className="mb-2 text-3xl font-semibold uppercase tracking-[0.06em] text-white md:text-4xl">
               {make} {model}
             </h1>
@@ -261,15 +258,14 @@ export default function VehicleClient({
               <div style={{ width: '100%' }}>
                 <div
                   id="codeweavers-plugin"
-                  className="rounded-xl overflow-hidden bg-white/5 min-h-[400px]"
+                  className="overflow-hidden bg-white/5 min-h-100"
                 ></div>
               </div>
             </div>
           </section>
 
           <aside className="border border-white/12 bg-black p-5">
-            <p className="border-b border-blue-500 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
-            <h2 className="mt-3 text-4xl font-extrabold uppercase tracking-[0.05em]">{make} {model}</h2>
+            <p className="border-b border-white/10 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
 
             <div className="mt-4 grid grid-cols-2 gap-3 border-b border-white/10 pb-4">
               <div>
@@ -277,10 +273,7 @@ export default function VehicleClient({
                 <p className="text-4xl font-bold text-white">{price ? `£${new Intl.NumberFormat('en-GB').format(price)}` : 'POA'}</p>
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Monthly</p>
-                  <span className="text-[9px] uppercase tracking-wider text-teal-400 font-bold">Soft Search</span>
-                </div>
+                <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Est. Monthly</p>
                 <p className="text-3xl font-bold text-blue-400">{price ? `${calculateMonthlyPayment(price)}/mo` : 'N/A'}</p>
                 {wasPrice && <p className="mt-1 text-xs text-zinc-400 line-through">Was £{new Intl.NumberFormat('en-GB').format(wasPrice)}</p>}
                 {price && (
@@ -304,33 +297,33 @@ export default function VehicleClient({
               </div>
             </div>
 
-            <div className="mt-4 space-y-2">
-              {specRows.map((item) => (
-                <div key={item.label} className="grid grid-cols-2 border border-white/10 text-sm">
-                  <span className="px-3 py-2 text-zinc-400">{item.label}</span>
-                  <span className="px-3 py-2 text-right font-semibold text-white">{item.value}</span>
+            <div className="mt-4">
+              {specRows.map((item, i) => (
+                <div key={item.label} className={`grid grid-cols-2 text-sm py-2 ${i < specRows.length - 1 ? 'border-b border-white/8' : ''}`}>
+                  <span className="text-zinc-500">{item.label}</span>
+                  <span className="text-right font-semibold text-white">{item.value}</span>
                 </div>
               ))}
             </div>
 
             <div className="mt-4 grid gap-2">
-              <button onClick={() => setShowEmail(true)} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-200">
+              <button onClick={() => setShowEmail(true)} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-100">
                 Enquire Now
               </button>
-              {/* <button onClick={() => setShowFinance(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600"> */}
+              <button onClick={handleWhatsapp} className="flex w-full items-center justify-center gap-2 bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </button>
               <button onClick={() => {
                 const section = document.getElementById("cw_standalone_calculate_button");
                 section?.scrollIntoView({ behavior: "smooth" });
               }} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
                 Apply For Finance
               </button>
-              <button onClick={handleWhatsapp} className="w-full bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
-                Chat
+              <button onClick={() => setShowReserve(true)} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8">
+                Reserve Vehicle
               </button>
-              <button onClick={() => setShowReserve(true)} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
-                Reserve
-              </button>
-              <button onClick={() => setShowPartExchange(true)} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/10">
+              <button onClick={() => setShowPartExchange(true)} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white">
                 Part Exchange
               </button>
             </div>
