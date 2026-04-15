@@ -102,12 +102,24 @@ const Home = async () => {
         {/* Video background */}
         <video
           className="absolute inset-0 z-0 h-full w-full object-cover"
-          autoPlay
-          loop
+           autoPlay
           muted
+          loop
           playsInline
+          preload="auto"
+          poster="/hero-poster.png"
         >
-          <source src="/hero_video.mp4" type="video/mp4" />
+          {/* <source src="/hero_mobile.webm" type="video/webm" media="(max-width: 768px)" />
+          <source src="/hero_video.mp4" type="video/mp4" /> */}
+
+          {/* <source src="/hero_mobile.webm" type="video/webm" media="(max-width: 768px)" /> */}
+          {/* Mobile MP4 fallback */}
+          {/* <source src="/hero_mobile.mp4" type="video/mp4" media="(max-width: 768px)" /> */}
+          <source src="https://pub-d7a6ee47169b484abb7da416732624a8.r2.dev/autoprestige/output_mobile.mp4" type="video/mp4" media="(max-width: 768px)" />
+
+          {/* Desktop */}
+          {/* <source src="/hero_desktop.mp4" type="video/mp4" /> */}
+          <source src="https://pub-d7a6ee47169b484abb7da416732624a8.r2.dev/autoprestige/hero_video.mp4" type="video/mp4" />
         </video>
         
         {/* Dark overlay for readability */}

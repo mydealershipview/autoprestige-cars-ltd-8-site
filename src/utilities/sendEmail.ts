@@ -97,23 +97,30 @@ function generateEmailTemplate(data: WebhookData): string {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${getEmailSubject(data.enquiryType)}</title>
       <style>
+        * {
+        color: white;
+        }
+        div {
+          color: white;
+        }
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: white !important;
           max-width: 600px;
           margin: 0 auto;
           padding: 20px;
-          background-color: #f8f9fa;
+          background-color: #000000;
         }
         .email-container {
-          background-color: white;
+          background-color: #111111;
           border-radius: 8px;
           padding: 30px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(255,255,255,0.1);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
         }
         .header {
-          background-color: #44903C;
+          background-color: #3b82f6;
           color: white;
           padding: 20px;
           border-radius: 8px 8px 0 0;
@@ -126,13 +133,13 @@ function generateEmailTemplate(data: WebhookData): string {
         .section {
           margin-bottom: 25px;
           padding: 15px;
-          background-color: #f8f9fa;
+          background-color: #1f232a;
           border-radius: 6px;
-          border-left: 4px solid #44903C;
+          border-left: 4px solid #3b82f6;
         }
         .section h3 {
           margin-top: 0;
-          color: #44903C;
+          color: #60a5fa;
           font-size: 18px;
         }
         .info-grid {
@@ -142,13 +149,13 @@ function generateEmailTemplate(data: WebhookData): string {
           margin-top: 10px;
         }
         .info-item {
-          background-color: white;
+          background-color: #111111;
           padding: 10px;
           border-radius: 4px;
-          border: 1px solid #e9ecef;
+          border: 1px solid #4a4f58;
         }
         .info-item strong {
-          color: #44903C;
+          color: #60a5fa;
           display: block;
           font-size: 12px;
           text-transform: uppercase;
@@ -159,7 +166,7 @@ function generateEmailTemplate(data: WebhookData): string {
         }
         .priority-badge {
           display: inline-block;
-          background-color: #dc3545;
+          background-color: #ef4444;
           color: white;
           padding: 4px 8px;
           border-radius: 4px;
@@ -168,8 +175,8 @@ function generateEmailTemplate(data: WebhookData): string {
           text-transform: uppercase;
         }
         .notes {
-          background-color: #fff3cd;
-          border: 1px solid #ffeaa7;
+          background-color: #1f2937;
+          border: 1px solid #374151;
           padding: 15px;
           border-radius: 6px;
           margin-top: 15px;
@@ -177,8 +184,8 @@ function generateEmailTemplate(data: WebhookData): string {
         .footer {
           margin-top: 30px;
           padding-top: 20px;
-          border-top: 1px solid #e9ecef;
-          color: #6c757d;
+          border-top: 1px solid rgba(255,255,255,0.1);
+          color: #9ca3af;
           font-size: 14px;
         }
       </style>
@@ -559,8 +566,8 @@ function generateNotesSection(data: WebhookData): string {
   
   return `
     <div class="notes">
-      <h3 style="margin-top: 0; color: #856404;">📝 Additional Notes</h3>
-      <p style="margin-bottom: 0; white-space: pre-wrap;">${data.notes}</p>
+      <h3 style="margin-top: 0; color: #fbbf24;">📝 Additional Notes</h3>
+      <p style="margin-bottom: 0; white-space: pre-wrap; color: white;">${data.notes}</p>
     </div>
   `
 }
@@ -602,23 +609,30 @@ function generateVehicleReservationEmailTemplate(data: VehicleReservationData): 
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>New Vehicle Reservation Request</title>
       <style>
+        * {
+          color: white;
+        }
+        div {
+          color: white;
+        }
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: white;
           max-width: 600px;
           margin: 0 auto;
           padding: 20px;
-          background-color: #f8f9fa;
+          background-color: #000000;
         }
         .email-container {
-          background-color: white;
+          background-color: #111111;
           border-radius: 8px;
           padding: 30px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(255,255,255,0.1);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
         }
         .header {
-          background-color: #44903C;
+          background-color: #3b82f6;
           color: white;
           padding: 20px;
           border-radius: 8px 8px 0 0;
@@ -629,7 +643,7 @@ function generateVehicleReservationEmailTemplate(data: VehicleReservationData): 
           font-size: 24px;
         }
         .priority-alert {
-          background-color: #dc3545;
+          background-color: #ef4444;
           color: white;
           padding: 15px;
           border-radius: 6px;
@@ -640,13 +654,13 @@ function generateVehicleReservationEmailTemplate(data: VehicleReservationData): 
         .section {
           margin-bottom: 25px;
           padding: 15px;
-          background-color: #f8f9fa;
+          background-color: #1f232a;
           border-radius: 6px;
-          border-left: 4px solid #44903C;
+          border-left: 4px solid #3b82f6;
         }
         .section h3 {
           margin-top: 0;
-          color: #44903C;
+          color: #60a5fa;
           font-size: 18px;
         }
         .info-grid {
@@ -656,13 +670,13 @@ function generateVehicleReservationEmailTemplate(data: VehicleReservationData): 
           margin-top: 10px;
         }
         .info-item {
-          background-color: white;
+          background-color: #111111;
           padding: 10px;
           border-radius: 4px;
-          border: 1px solid #e9ecef;
+          border: 1px solid #4a4f58;
         }
         .info-item strong {
-          color: #44903C;
+          color: #60a5fa;
           display: block;
           font-size: 12px;
           text-transform: uppercase;
@@ -672,22 +686,24 @@ function generateVehicleReservationEmailTemplate(data: VehicleReservationData): 
           grid-column: 1 / -1;
         }
         .amount-highlight {
-          background-color: #28a745;
+          background-color: #1f232a;
           color: white;
           padding: 20px;
           border-radius: 8px;
           text-align: center;
           margin: 20px 0;
+          border: 1px solid #3b82f6;
         }
         .amount-highlight h2 {
           margin: 0;
           font-size: 28px;
+          color: #60a5fa;
         }
         .footer {
           margin-top: 30px;
           padding-top: 20px;
-          border-top: 1px solid #e9ecef;
-          color: #6c757d;
+          border-top: 1px solid rgba(255,255,255,0.1);
+          color: #9ca3af;
           font-size: 14px;
         }
       </style>
@@ -781,7 +797,7 @@ function generateVehicleReservationEmailTemplate(data: VehicleReservationData): 
           })}</p>
           <p><strong>Customer:</strong> ${customerName}</p>
           <p><strong>Vehicle:</strong> ${vehicleTitle} (${data.vehicleDetails.registration})</p>
-          <p style="color: #dc3545; font-weight: bold;">⚡ Urgent: Customer is ready to pay - please respond immediately!</p>
+          <p style="color: #ef4444; font-weight: bold;">⚡ Urgent: Customer is ready to pay - please respond immediately!</p>
         </div>
       </div>
     </body>

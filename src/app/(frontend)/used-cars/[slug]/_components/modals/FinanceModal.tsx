@@ -41,7 +41,7 @@ export default function FinanceModal({
 
   const [deposit, setDeposit] = useState(vehiclePrice ? Math.round(vehiclePrice * 0.1) : 0)
   const [term, setTerm] = useState(60)
-  const [apr, setApr] = useState(9.9)
+  const [apr, setApr] = useState(8.9)
 
   const [gender, setGender] = useState('Prefer not to say')
   const [country, setCountry] = useState('United Kingdom')
