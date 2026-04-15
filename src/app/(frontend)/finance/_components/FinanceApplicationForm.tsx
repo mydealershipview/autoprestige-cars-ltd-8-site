@@ -32,7 +32,7 @@ const FinanceApplicationForm = () => {
   useEffect(() => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=F3LL6p5XArX4mc1udA'
+    script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=U86tH2vLnYI0LyA2D5'
     script.async = true
     document.head.appendChild(script)
 
