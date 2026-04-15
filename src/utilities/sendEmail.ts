@@ -80,9 +80,15 @@ function getEmailSubject(enquiryType: WebhookData['enquiryType']): string {
   }
 }
 
+function formatEnquiryType(value: unknown): string {
+  if (typeof value !== 'string' || !value.trim()) {
+    return 'GENERAL ENQUIRY'
+  }
+
+  return value.replace('-', ' ').toUpperCase()
+}
+
 function generateEmailTemplate(data: WebhookData): string {
-  const customerName = `${data.personal.firstName} ${data.personal.lastName}`.trim()
-  
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -200,7 +206,7 @@ function generateEmailTemplate(data: WebhookData): string {
             dateStyle: 'full',
             timeStyle: 'short'
           })}</p>
-          <p><strong>Enquiry Type:</strong> ${data.enquiryType.replace('-', ' ').toUpperCase()}</p>
+          <p><strong>Enquiry Type:</strong> ${formatEnquiryType(data.enquiryType)}</p>
           <p>Please respond to this enquiry as soon as possible to maintain good customer service.</p>
         </div>
       </div>
@@ -570,7 +576,7 @@ function generateFindYourNextCarSection(data: WebhookData): string {
       <div class="info-grid">
         <div class="info-item">
           <strong>Enquiry Type</strong>
-          ${findCar.enquiryType.replace('-', ' ').toUpperCase()}
+          ${formatEnquiryType(findCar.enquiryType)}
         </div>
         ${findCar.vehiclePreferences ? `
         <div class="info-item full-width">

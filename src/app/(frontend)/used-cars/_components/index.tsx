@@ -8,6 +8,7 @@ import { Make, Model } from '@/utilities/types'
 import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { ChevronDown, Search, CreditCard, Camera, Video, SlidersHorizontal, X } from 'lucide-react'
+import ReserveModal from '../[slug]/_components/modals/ReserveModal'
 
 interface UsedCarsComponentProps {
   listingsData?: unknown
@@ -32,11 +33,20 @@ type ExtendedModel = Model & {
   makeName: string
 }
 
+interface ReserveVehicleData {
+  vehicleMake: string
+  vehicleModel: string
+  vehicleReg: string
+  vehiclePrice: number | null
+  stockId?: string
+}
+
 export default function UsedCarsComponent({ listingsData: _listingsData }: UsedCarsComponentProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const [listings, setListings] = useState<AutoTraderVehicle[]>([])
+  const [reserveVehicle, setReserveVehicle] = useState<ReserveVehicleData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalResults, setTotalResults] = useState(0)
@@ -1008,13 +1018,22 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               </svg>
                               Chat
                             </a>
-                            <Link
-                              href={`/reservation?stockId=${stockId}`}
-                              onClick={(e) => e.stopPropagation()}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setReserveVehicle({
+                                  vehicleMake,
+                                  vehicleModel,
+                                  vehicleReg: vehicle.vehicle?.registration || '',
+                                  vehiclePrice,
+                                  stockId: stockId || undefined,
+                                })
+                              }}
                               className="flex items-center justify-center py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors"
                             >
                               Reserve
-                            </Link>
+                            </button>
                             <Link
                               href={`/finance?stockId=${stockId}`}
                               onClick={(e) => e.stopPropagation()}
@@ -1087,6 +1106,16 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           </div>
         </div>
       </div>
+      {reserveVehicle && (
+        <ReserveModal
+          vehicleMake={reserveVehicle.vehicleMake}
+          vehicleModel={reserveVehicle.vehicleModel}
+          vehicleReg={reserveVehicle.vehicleReg}
+          vehiclePrice={reserveVehicle.vehiclePrice}
+          stockId={reserveVehicle.stockId}
+          onClose={() => setReserveVehicle(null)}
+        />
+      )}
     </main>
   )
 }

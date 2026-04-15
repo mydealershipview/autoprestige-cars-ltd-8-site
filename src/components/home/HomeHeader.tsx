@@ -11,6 +11,7 @@ const navItems = [
   { label: "SERVICES", href: "/services" },
   { label: "REG PLATES", href: "/reg-plates" },
   { label: "VALUATION", href: "/valuation" },
+  { label: "FINANCE", href: "/finance" },
   { label: "PROFILE", href: "/profile" },
   { label: "WARRANTY", href: "/warranty" },
   { label: "REVIEWS", href: "/reviews" },
@@ -82,7 +83,8 @@ export default function HomeHeader({
   const requiredSidebarItems = [
     { label: 'REG PLATES', href: '/reg-plates', insertIndex: 3 },
     { label: 'VALUATION', href: '/valuation', insertIndex: 4 },
-    { label: 'PROFILE', href: '/profile', insertIndex: 5 },
+    { label: 'FINANCE', href: '/finance', insertIndex: 5 },
+    { label: 'PROFILE', href: '/profile', insertIndex: 6 },
   ]
 
   const sidebarNavItems = requiredSidebarItems.reduce((items, requiredItem) => {
