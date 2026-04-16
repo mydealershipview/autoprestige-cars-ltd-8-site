@@ -889,7 +889,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     const whatsappMsg = encodeURIComponent(
                       `Hi, I'm interested in the ${vehicleYear || ''} ${vehicleMake} ${vehicleModel}. Stock ID: ${stockId}`,
                     )
-                    const whatsappHref = `https://wa.me/441484480777?text=${whatsappMsg}`
+                    const whatsappHref = `https://wa.me/447739967131?text=${whatsappMsg}`
 
                     return (
                       <div
@@ -1061,7 +1061,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               Reserve
                             </button>
                             <Link
-                              href={`/finance?stockId=${stockId}`}
+                              // href={`/finance`}
+                              href={financeUrl}
                               onClick={(e) => e.stopPropagation()}
                               className="flex items-center justify-center gap-1 py-2 border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors"
                             >
