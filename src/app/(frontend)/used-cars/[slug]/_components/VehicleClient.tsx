@@ -45,7 +45,9 @@ export default function VehicleClient({
   const make = vehicle.vehicle.make || vehicle.vehicle.standard?.make || ''
   const model = vehicle.vehicle.model || vehicle.vehicle.standard?.model || ''
   const derivative = vehicle.vehicle.derivative || vehicle.vehicle.standard?.derivative || ''
-  
+
+  const isSold = vehicle.metadata?.lifecycleState === 'SOLD'
+
   const price = vehicle.adverts?.forecourtPrice?.amountGBP || vehicle.adverts?.retailAdverts?.suppliedPrice?.amountGBP
   const wasPrice = vehicle.adverts?.soldPrice?.amountGBP || null
 
@@ -197,10 +199,18 @@ export default function VehicleClient({
 
           <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px]">
             {hasImages ? (
-              <img src={activeImage} alt={`${make} ${model}`} className="h-full w-full object-cover" />
+              <img src={activeImage} alt={`${make} ${model}`} className={`h-full w-full object-cover ${isSold ? 'brightness-50' : ''}`} />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-500">
                 No Image Available
+              </div>
+            )}
+
+            {isSold && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="border-4 border-red-500 px-8 py-4 -rotate-12">
+                  <span className="text-5xl font-black uppercase tracking-[0.2em] text-red-500 drop-shadow-lg">SOLD</span>
+                </div>
               </div>
             )}
 
@@ -267,6 +277,13 @@ export default function VehicleClient({
           <aside className="border border-white/12 bg-black p-5">
             <p className="border-b border-white/10 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
 
+            {isSold && (
+              <div className="mt-3 flex items-center gap-2 bg-red-600/15 border border-red-500/40 px-3 py-2">
+                <span className="text-xs font-black uppercase tracking-[0.18em] text-red-400">SOLD</span>
+                <span className="text-xs text-red-300/80">This vehicle has been sold</span>
+              </div>
+            )}
+
             <div className="mt-4 grid grid-cols-2 gap-3 border-b border-white/10 pb-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Our Price</p>
@@ -307,23 +324,28 @@ export default function VehicleClient({
             </div>
 
             <div className="mt-4 grid gap-2">
-              <button onClick={() => setShowEmail(true)} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-100">
+              {isSold && (
+                <p className="mb-1 text-xs leading-relaxed text-zinc-400 border border-white/10 bg-white/4 px-3 py-2">
+                  This vehicle has already been sold and is no longer available. Please browse our current stock or contact us for similar options.
+                </p>
+              )}
+              <button onClick={() => setShowEmail(true)} disabled={isSold} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-100 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-white">
                 Enquire Now
               </button>
-              <button onClick={handleWhatsapp} className="flex w-full items-center justify-center gap-2 bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700">
+              <button onClick={handleWhatsapp} disabled={isSold} className="flex w-full items-center justify-center gap-2 bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-emerald-600">
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp
               </button>
               <button onClick={() => {
                 const section = document.getElementById("cw_standalone_calculate_button");
                 section?.scrollIntoView({ behavior: "smooth" });
-              }} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600">
+              }} disabled={isSold} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
                 Apply For Finance
               </button>
-              <button onClick={() => setShowReserve(true)} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8">
+              <button onClick={() => setShowReserve(true)} disabled={isSold} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
                 Reserve Vehicle
               </button>
-              <button onClick={() => setShowPartExchange(true)} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white">
+              <button onClick={() => setShowPartExchange(true)} disabled={isSold} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:border-white/15 disabled:hover:text-zinc-400">
                 Part Exchange
               </button>
             </div>

@@ -8,6 +8,7 @@ import type { ContactData } from "@/types/contact"
 const navItems = [
   { label: "HOME", href: "/" },
   { label: "SHOWROOM", href: "/used-cars" },
+  { label: "SOLD CARS", href: "/used-cars/sold" },
   { label: "SERVICES", href: "/services" },
   { label: "REG PLATES", href: "/reg-plates" },
   { label: "VALUATION", href: "/valuation" },
