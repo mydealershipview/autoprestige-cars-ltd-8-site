@@ -2,6 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { ChevronRight } from 'lucide-react'
 import { AnimatedCard } from '@/components/AnimatedCard'
+import { SoldCarsSlider } from '@/components/home/SoldCarsSlider'
 import Link from 'next/link'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 
@@ -277,6 +278,9 @@ const Home = async () => {
           </Link>
         </AnimatedCard>
       </section>
+
+      {/* Recently Sold Slider */}
+      <SoldCarsSlider />
     </main>
   )
 }
