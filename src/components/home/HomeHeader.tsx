@@ -184,13 +184,13 @@ export default function HomeHeader({
                     {getSocialIcon(link.platform)}
                   </a>
                 ))}
-                <a
+                <Link
                     key="contact-form"
                     href="/contact#contact-form"
                     className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
                   >
                     {getSocialIcon('form')}
-                  </a>
+                  </Link>
                 <div className="h-10 w-[1px] bg-white/20"></div>
               </div>
             </div>

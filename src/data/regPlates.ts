@@ -59,6 +59,7 @@ export const REG_PLATES_TEASER =
 export const REG_PLATES_LOCATION_LINES = [
   'Rosse Street',
   'Bradford',
+  
   'West Yorkshire',
   'BD8 9AS',
 ] as const
