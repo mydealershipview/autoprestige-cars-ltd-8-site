@@ -154,9 +154,7 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
         <div className="w-full h-px bg-white/10 mb-12" />
 
         {/* Primary Disclaimer */}
-        <div className="w-full border border-blue-500/30 bg-blue-500/5 px-6 py-8 mb-8 max-w-6xl mx-auto">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="w-0.5 self-stretch bg-blue-500 shrink-0" />
+        <div className="text-[10px] md:text-xs text-center text-gray-500 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
             <div className="space-y-4 text-xs md:text-sm text-gray-300 leading-relaxed tracking-wide">
               <p>
                 <span className="text-white font-semibold uppercase tracking-widest text-[11px] block mb-2">Important Disclosure</span>
@@ -169,7 +167,6 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
                 Autoprestige is the trading name of <span className="text-white/80">Cars Unlimited Ltd</span>
               </p>
             </div>
-          </div>
         </div>
 
         {/* FCA Regulatory Note */}

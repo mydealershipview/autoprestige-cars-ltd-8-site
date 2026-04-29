@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation'
 import {
   getRegPlateBySlug,
   REG_PLATES,
-  REG_PLATES_MOBILE,
   REG_PLATES_PHONE,
   REG_PLATES_TEASER,
 } from '@/data/regPlates'
@@ -56,8 +55,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
       <div className="mx-auto max-w-[1480px] px-4 pt-28 pb-16">
         <div className="mb-8 border border-blue-800/40 bg-zinc-950 px-4 py-3 text-sm text-white/85 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <p>
-            Telephone: <span className="font-semibold text-white">{REG_PLATES_PHONE}</span> Mobile:{' '}
-            <span className="font-semibold text-white">{REG_PLATES_MOBILE}</span>
+            Telephone: <span className="font-semibold text-white">{REG_PLATES_PHONE}</span>
           </p>
           <Link
             href="/contact"

@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { Phone, Mail, MapPin, Globe, Youtube, Instagram, Facebook } from 'lucide-react'
+import { Phone, Mail, MapPin, Globe, Youtube, Instagram, Facebook, Send } from 'lucide-react'
 import ContactForm from './_components/ContactForm'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
@@ -61,6 +61,10 @@ const platformIcon = (platform: string) => {
             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
           </svg>
         )
+      case 'form':
+        return (
+          <Send className="h-5 w-5 text-white" />
+        )
     default:
       return <Globe size={18} />
   }
@@ -76,13 +80,18 @@ export default async function ContactPage() {
     { day: 'Sun', hours: dealership.openingHours.sunday || 'By Appointment Only' },
   ]
 
-  const phoneNumbers = contactData?.phoneNumbers ? [
-    ...contactData.phoneNumbers,
-    { label: 'Mobile', number: '07739967131' }
-  ] : []
+  // const phoneNumbers = contactData?.phoneNumbers ? [
+  //   ...contactData.phoneNumbers,
+  //   { label: 'Mobile', number: '07739967131' }
+  // ] : []
+  const phoneNumbers = contactData?.phoneNumbers ?? []
   const emailAddresses = contactData?.emailAddresses ?? []
   const address = contactData?.businessAddress
   const socialLinks = (contactData?.socialLinks ?? []).filter((l) => l.isActive !== false)
+  const whatsappNumber = contactData?.whatsappNumber
+  const whatsappUrl = whatsappNumber
+    ? `https://wa.me/${whatsappNumber.replace(/\s+/g, '')}`
+    : `https://wa.me/${phoneNumbers[0]?.number.replace(/\s+/g, '')}`
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -250,6 +259,22 @@ export default async function ContactPage() {
                       {platformIcon(s.platform)}
                     </a>
                   ))}
+                  <a
+                    key={whatsappNumber}
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 border border-white/20 flex items-center justify-center text-white/60 hover:border-blue-400 hover:text-blue-400 !transition-colors"
+                  >
+                    {platformIcon('whatsapp')}
+                  </a>
+                  <a
+                    key="contact-form"
+                    href="#contact-form"
+                    className="w-9 h-9 border border-white/20 flex items-center justify-center text-white/60 hover:border-blue-400 hover:text-blue-400 !transition-colors"
+                  >
+                    {platformIcon('form')}
+                  </a>
                 </div>
               </>
             )}
@@ -258,7 +283,7 @@ export default async function ContactPage() {
       </section>
 
       {/* ─── CONTACT FORM ─── */}
-      <section className="py-16 px-4 bg-black">
+      <section id='contact-form' className="py-16 px-4 bg-black">
         <div className="max-w-4xl mx-auto">
           <div className="border border-white/10 p-8 md:p-12">
             <h2 className="text-2xl font-black tracking-widest uppercase mb-1">Contact Us</h2>

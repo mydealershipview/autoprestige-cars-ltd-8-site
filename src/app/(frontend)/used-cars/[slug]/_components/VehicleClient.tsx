@@ -239,7 +239,7 @@ export default function VehicleClient({
                 key={idx}
                 onClick={() => setActiveImageIndex(idx % 2 === 0 ? idx : idx - 1)}
                 className={`relative h-20 w-30 shrink-0 overflow-hidden border ${
-                  idx === activeImageIndex ? 'border-blue-400' : 'border-white/20'
+                  idx === activeImageIndex || idx === activeImageIndex + 1 ? 'border-blue-400 border-2' : 'border-white/20'
                 }`}
               >
                 <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />

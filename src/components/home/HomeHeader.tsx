@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Facebook, Instagram, Menu, MessageCircle, Phone, X, Youtube } from "lucide-react"
+import { Facebook, Instagram, Menu, MessageCircle, Phone, Send, X, Youtube } from "lucide-react"
 import Link from "next/link"
 import type { ContactData } from "@/types/contact"
 
 const navItems = [
   { label: "HOME", href: "/" },
   { label: "SHOWROOM", href: "/used-cars" },
-  { label: "SOLD CARS", href: "/used-cars/sold" },
+  // { label: "SOLD CARS", href: "/used-cars/sold" },
   { label: "SERVICES", href: "/services" },
   { label: "REG PLATES", href: "/reg-plates" },
   { label: "VALUATION", href: "/valuation" },
@@ -44,6 +44,10 @@ const getSocialIcon = (platform: string) => {
       case 'instagram':
         return (
           <Instagram className="h-5 w-5 text-white" />
+        )
+      case 'form':
+        return (
+          <Send className="h-5 w-5 text-white" />
         )
       case 'twitter':
       case 'x':
@@ -180,6 +184,13 @@ export default function HomeHeader({
                     {getSocialIcon(link.platform)}
                   </a>
                 ))}
+                <a
+                    key="contact-form"
+                    href="/contact#contact-form"
+                    className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
+                  >
+                    {getSocialIcon('form')}
+                  </a>
                 <div className="h-10 w-[1px] bg-white/20"></div>
               </div>
             </div>

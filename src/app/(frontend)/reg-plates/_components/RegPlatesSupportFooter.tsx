@@ -6,6 +6,7 @@ import {
 } from '@/data/regPlates'
 
 export default function RegPlatesSupportFooter() {
+  return null
   return (
     <section className="mt-12 border-y border-white/10 bg-black">
       <div className="grid grid-cols-1 md:grid-cols-3 border-b border-white/10">

@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   REG_PLATES,
-  REG_PLATES_MOBILE,
   REG_PLATES_PHONE,
   REG_PLATES_TEASER,
 } from '@/data/regPlates'
@@ -28,8 +27,7 @@ export default function RegPlatesPage() {
       <div className="mx-auto max-w-[1480px] px-4 pt-28 pb-16">
         <div className="mb-8 border border-blue-800/40 bg-zinc-950 px-4 py-3 text-sm text-white/85">
           <p>
-            Telephone: <span className="font-semibold text-white">{REG_PLATES_PHONE}</span> Mobile:{' '}
-            <span className="font-semibold text-white">{REG_PLATES_MOBILE}</span>
+            Telephone: <span className="font-semibold text-white">{REG_PLATES_PHONE}</span> 
           </p>
           <p className="mt-1 text-white/60">Autoprestige Cars - Used cars in Bradford</p>
         </div>

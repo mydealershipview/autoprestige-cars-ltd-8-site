@@ -129,37 +129,6 @@ export default function ProfilePage() {
               </ul>
             </article>
           </section>
-
-          <section className="border-t border-white/10 pt-10 space-y-3 text-sm leading-relaxed">
-            <p>Autoprestige Cars - cars</p>
-            <p>
-              <Link href="/privacy" className="text-blue-400 hover:text-blue-300 underline">
-                Privacy Policy
-              </Link>{' '}
-              |{' '}
-              <Link href="/cookies" className="text-blue-400 hover:text-blue-300 underline">
-                Cookie Policy
-              </Link>
-            </p>
-            <p>Copyright (c) 2026 Autoprestige Cars. All Rights Reserved.</p>
-            <p>
-              VAT Number - GB 219955471 | Company Number - 9681013 | FCA Number - 715892
-            </p>
-            <p>
-              Disclosure: Whilst every care has been taken to ensure all of the information on this
-              site is accurate, please always check with your dealer as errors can occur.
-            </p>
-            <p>
-              We act as a credit broker not a lender. We work with a number of carefully selected
-              credit providers who typically will be able to offer you finance for your purchase.
-              (Written quotations available on request). Whichever lender we introduce you to, we
-              will typically receive a fee from them (either a fixed fee or a percentage of the
-              amount you borrow). The lenders we work with could pay commissions at different
-              rates. All finance is subject to status and income. Terms and conditions apply.
-              Applicants must be 18 years or over.
-            </p>
-            <p>Autoprestige is the trading name of Cars Unlimited Ltd</p>
-          </section>
         </div>
       </div>
     </div>
