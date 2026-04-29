@@ -202,7 +202,7 @@ const Home = async () => {
       <section className="relative h-screen w-full overflow-clip flex items-end">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/car_3.jpg" 
+            src="/car_3.png" 
             alt="RAC Warranty" 
             className="w-full h-full object-cover"
           />

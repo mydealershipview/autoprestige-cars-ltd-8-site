@@ -480,7 +480,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
       <div className="text-center py-9 border-b border-white/10">
         <h1 className="text-2xl sm:text-4xl font-extrabold tracking-[0.2em] uppercase">Our Showroom</h1>
         <p className="text-sm tracking-[0.15em] text-gray-400 mt-2 uppercase font-medium">
-          {loading ? '...' : `${totalResults} Vehicles for Sale`}
+          {loading ? '...' : ``}
         </p>
       </div>
 
@@ -500,7 +500,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <div>
               <p className="text-sm font-extrabold tracking-widest uppercase">Filters</p>
               <p className="text-[11px] text-gray-500 mt-0.5 font-semibold uppercase tracking-wider">
-                {loading ? '...' : `${totalResults} Available`}
+                {loading ? '...' : ``}
               </p>
             </div>
             <div className="flex items-center gap-2">

@@ -48,7 +48,7 @@ export default async function ValuationPage() {
       >
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/car_3.jpg')" }}
+          style={{ backgroundImage: "url('/car_3.png')" }}
         />
         <div className="absolute inset-0 bg-black/65" />
 
