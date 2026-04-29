@@ -49,11 +49,12 @@ const REG_PLATE_NAMES = [
   'WDZ 72',
 ] as const
 
-export const REG_PLATES_TEASER =
-  "Should you require any further assistance please click the button, fill out the form and we'll be in touch as soon as possible. Alternatively ..."
 
 export const REG_PLATES_PHONE = '01274 488500'
 export const REG_PLATES_MOBILE = '07739 967131'
+
+export const REG_PLATES_TEASER =
+  `Should you require any further assistance please click the button, fill out the form and we'll be in touch as soon as possible. Alternatively Call us on ${REG_PLATES_PHONE}`
 
 export const REG_PLATES_LOCATION_LINES = [
   'Rosse Street',
