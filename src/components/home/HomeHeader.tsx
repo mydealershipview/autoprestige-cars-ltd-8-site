@@ -14,7 +14,7 @@ const navItems = [
   { label: "VALUATION", href: "/valuation" },
   { label: "FINANCE", href: "/finance" },
   { label: "PROFILE", href: "/profile" },
-  { label: "WARRANTY", href: "/warranty" },
+  // { label: "WARRANTY", href: "/warranty" },
   { label: "REVIEWS", href: "/reviews" },
   { label: "CONTACT US", href: "/contact" },
 ]

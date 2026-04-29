@@ -203,7 +203,7 @@ const Home = async () => {
         <div className="absolute inset-0 z-0">
           <img 
             src="/car_3.png" 
-            alt="RAC Warranty" 
+            alt="Warranty" 
             className="w-full h-full object-cover"
           />
         </div>
@@ -213,15 +213,15 @@ const Home = async () => {
           <div className="flex items-center mb-3">
             <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
-              RAC WARRANTY
+              WARRANTY
             </h2>
           </div>
           <p className="text-base text-gray-300 font-medium mb-6">
-            Protect your car with the UK&apos;s leading warranty provider
+            Protect your new car with warranty from leading third party providers or our in house warranty
           </p>
-          <Link href="/warranty" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+          {/* <Link href="/warranty" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
             VIEW PACKAGES <ChevronRight className="h-4 w-4 text-blue-400" />
-          </Link>
+          </Link> */}
         </AnimatedCard>
       </section>
 

@@ -153,13 +153,29 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
 
         <div className="w-full h-px bg-white/10 mb-12" />
 
-        {/* FCA Disclaimer */}
-        <div className="text-[10px] md:text-xs text-center text-gray-500 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
-          <p className="mb-4">
-            This dealership is authorised and regulated by the Financial Conduct Authority for Consumer Credit. We are a credit broker, not a lender, and can introduce you to a limited number of lenders.
-          </p>
+        {/* Primary Disclaimer */}
+        <div className="w-full border border-blue-500/30 bg-blue-500/5 px-6 py-8 mb-8 max-w-6xl mx-auto">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-0.5 self-stretch bg-blue-500 shrink-0" />
+            <div className="space-y-4 text-xs md:text-sm text-gray-300 leading-relaxed tracking-wide">
+              <p>
+                <span className="text-white font-semibold uppercase tracking-widest text-[11px] block mb-2">Important Disclosure</span>
+                Whilst every care has been taken to ensure all of the information on this site is accurate, please always check with your dealer as errors can occur.
+              </p>
+              <p>
+                We act as a credit broker not a lender. We work with a number of carefully selected credit providers who typically will be able to offer you finance for your purchase. (Written quotations available on request). Whichever lender we introduce you to, we will typically receive a fee from them (either a fixed fee or a percentage of the amount you borrow). The lenders we work with could pay commissions at different rates. All finance is subject to status and income. Terms and conditions apply. Applicants must be 18 years or over.
+              </p>
+              <p className="text-white/60 text-xs tracking-widest uppercase border-t border-white/10 pt-4">
+                Autoprestige is the trading name of <span className="text-white/80">Cars Unlimited Ltd</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* FCA Regulatory Note */}
+        <div className="text-[10px] text-center text-gray-600 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
           <p>
-            All finance applications are subject to status, terms and conditions apply, UK residents only, 18&apos;s or over. Guarantees may be required. The commission we receive does not influence the interest rate you will pay. Our aim is to secure finance for you at the lowest interest rate you are eligible for from our panel of lenders.
+            Authorised &amp; regulated by the Financial Conduct Authority for Consumer Credit. Finance subject to status — UK residents 18+ only. Guarantees may be required.
           </p>
         </div>
 

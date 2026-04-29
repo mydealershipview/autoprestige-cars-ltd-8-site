@@ -1,18 +1,19 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import NotFound from '../not-found'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
 
   return {
-    title: `RAC Warranty | ${dealership.name}`,
+    title: `Warranty | ${dealership.name}`,
     description:
-      'Every eligible vehicle we sell includes an RAC Warranty. 3-month maintenance and repair cover, 12 months free RAC Breakdown Cover, Car Data Check and no excess to pay.',
+      'Every eligible vehicle we sell includes a Warranty. 3-month maintenance and repair cover, 12 months free RAC Breakdown Cover, Car Data Check and no excess to pay.',
     openGraph: {
-      title: `RAC Warranty | ${dealership.name}`,
+      title: `Warranty | ${dealership.name}`,
       description:
-        'Comprehensive RAC warranty protection with every eligible vehicle sold. Peace of mind driving from day one.',
+        'Comprehensive warranty protection with every eligible vehicle sold. Peace of mind driving from day one.',
       type: 'website',
       locale: 'en_GB',
     },
@@ -41,7 +42,7 @@ const warrantyFeatures = [
   {
     title: 'No Excess to Pay',
     description:
-      'Unlike many warranty providers, our RAC Warranty comes with no excess payments. When something goes wrong you are fully covered with no hidden costs to worry about.',
+      'Unlike many warranty providers, our warranty comes with no excess payments. When something goes wrong you are fully covered with no hidden costs to worry about.',
     image: '/car_8.jpg',
   },
 ]
@@ -74,6 +75,7 @@ const FeatureCard = ({ feature }: { feature: (typeof warrantyFeatures)[number] }
 )
 
 export default function WarrantyPage() {
+  return <NotFound />
   return (
     <div className="bg-black text-white min-h-screen">
       {/* ─── HERO ─── */}
@@ -89,7 +91,7 @@ export default function WarrantyPage() {
 
         <div className="relative z-10 text-center px-4">
           <h1 className="text-5xl md:text-7xl font-black tracking-[0.2em] uppercase text-white mb-4">
-            RAC Warranty
+            Warranty
           </h1>
           <AccentBar />
         </div>
@@ -106,7 +108,7 @@ export default function WarrantyPage() {
           Although we take care and pride in ensuring all our vehicles are in their best condition
           when sold, sometimes things can go wrong. We&apos;d like to offer you added peace of mind
           when driving your new vehicle. As part of the RAC Dealer Network, every eligible vehicle
-          we sell includes an RAC Warranty.
+          we sell includes a warranty.
         </p>
       </section>
 
