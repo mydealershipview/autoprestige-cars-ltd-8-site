@@ -21,7 +21,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         alternateName: dealership.name,
         description:
           dealership.seoText ||
-          `${dealership.name} is a trusted used car dealership offering quality pre-owned vehicles and customer-first support.`,
+          `${dealership.name} is a trusted used car dealership offering prestige dealership vehicles and customer-first support.`,
         url: baseUrl,
         telephone: dealership.phone,
         email: dealership.email,

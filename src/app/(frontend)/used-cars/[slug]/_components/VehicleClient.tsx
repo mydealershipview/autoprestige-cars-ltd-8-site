@@ -1,12 +1,14 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
   MessageCircle,
+  X,
+  Maximize2,
 } from 'lucide-react'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 
@@ -34,6 +36,41 @@ export default function VehicleClient({
   emailAddress,
 }: VehicleClientProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const lightboxThumbsRef = useRef<HTMLDivElement>(null)
+
+  const openLightbox = (idx: number) => {
+    setLightboxIndex(idx)
+    document.body.style.overflow = 'hidden'
+  }
+
+  const closeLightbox = () => {
+    setLightboxIndex(null)
+    document.body.style.overflow = ''
+  }
+
+  const lightboxPrev = () =>
+    setLightboxIndex((prev) => (prev !== null ? (prev === 0 ? images.length - 1 : prev - 1) : null))
+
+  const lightboxNext = () =>
+    setLightboxIndex((prev) => (prev !== null ? (prev === images.length - 1 ? 0 : prev + 1) : null))
+
+  useEffect(() => {
+    if (lightboxIndex === null) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox()
+      if (e.key === 'ArrowLeft') lightboxPrev()
+      if (e.key === 'ArrowRight') lightboxNext()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [lightboxIndex])
+
+  useEffect(() => {
+    if (lightboxIndex === null || !lightboxThumbsRef.current) return
+    const thumb = lightboxThumbsRef.current.children[lightboxIndex] as HTMLElement
+    thumb?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }, [lightboxIndex])
 
   // Modal States
   const [showReserve, setShowReserve] = useState(false)
@@ -197,9 +234,23 @@ export default function VehicleClient({
               </>
             )}
 
-          <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px]">
+          <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px] group/left">
             {hasImages ? (
-              <img src={activeImage} alt={`${make} ${model}`} className={`h-full w-full object-cover ${isSold ? 'brightness-50' : ''}`} />
+              <>
+                <img
+                  src={activeImage}
+                  alt={`${make} ${model}`}
+                  className={`h-full w-full object-cover cursor-pointer ${isSold ? 'brightness-50' : ''}`}
+                  onClick={() => openLightbox(activeImageIndex)}
+                />
+                <button
+                  onClick={() => openLightbox(activeImageIndex)}
+                  className="absolute top-3 right-3 z-10 bg-black/60 p-1.5 text-white opacity-0 group-hover/left:opacity-100 transition-opacity hover:bg-black/90"
+                  aria-label="View fullscreen"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </button>
+              </>
             ) : (
               <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-500">
                 No Image Available
@@ -221,9 +272,23 @@ export default function VehicleClient({
             </div>
           </div>
 
-          <div className="h-[320px] border-t border-white/10 bg-zinc-950 sm:h-[420px] lg:h-[560px] lg:border-l lg:border-t-0 xl:h-[620px]">
+          <div className="relative h-[320px] border-t border-white/10 bg-zinc-950 sm:h-[420px] lg:h-[560px] lg:border-l lg:border-t-0 xl:h-[620px] group/right">
             {secondaryImage ? (
-              <img src={secondaryImage} alt={`${make} ${model} secondary view`} className="h-full w-full object-cover" />
+              <>
+                <img
+                  src={secondaryImage}
+                  alt={`${make} ${model} secondary view`}
+                  className="h-full w-full object-cover cursor-pointer"
+                  onClick={() => openLightbox(activeImageIndex + 1)}
+                />
+                <button
+                  onClick={() => openLightbox(activeImageIndex + 1)}
+                  className="absolute top-3 right-3 z-10 bg-black/60 p-1.5 text-white opacity-0 group-hover/right:opacity-100 transition-opacity hover:bg-black/90"
+                  aria-label="View fullscreen"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </button>
+              </>
             ) : (
               <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-500">
                 More Photos Coming Soon
@@ -352,6 +417,64 @@ export default function VehicleClient({
           </aside>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <div
+          className="fixed inset-0 z-9999 flex flex-col bg-black/95 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) closeLightbox() }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+            <span className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-400">
+              {make} {model} &mdash; {lightboxIndex + 1} / {images.length}
+            </span>
+            <button onClick={closeLightbox} className="p-2 text-zinc-400 hover:text-white transition-colors">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Main image */}
+          <div className="relative flex flex-1 items-center justify-center overflow-hidden min-h-0">
+            <button
+              onClick={lightboxPrev}
+              className="absolute left-3 z-10 bg-black/60 p-3 text-white hover:bg-black/90 transition-colors"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <img
+              key={lightboxIndex}
+              src={images[lightboxIndex].href}
+              alt={`${make} ${model} image ${lightboxIndex + 1}`}
+              className="max-h-full max-w-full object-contain select-none"
+            />
+            <button
+              onClick={lightboxNext}
+              className="absolute right-3 z-10 bg-black/60 p-3 text-white hover:bg-black/90 transition-colors"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          </div>
+
+          {/* Thumbnail strip */}
+          <div
+            ref={lightboxThumbsRef}
+            className="flex gap-2 overflow-x-auto px-3 py-3 border-t border-white/10 shrink-0 hide-scrollbar"
+          >
+            {images.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setLightboxIndex(idx)}
+                className={`relative h-16 w-24 shrink-0 overflow-hidden border-2 transition-colors ${
+                  idx === lightboxIndex ? 'border-blue-400' : 'border-white/15 hover:border-white/40'
+                }`}
+              >
+                <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       {showReserve && (

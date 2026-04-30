@@ -16,7 +16,7 @@ const buildHomeSchema = (dealership: Awaited<ReturnType<typeof getDealershipInfo
       name: dealership.name,
       description:
         dealership.seoText ||
-        `${dealership.name} is a trusted used car dealership offering quality pre-owned vehicles.`,
+        `${dealership.name} is a trusted used car dealership offering prestige dealership vehicles.`,
       address: {
         '@type': 'PostalAddress',
         streetAddress: [dealership.address.line1, dealership.address.line2].filter(Boolean).join(', '),
@@ -47,7 +47,7 @@ const buildHomeSchema = (dealership: Awaited<ReturnType<typeof getDealershipInfo
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
-  const title = `${dealership.name} | Quality Pre-Owned Vehicles`
+  const title = `${dealership.name} | Prestige Vehicle Dealership`
   const description =
     dealership.seoText || `${dealership.name} - ${dealership.tagline || 'Trusted used car specialists.'}`
 
