@@ -100,7 +100,7 @@ export default async function ContactPage() {
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/car_3.png')" }}
+          style={{ backgroundImage: "url('/car_3.jpeg')" }}
         />
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/55" />

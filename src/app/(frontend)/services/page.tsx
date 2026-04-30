@@ -37,7 +37,7 @@ const services = [
     title: 'Privacy Glass',
     description:
       'Privacy glass and window tinting enhance your vehicle\'s safety and style while protecting against sun damage and reducing interior fading. Our professional fitting team ensures a flawless installation that seamlessly matches factory tints. We provide expert advice on the best shade to complement your car\'s appearance and meet your needs for privacy and security.',
-    image: '/car_3.png',
+    image: '/car_3.jpeg',
   },
   {
     title: 'Alloy Wheel Refurb',

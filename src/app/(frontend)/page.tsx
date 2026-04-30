@@ -199,10 +199,10 @@ const Home = async () => {
       </section>
 
       {/* RAC Warranty Section */}
-      <section className="relative h-screen w-full overflow-clip flex items-end">
+      <section className="relative h-screen w-full overflow-clip flex items-end md:pb-8">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/car_3.png" 
+            src="/car_3.jpeg" 
             alt="Warranty" 
             className="w-full h-full object-cover"
           />
