@@ -234,13 +234,18 @@ export default function VehicleClient({
               </>
             )}
 
-          <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px] group/left">
+          <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px] group/left overflow-hidden">
             {hasImages ? (
               <>
+                <div
+                  className="absolute inset-0 bg-center bg-cover blur-xl scale-110"
+                  style={{ backgroundImage: `url(${activeImage})` }}
+                />
+                <div className="absolute inset-0 bg-black/40" />
                 <img
                   src={activeImage}
                   alt={`${make} ${model}`}
-                  className={`h-full w-full object-cover cursor-pointer ${isSold ? 'brightness-50' : ''}`}
+                  className={`relative h-full w-full object-contain cursor-pointer ${isSold ? 'brightness-50' : ''}`}
                   onClick={() => openLightbox(activeImageIndex)}
                 />
                 <button
@@ -272,13 +277,18 @@ export default function VehicleClient({
             </div>
           </div>
 
-          <div className="relative h-[320px] border-t border-white/10 bg-zinc-950 sm:h-[420px] lg:h-[560px] lg:border-l lg:border-t-0 xl:h-[620px] group/right">
+          <div className="relative h-[320px] border-t border-white/10 bg-zinc-950 sm:h-[420px] lg:h-[560px] lg:border-l lg:border-t-0 xl:h-[620px] group/right overflow-hidden">
             {secondaryImage ? (
               <>
+                <div
+                  className="absolute inset-0 bg-center bg-cover blur-xl scale-110"
+                  style={{ backgroundImage: `url(${secondaryImage})` }}
+                />
+                <div className="absolute inset-0 bg-black/40" />
                 <img
                   src={secondaryImage}
                   alt={`${make} ${model} secondary view`}
-                  className="h-full w-full object-cover cursor-pointer"
+                  className="relative h-full w-full object-contain cursor-pointer"
                   onClick={() => openLightbox(activeImageIndex + 1)}
                 />
                 <button
