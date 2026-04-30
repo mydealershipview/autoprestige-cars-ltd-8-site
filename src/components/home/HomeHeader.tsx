@@ -161,17 +161,6 @@ export default function HomeHeader({
             <div className="hidden sm:flex items-center">
               <div className="flex items-center gap-2 sm:gap-4 ml-6">
                 <div className="h-10 w-[1px] bg-white/20"></div>
-                
-                  <a
-                    key="whatsapp"
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="whatsapp"
-                    className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
-                  >
-                    {getSocialIcon('whatsapp')}
-                  </a>
                 {socialLinks.map((link) => (
                   <a
                     key={link.platform}
@@ -184,6 +173,16 @@ export default function HomeHeader({
                     {getSocialIcon(link.platform)}
                   </a>
                 ))}
+                <a
+                  key="whatsapp"
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="whatsapp"
+                  className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
+                >
+                  {getSocialIcon('whatsapp')}
+                </a>
                 <Link
                     key="contact-form"
                     href="/contact#contact-form"

@@ -32,54 +32,67 @@ const FinanceApplicationForm = () => {
   useEffect(() => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
-    script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=U86tH2vLnYI0LyA2D5'
     script.async = true
-    document.head.appendChild(script)
 
-    const loadPlugin = () => {
-      if ((window as any).codeweavers) {
-        ;(window as any).codeweavers.main({
-          pluginContentDivId: 'cw-finance-plugin',
-          vehicle: {
-            type: 'Car',
-            cashPrice: price || '0',
-            mileage: mileage || '0',
-            isNew: 'false',
-            identifierType: '',
-            identifier: ' ',
-            imageUrl: imageUrl || '',
-            linkBackUrl: 'https://www.autoprestigecars.co.uk/',
-            registration: {
-              number: registration || 'NOVEHICLE',
-              date: firstRegistrationDate || '2000-01-01',
-            },
-          },
-          defaultParameters: {
-            deposit: {
-              defaultValue: 10,
-              defaultType: 'Percentage',
-            },
-            term: {
-              defaultValue: 60,
-            },
-            annualMileage: {
-              defaultValue: 10000,
-            },
-          },
-        })
-      } else {
-        setTimeout(loadPlugin, 100)
+    if (hasVehicleData) {
+      // Finance calculator plugin — requires vehicle price
+      script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=U86tH2vLnYI0LyA2D5'
+      script.onload = () => {
+        const loadPlugin = () => {
+          if ((window as any).codeweavers) {
+            ;(window as any).codeweavers.main({
+              pluginContentDivId: 'cw-finance-plugin',
+              vehicle: {
+                type: 'Car',
+                cashPrice: price || '0',
+                mileage: mileage || '0',
+                isNew: 'false',
+                identifierType: '',
+                identifier: ' ',
+                imageUrl: imageUrl || '',
+                linkBackUrl: 'https://www.autoprestigecars.co.uk/',
+                registration: {
+                  number: registration || 'NOVEHICLE',
+                  date: firstRegistrationDate || '2000-01-01',
+                },
+              },
+              defaultParameters: {
+                deposit: { defaultValue: 10, defaultType: 'Percentage' },
+                term: { defaultValue: 60 },
+                annualMileage: { defaultValue: 10000 },
+              },
+            })
+          } else {
+            setTimeout(loadPlugin, 100)
+          }
+        }
+        loadPlugin()
+      }
+    } else {
+      // Ecommerce apply plugin — works without vehicle data
+      script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/ecommerce?ApiKey=U86tH2vLnYI0LyA2D5'
+      script.onload = () => {
+        const loadPlugin = () => {
+          if ((window as any).codeweavers?.ecommerce?.apply) {
+            ;(window as any).codeweavers.ecommerce.apply.main({
+              pluginContentDivId: 'cw-finance-plugin',
+            })
+          } else {
+            setTimeout(loadPlugin, 100)
+          }
+        }
+        loadPlugin()
       }
     }
 
-    script.onload = loadPlugin
+    document.head.appendChild(script)
 
     return () => {
       if (document.head.contains(script)) {
         document.head.removeChild(script)
       }
     }
-  }, [price, mileage, imageUrl, registration, firstRegistrationDate])
+  }, [hasVehicleData, price, mileage, imageUrl, registration, firstRegistrationDate])
 
   return (
     <div className="space-y-8">

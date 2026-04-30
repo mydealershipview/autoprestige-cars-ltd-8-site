@@ -1,6 +1,6 @@
 "use client"
 
-import { Phone, MapPin, Clock, MessageCircle, Facebook, Instagram, Youtube } from "lucide-react"
+import { Phone, MapPin, Clock, MessageCircle, Facebook, Instagram, Youtube, Send } from "lucide-react"
 import { ContactData } from "@/types/contact"
 import { Make, Model } from "@/utilities/types"
 import Link from "next/link"
@@ -20,6 +20,7 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
   const address = contactData?.businessAddress
   const displayName = dealershipName || address?.name || 'Dealership'
 
+  const phoneNumbers = contactData?.phoneNumbers || []
   const phone = primaryPhone?.number ?? 'Phone available on request'
   const email = primaryEmail?.email ?? 'Email available on request'
   const phoneHref = primaryPhone?.number ? `tel:${primaryPhone.number.replace(/\s/g, '')}` : '#'
@@ -29,6 +30,10 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
     : 'Address details available on request'
 
   const socialLinks = (contactData?.socialLinks ?? []).filter(s => s.isActive !== false)
+   const whatsappNumber = contactData?.whatsappNumber
+  const whatsappUrl = whatsappNumber
+    ? `https://wa.me/${whatsappNumber.replace(/\s+/g, '')}`
+    : `https://wa.me/${phoneNumbers[0]?.number.replace(/\s+/g, '')}`
 
   const getSocialIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
@@ -45,6 +50,10 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
       case 'instagram':
         return (
           <Instagram className="h-5 w-5 text-white" />
+        )
+      case 'form':
+        return (
+          <Send className="h-5 w-5 text-white" />
         )
       case 'twitter':
       case 'x':
@@ -123,31 +132,38 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
           {/* Social Icons */}
           <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">
             {socialLinks.length > 0 ? (
-              socialLinks.map(s => (
-                <a
-                  key={s.id ?? s.url}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.platform}
-                  className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors"
-                >
-                  {getSocialIcon(s.platform)}
-                </a>
-              ))
-            ) : (
               <>
-                <a href="#" className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors">
-                  <MessageCircle className="h-5 w-5 text-white" />
-                </a>
-                <a href="#" className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors">
-                  <Facebook className="h-5 w-5 text-white" />
-                </a>
-                <a href="#" className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors">
-                  <Instagram className="h-5 w-5 text-white" />
-                </a>
+                {socialLinks.map((s) => (
+                  <a
+                    key={s.id ?? s.url}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.platform}
+                    className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors"
+                  >
+                    {getSocialIcon(s.platform)}
+                  </a>
+                ))}
+                <a
+                    key="whatsapp"
+                  href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="whatsapp"
+                    className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors"
+                  >
+                    {getSocialIcon('whatsapp')}
+                  </a>
+                  <Link
+                    key="contact-form"
+                    href="/contact#contact-form"
+                    className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors"
+                  >
+                    {getSocialIcon("form")}
+                  </Link>
               </>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -155,18 +171,18 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
 
         {/* Primary Disclaimer */}
         <div className="text-[10px] md:text-xs text-center text-gray-500 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
-            <div className="space-y-4 text-xs md:text-sm text-gray-300 leading-relaxed tracking-wide">
-              <p>
-                <span className="text-white font-semibold uppercase tracking-widest text-[11px] block mb-2">Important Disclosure</span>
-                Whilst every care has been taken to ensure all of the information on this site is accurate, please always check with your dealer as errors can occur.
-              </p>
-              <p>
-                We act as a credit broker not a lender. We work with a number of carefully selected credit providers who typically will be able to offer you finance for your purchase. (Written quotations available on request). Whichever lender we introduce you to, we will typically receive a fee from them (either a fixed fee or a percentage of the amount you borrow). The lenders we work with could pay commissions at different rates. All finance is subject to status and income. Terms and conditions apply. Applicants must be 18 years or over.
-              </p>
-              <p className="text-white/60 text-xs tracking-widest uppercase border-t border-white/10 pt-4">
-                Autoprestige is the trading name of <span className="text-white/80">Cars Unlimited Ltd</span>
-              </p>
-            </div>
+          <div className="space-y-4 text-xs md:text-sm text-gray-300 leading-relaxed tracking-wide">
+            <p>
+              <span className="text-white font-semibold uppercase tracking-widest text-[11px] block mb-2">Important Disclosure</span>
+              Whilst every care has been taken to ensure all of the information on this site is accurate, please always check with your dealer as errors can occur.
+            </p>
+            <p>
+              We act as a credit broker not a lender. We work with a number of carefully selected credit providers who typically will be able to offer you finance for your purchase. (Written quotations available on request). Whichever lender we introduce you to, we will typically receive a fee from them (either a fixed fee or a percentage of the amount you borrow). The lenders we work with could pay commissions at different rates. All finance is subject to status and income. Terms and conditions apply. Applicants must be 18 years or over.
+            </p>
+            <p className="text-white/60 text-xs tracking-widest uppercase border-t border-white/10 pt-4">
+              Autoprestige is the trading name of <span className="text-white/80">Cars Unlimited Ltd</span>
+            </p>
+          </div>
         </div>
 
         {/* FCA Regulatory Note */}
