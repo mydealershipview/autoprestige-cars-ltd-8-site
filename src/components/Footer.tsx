@@ -192,9 +192,18 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
           </p>
         </div>
 
+        {/* Company Registration Numbers */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-[10px] text-gray-500 tracking-widest uppercase mb-4 text-center">
+          <span>VAT No. GB 219955471</span>
+          <span className="hidden sm:inline text-white/20">|</span>
+          <span>Company No. 9681013</span>
+          <span className="hidden sm:inline text-white/20">|</span>
+          <span>FCA No. 715892</span>
+        </div>
+
         {/* Bottom Legal Links */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-500 tracking-wider">
-          <span>© {new Date().getFullYear()} {displayName}</span>
+          <span>© {new Date().getFullYear()} Autoprestige Cars. All Rights Reserved.</span>
           <span className="hidden md:inline">|</span>
           <Link href="/terms" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Terms &amp; Conditions</Link>
           <span className="hidden md:inline">|</span>

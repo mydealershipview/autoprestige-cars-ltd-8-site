@@ -9,6 +9,7 @@ import {
   MessageCircle,
   X,
   Maximize2,
+  MapPin,
 } from 'lucide-react'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 
@@ -352,6 +353,13 @@ export default function VehicleClient({
           <aside className="border border-white/12 bg-black p-5">
             <p className="border-b border-white/10 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
 
+            {vehicle.metadata?.stockId && (
+              <div className="flex items-center justify-between border-b border-white/8 py-2.5">
+                <span className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Stock ID:</span>
+                <span className="font-mono text-[11px] font-semibold tracking-wider text-zinc-300">{vehicle.metadata.stockId}</span>
+              </div>
+            )}
+
             {isSold && (
               <div className="mt-3 flex items-center gap-2 bg-red-600/15 border border-red-500/40 px-3 py-2">
                 <span className="text-xs font-black uppercase tracking-[0.18em] text-red-400">SOLD</span>
@@ -426,6 +434,20 @@ export default function VehicleClient({
             </div>
           </aside>
         </div>
+
+        {/* Dealer Address */}
+        <div className="mt-4 flex items-start gap-4 border border-white/10 bg-zinc-950 px-5 py-4">
+          <div className="mt-0.5 shrink-0">
+            <MapPin className="h-4 w-4 text-blue-500" />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Our Location</span>
+            <span className="text-sm text-zinc-200 leading-relaxed">
+              Autoprestige House, Cars Unlimited T/A Autoprestige, Rosse Street, Bradford, West Yorkshire, BD8 9AS, United Kingdom
+            </span>
+          </div>
+        </div>
+
       </div>
 
       {/* Lightbox */}
