@@ -332,6 +332,20 @@ export default function VehicleClient({
             {derivative && (
               <p className="mb-6 text-sm uppercase tracking-[0.15em] text-zinc-400">{derivative}</p>
             )}
+
+            {/* Attention Grabber banner */}
+            {vehicle.adverts?.retailAdverts?.attentionGrabber && (
+              <div className="mb-3 border-l-2 border-amber-400 bg-amber-400/8 px-4 py-2.5 text-sm font-medium text-amber-200">
+                {vehicle.adverts.retailAdverts.attentionGrabber}
+              </div>
+            )}
+            {/* Reservation Status banner */}
+            {vehicle.adverts?.retailAdverts?.reservationStatus && (
+              <div className="mb-6 border-l-2 border-blue-400 bg-blue-400/8 px-4 py-2.5 text-sm font-medium text-blue-200">
+                {vehicle.adverts.retailAdverts.reservationStatus}
+              </div>
+            )}
+
             {vehicle.adverts?.retailAdverts?.description ? (
               <div className="text-sm leading-7 text-zinc-300">
                 {vehicle.adverts.retailAdverts.description}

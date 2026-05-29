@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchAutoTraderListings, AutoTraderVehicle } from '../../../../utilities/autotrader'
 import { mergeVehicleWithPayloadData, fetchPayloadVehicleData, mergeVehiclesWithPayloadData } from '../../../../utilities/mergePayloadData'
+import { fetchOverridesMap, applyOverrideToVehicle } from '../../../../utilities/vehicleOverrides'
 
 // Cache for storing all listings
 let allListingsCache: AutoTraderVehicle[] | null = null
@@ -216,11 +217,15 @@ export async function GET(
     // Efficiently merge both the main vehicle and similar vehicles with Payload data
     const allVehicleStockIds = [stockId, ...similarVehicles.map(v => v.metadata.stockId)]
     const payloadDataMap = await fetchPayloadVehicleData(allVehicleStockIds)
+    const overridesMap = await fetchOverridesMap(allVehicleStockIds)
 
-    // Merge the main vehicle with its payload data
-    const mergedVehicle = mergeVehicleWithPayloadData(vehicle, payloadDataMap.get(stockId))
+    // Merge the main vehicle with its payload data, then apply DB overrides
+    const mergedVehicle = applyOverrideToVehicle(
+      mergeVehicleWithPayloadData(vehicle, payloadDataMap.get(stockId)),
+      overridesMap.get(stockId),
+    )
 
-    // Merge similar vehicles with their payload data
+    // Merge similar vehicles with their payload data (overrides applied inside mergeVehiclesWithPayloadData)
     const mergedSimilarVehicles = await mergeVehiclesWithPayloadData(similarVehicles)
 
     const response = {

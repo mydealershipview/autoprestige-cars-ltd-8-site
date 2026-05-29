@@ -1,6 +1,7 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import type { AutoTraderVehicle } from './autotrader'
+import { applyVehicleOverrides } from './vehicleOverrides'
 
 interface PayloadVehicleData {
   id?: string
@@ -140,10 +141,13 @@ export async function mergeVehiclesWithPayloadData(vehicles: AutoTraderVehicle[]
   const payloadDataMap = await fetchPayloadVehicleData(stockIds)
 
   // Merge each vehicle with its corresponding payload data
-  const mergedVehicles = vehicles.map(vehicle => {
+  const payloadMerged = vehicles.map(vehicle => {
     const payloadData = payloadDataMap.get(vehicle.metadata.stockId)
     return mergeVehicleWithPayloadData(vehicle, payloadData)
   })
+
+  // Apply local DB overrides (attentionGrabber, listingPrice) — these take final precedence
+  const mergedVehicles = await applyVehicleOverrides(payloadMerged)
 
   return mergedVehicles
 }

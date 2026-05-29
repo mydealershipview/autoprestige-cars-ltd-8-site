@@ -134,6 +134,7 @@ interface AutoTraderVehicle {
       }
       vatStatus?: string | null
       attentionGrabber?: string | null
+      reservationStatus?: string | null
       description: string | null
       description2?: string | null
       priceIndicatorRating: string
