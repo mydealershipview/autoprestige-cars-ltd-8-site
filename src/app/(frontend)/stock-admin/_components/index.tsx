@@ -74,7 +74,7 @@ export default function StockAdminComponent() {
     listingPrice: '',
   })
 
-  const [overridesMap, setOverridesMap] = useState<Record<string, { attentionGrabber?: string | null; reservationStatus?: string | null; listingPrice?: number | null }>>({})  
+  const [overridesMap, setOverridesMap] = useState<Record<string, { attentionGrabber?: string | null; reservationStatus?: string | null; listingPrice?: number | null }>>({})
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
 
@@ -129,9 +129,9 @@ export default function StockAdminComponent() {
         setAllModels(data.availableModels)
         const filtered = currentFilters.make
           ? data.availableModels.filter((m: any) => {
-              const mk = data.availableMakes?.find((mk: any) => mk.name === currentFilters.make)
-              return mk && m.makeId === mk.makeId
-            })
+            const mk = data.availableMakes?.find((mk: any) => mk.name === currentFilters.make)
+            return mk && m.makeId === mk.makeId
+          })
           : []
         setModels(filtered)
       }
@@ -411,14 +411,14 @@ export default function StockAdminComponent() {
           <FilterSection sectionKey="bodyType" label="Body Type" isActive={!!filters.bodyType}>
             <select value={filters.bodyType} onChange={(e) => handleFilterChange('bodyType', e.target.value)} className={selectCls}>
               <option value="">Any</option>
-              {['Saloon','Hatchback','SUV','Coupe','Convertible','Estate','MPV'].map(t => <option key={t} value={t}>{t}</option>)}
+              {['Saloon', 'Hatchback', 'SUV', 'Coupe', 'Convertible', 'Estate', 'MPV'].map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </FilterSection>
 
           <FilterSection sectionKey="fuelType" label="Fuel Type" isActive={!!filters.fuelType}>
             <select value={filters.fuelType} onChange={(e) => handleFilterChange('fuelType', e.target.value)} className={selectCls}>
               <option value="">Any</option>
-              {['Petrol','Diesel','Electric','Hybrid'].map(t => <option key={t} value={t}>{t}</option>)}
+              {['Petrol', 'Diesel', 'Electric', 'Hybrid'].map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </FilterSection>
 
@@ -615,7 +615,7 @@ export default function StockAdminComponent() {
                               </div>
                             </div>
                             {grabber && (
-                              <p className="text-[10px] text-blue-400/80 italic truncate mt-1">"{grabber}"</p>
+                              <p className="text-[10px] text-blue-400/80 italic truncate mt-1">&quot;{grabber}&quot;</p>
                             )}
                           </div>
                         </div>
@@ -633,10 +633,10 @@ export default function StockAdminComponent() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
                               <p className="font-bold uppercase tracking-wide text-sm truncate">{make} {model}</p>
-                              {hasOverride && <CheckCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" title="Has overrides" />}
+                              {hasOverride && <CheckCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
                             </div>
                             {derivative && <p className="text-[10px] text-gray-500 truncate">{derivative}</p>}
-                            {grabber && <p className="text-[10px] text-blue-400/70 italic truncate">"{grabber}"</p>}
+                            {grabber && <p className="text-[10px] text-blue-400/70 italic truncate">&quot;{grabber}&quot;</p>}
                           </div>
 
                           {/* Reg */}
@@ -707,11 +707,10 @@ export default function StockAdminComponent() {
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`w-9 h-9 rounded border text-sm font-semibold !transition-colors ${
-                            page === currentPage
+                          className={`w-9 h-9 rounded border text-sm font-semibold !transition-colors ${page === currentPage
                               ? 'bg-amber-400 text-black border-amber-400'
                               : 'border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
-                          }`}
+                            }`}
                         >
                           {page}
                         </button>
@@ -767,8 +766,12 @@ export default function StockAdminComponent() {
                 <p>
                   <span className="text-gray-600 text-xs uppercase tracking-wide">DMS Price</span>{' '}
                   <span className="text-white font-bold">
-                    {(editModal.vehicle.adverts?.forecourtPrice?.amountGBP ?? editModal.vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP) != null
-                      ? formatPrice(editModal.vehicle.adverts?.forecourtPrice?.amountGBP ?? editModal.vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP!)
+                    {(editModal.vehicle.adverts?.forecourtPrice?.amountGBP ??
+                      editModal.vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP) != null
+                      ? formatPrice(
+                        editModal.vehicle.adverts?.forecourtPrice?.amountGBP ??
+                        editModal.vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP
+                      )
                       : 'POA'}
                   </span>
                 </p>
