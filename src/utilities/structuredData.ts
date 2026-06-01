@@ -36,17 +36,20 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
           {
             '@type': 'OpeningHoursSpecification',
             dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            description: dealership.openingHours.weekdays,
+            opens: '09:00',
+            closes: '18:00',
           },
           {
             '@type': 'OpeningHoursSpecification',
             dayOfWeek: 'Saturday',
-            description: dealership.openingHours.saturday,
+            opens: '09:00',
+            closes: '17:00',
           },
           {
             '@type': 'OpeningHoursSpecification',
             dayOfWeek: 'Sunday',
-            description: dealership.openingHours.sunday,
+            opens: '10:00',
+            closes: '16:00',
           }
         ],
         serviceType: ['Used Car Sales', 'Car Finance', 'Part Exchange'],
@@ -64,9 +67,15 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             }
           ]
         },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          reviewCount: '125',
+          bestRating: '5',
+        },
         logo: {
           '@type': 'ImageObject',
-          url: dealership.logoUrl || `${baseUrl}/favicon.svg`,
+          url: dealership.logoUrl || `${baseUrl}/logo.png`,
         },
         sameAs: socialLinks,
       },

@@ -1,0 +1,19 @@
+# Autoprestige Cars LTD
+> Quality prestige used vehicles in Bradford, West Yorkshire. Car finance, part exchange, and warranty available.
+
+## Main Pages
+- [Home](https://template-8.mydealershipview.com/): Our story and services — prestige and performance vehicles
+- [Showroom](https://template-8.mydealershipview.com/used-cars): Browse our prestige vehicle inventory
+- [Finance](https://template-8.mydealershipview.com/finance): Car finance options and online application
+- [Valuation](https://template-8.mydealershipview.com/valuation): Get a part-exchange valuation
+- [Contact](https://template-8.mydealershipview.com/contact): Visit or contact us in Bradford
+
+## Services
+- [Services](https://template-8.mydealershipview.com/services): All services overview
+- [Warranty](https://template-8.mydealershipview.com/services): Extended warranty information
+- [Sell Your Car](https://template-8.mydealershipview.com/valuation): Part exchange and outright purchase
+
+## Legal
+- [Terms & Conditions](https://template-8.mydealershipview.com/terms)
+- [Privacy Policy](https://template-8.mydealershipview.com/privacy)
+- [Cookie Preferences](https://template-8.mydealershipview.com/cookies)

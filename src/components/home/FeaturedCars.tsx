@@ -76,6 +76,9 @@ export function FeaturedCars() {
                   src={car.img} 
                   alt={`${car.make} ${car.model}`} 
                   className="w-full h-full object-cover group-hover:scale-105 !transition-transform !duration-700 opacity-90 group-hover:opacity-100"
+                  width="1000"
+                  height="750"
+                  loading="lazy"
                 />
               </Link>
 

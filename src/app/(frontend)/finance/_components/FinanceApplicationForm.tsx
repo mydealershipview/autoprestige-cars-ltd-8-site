@@ -105,6 +105,9 @@ const FinanceApplicationForm = () => {
                 src={imageUrl}
                 alt="Selected vehicle"
                 className="h-full w-full object-cover"
+                width="192"
+                height="128"
+                loading="lazy"
               />
             </div>
           )}

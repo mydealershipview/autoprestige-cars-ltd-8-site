@@ -59,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = `${dealership.name} | Quality Used Cars`
   const description =
     dealership.seoText ||
-    `${dealership.name} - ${dealership.tagline || 'Trusted used cars, finance options, and friendly support.'}`
+    `Browse quality used prestige vehicles at ${dealership.name} in ${dealership.address.city || 'Bradford'}. Car finance, part exchange, and warranty available. Visit our showroom or apply online today.`
 
   return {
     metadataBase: new URL(serverUrl),
@@ -72,6 +72,9 @@ export async function generateMetadata(): Promise<Metadata> {
       'used cars',
       'car finance',
       'part exchange',
+      'prestige vehicles',
+      'car dealership',
+      'used car dealers',
       dealership.name,
       dealership.address.city,
       dealership.address.postcode,
@@ -85,6 +88,9 @@ export async function generateMetadata(): Promise<Metadata> {
       telephone: true,
       email: true,
       address: true,
+    },
+    alternates: {
+      canonical: serverUrl,
     },
     openGraph: mergeOpenGraph({
       title,

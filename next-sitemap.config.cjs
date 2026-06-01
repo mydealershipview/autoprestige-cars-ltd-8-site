@@ -1,12 +1,12 @@
 const SITE_URL =
   process.env.NEXT_PUBLIC_SERVER_URL ||
   process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-  'https://example.com'
+  'https://template-8.mydealershipview.com'
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: SITE_URL,
-  generateRobotsTxt: true,
+  generateRobotsTxt: false,
   exclude: [
     '/posts-sitemap.xml', 
     '/pages-sitemap.xml', 
@@ -17,12 +17,6 @@ module.exports = {
     '/used-cars/*' // Exclude dynamic vehicle pages since they're in vehicles-sitemap.xml
   ],
   robotsTxtOptions: {
-    policies: [
-      {
-        userAgent: '*',
-        disallow: '/websiteadmin/*',
-      },
-    ],
     additionalSitemaps: [
       `${SITE_URL}/pages-sitemap.xml`, 
       `${SITE_URL}/posts-sitemap.xml`,

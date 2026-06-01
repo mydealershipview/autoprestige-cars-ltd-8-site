@@ -6,45 +6,6 @@ import { SoldCarsSlider } from '@/components/home/SoldCarsSlider'
 import Link from 'next/link'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-const buildHomeSchema = (dealership: Awaited<ReturnType<typeof getDealershipInfo>>) => {
-  const sameAs = Object.values(dealership.social).filter(Boolean)
-
-  return {
-    __html: JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'AutoDealer',
-      name: dealership.name,
-      description:
-        dealership.seoText ||
-        `${dealership.name} is a trusted used car dealership offering prestige dealership vehicles.`,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: [dealership.address.line1, dealership.address.line2].filter(Boolean).join(', '),
-        addressLocality: dealership.address.city,
-        postalCode: dealership.address.postcode,
-        addressCountry: dealership.address.country || 'GB',
-      },
-      telephone: dealership.phone,
-      email: dealership.email,
-      sameAs,
-      serviceType: ['Used Car Sales', 'Car Finance', 'Part Exchange'],
-      hasOfferCatalog: {
-        '@type': 'OfferCatalog',
-        name: 'Used Cars',
-        itemListElement: [
-          {
-            '@type': 'Offer',
-            itemOffered: {
-              '@type': 'Car',
-              name: 'Quality Used Cars',
-            },
-          },
-        ],
-      },
-    }),
-  }
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
   const title = `${dealership.name} | Prestige Vehicle Dealership`
@@ -75,7 +36,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const Home = async () => {
   const dealership = await getDealershipInfo()
-  const script = buildHomeSchema(dealership)
   const displayName = dealership.name || 'Dealership'
   const displayTagline = dealership.tagline || 'Trusted used vehicles and support'
 
@@ -92,11 +52,7 @@ const Home = async () => {
           scrollbar-width: none;  /* Firefox */
         }
       `}} />
-      {/* Structured Data for Local Business */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={script}
-      />
+
       
       {/* Hero Section */}
       <section className="relative h-screen w-full overflow-hidden shrink-0">
@@ -149,8 +105,11 @@ const Home = async () => {
         <div className="absolute inset-0 z-0">
           <img 
             src="/car_2.jpg" 
-            alt="Online Showroom" 
+            alt="Online Showroom — Browse prestige and performance cars at Autoprestige Cars" 
             className="w-full h-full object-cover"
+            width="1920"
+            height="1080"
+            fetchPriority="high"
           />
         </div>
         
@@ -230,8 +189,11 @@ const Home = async () => {
         <div className="absolute inset-0 z-0">
           <img 
             src="/car_4.jpg" 
-            alt="Sell Your Car" 
+            alt="Sell your car — get a competitive valuation for your prestige or performance vehicle at Autoprestige Cars" 
             className="w-full h-full object-cover"
+            width="1920"
+            height="1080"
+            loading="lazy"
           />
         </div>
         

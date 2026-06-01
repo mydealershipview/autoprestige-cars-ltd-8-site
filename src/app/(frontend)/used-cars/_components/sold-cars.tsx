@@ -908,6 +908,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             src={imageUrl}
                             alt={`${vehicleMake} ${vehicleModel}`}
                             className="h-full w-full z-10 relative object-contain object-center group-hover:scale-[1.02] !transition-transform !duration-500"
+                            width="800"
+                            height="600"
+                            loading="lazy"
                           />
                           {/* Photo / video count */}
                           {imageCount > 0 && (

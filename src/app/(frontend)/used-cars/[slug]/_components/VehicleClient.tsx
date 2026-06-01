@@ -290,6 +290,9 @@ export default function VehicleClient({
                   src={secondaryImage}
                   alt={`${make} ${model} secondary view`}
                   className="relative h-full w-full object-contain cursor-pointer"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
                   onClick={() => openLightbox(activeImageIndex + 1)}
                 />
                 <button
@@ -318,7 +321,7 @@ export default function VehicleClient({
                   idx === activeImageIndex || idx === activeImageIndex + 1 ? 'border-blue-400 border-2' : 'border-white/20'
                 }`}
               >
-                <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" width="96" height="64" loading="lazy" />
               </button>
             ))}
           </div>
@@ -493,6 +496,8 @@ export default function VehicleClient({
               src={images[lightboxIndex].href}
               alt={`${make} ${model} image ${lightboxIndex + 1}`}
               className="max-h-full max-w-full object-contain select-none"
+              width="1200"
+              height="900"
             />
             <button
               onClick={lightboxNext}

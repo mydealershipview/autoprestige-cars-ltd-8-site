@@ -156,6 +156,9 @@ export function SoldCarsSlider() {
                           src={imageUrl}
                           alt={`${make} ${model}`}
                           className="relative z-10 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                          width="800"
+                          height="600"
+                          loading="lazy"
                         />
                         {/* Darken overlay */}
                         <div className="absolute inset-0 z-20 bg-black/50" />

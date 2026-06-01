@@ -142,7 +142,7 @@ export default function HomeHeader({
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
           <Link href="/" className="flex items-center hover:opacity-80 !transition-opacity">
             {logoUrl ? (
-              <img src={logoUrl} alt={displayName} className="h-10 md:h-15 w-auto max-w-[250px] md:max-w-none object-contain" />
+              <img src={logoUrl} alt={displayName} className="h-10 md:h-15 w-auto max-w-[250px] md:max-w-none object-contain" width="250" height="60" />
             ) : (
               <>
                 <div className="w-8 h-6 xl:w-10 xl:h-8 bg-blue-500 mr-2 -skew-x-[24deg]"></div>

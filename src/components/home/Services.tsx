@@ -81,6 +81,9 @@ export function Services() {
               src={activeService.image} 
               alt={activeService.title}
               className="w-full h-full object-cover !transition-opacity !duration-500 ease-in-out"
+              width="1000"
+              height="667"
+              loading="lazy"
             />
             
             {/* Left Absolute navigation button */}
