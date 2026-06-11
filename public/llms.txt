@@ -3,7 +3,7 @@
 
 ## Main Pages
 - [Home](https://template-8.mydealershipview.com/): Our story and services — prestige and performance vehicles
-- [Showroom](https://template-8.mydealershipview.com/used-cars): Browse our prestige vehicle inventory
+- [Showroom](https://template-8.mydealershipview.com/usedcars): Browse our prestige vehicle inventory
 - [Finance](https://template-8.mydealershipview.com/finance): Car finance options and online application
 - [Valuation](https://template-8.mydealershipview.com/valuation): Get a part-exchange valuation
 - [Contact](https://template-8.mydealershipview.com/contact): Visit or contact us in Bradford
@@ -15,5 +15,5 @@
 
 ## Legal
 - [Terms & Conditions](https://template-8.mydealershipview.com/terms)
-- [Privacy Policy](https://template-8.mydealershipview.com/privacy)
-- [Cookie Preferences](https://template-8.mydealershipview.com/cookies)
+- [Privacy Policy](https://template-8.mydealershipview.com/privacy-policy)
+- [Cookie Preferences](https://template-8.mydealershipview.com/cookie-policy)

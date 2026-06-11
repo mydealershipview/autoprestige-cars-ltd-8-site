@@ -26,5 +26,5 @@ export default async function ShowroomRedirectPage({
   searchParams: Promise<SearchParams>
 }) {
   const resolved = await searchParams
-  redirect(`/used-cars${toQueryString(resolved)}`)
+  redirect(`/usedcars${toQueryString(resolved)}`)
 }

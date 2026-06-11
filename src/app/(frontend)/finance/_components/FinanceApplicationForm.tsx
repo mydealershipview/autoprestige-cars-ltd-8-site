@@ -129,7 +129,7 @@ const FinanceApplicationForm = () => {
             <div className="flex gap-3 mt-1">
               {stockId ? (
                 <Link
-                  href={`/used-cars`}
+                  href={`/usedcars`}
                   className="text-[11px] font-semibold uppercase tracking-wider text-blue-400 hover:text-blue-300 transition-colors"
                 >
                   ← Back to Showroom

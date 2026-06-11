@@ -21,7 +21,7 @@ const getPagesSitemap = unstable_cache(
       },
       // Main category pages
       {
-        loc: `${SITE_URL}/used-cars`,
+        loc: `${SITE_URL}/usedcars`,
         lastmod: dateFallback,
         changefreq: 'daily' as const,
         priority: 0.9,
@@ -64,20 +64,20 @@ const getPagesSitemap = unstable_cache(
         priority: 0.8,
       },
       {
-        loc: `${SITE_URL}/reg-plates`,
+        loc: `${SITE_URL}/offers/reg-plates`,
         lastmod: dateFallback,
         changefreq: 'weekly' as const,
         priority: 0.8,
       },
       {
-        loc: `${SITE_URL}/profile`,
+        loc: `${SITE_URL}/contents/profile`,
         lastmod: dateFallback,
         changefreq: 'monthly' as const,
         priority: 0.6,
       },
       // Customer experience pages
       {
-        loc: `${SITE_URL}/reviews-and-customer-experience`,
+        loc: `${SITE_URL}/testimonials`,
         lastmod: dateFallback,
         changefreq: 'monthly' as const,
         priority: 0.7,
@@ -103,7 +103,7 @@ const getPagesSitemap = unstable_cache(
       },
       // Legal pages
       {
-        loc: `${SITE_URL}/privacy`,
+        loc: `${SITE_URL}/privacy-policy`,
         lastmod: dateFallback,
         changefreq: 'monthly' as const,
         priority: 0.4,
@@ -115,7 +115,7 @@ const getPagesSitemap = unstable_cache(
         priority: 0.4,
       },
       {
-        loc: `${SITE_URL}/cookies`,
+        loc: `${SITE_URL}/cookie-policy`,
         lastmod: dateFallback,
         changefreq: 'monthly' as const,
         priority: 0.4,

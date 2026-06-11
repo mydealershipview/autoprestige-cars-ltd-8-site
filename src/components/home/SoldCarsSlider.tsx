@@ -142,7 +142,7 @@ export function SoldCarsSlider() {
 
               return (
                 <SwiperSlide key={vehicle.metadata?.stockId || `${slug}-${i}`}>
-                  <Link href={`/used-cars/${slug}`} className="block group outline-none">
+                  <Link href={`/usedcars/${slug}`} className="block group outline-none">
                     <div className="bg-zinc-900 border border-zinc-700 overflow-hidden group-hover:border-zinc-500 transition-colors duration-300">
 
                       {/* Image */}

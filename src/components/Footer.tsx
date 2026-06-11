@@ -207,9 +207,9 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
           <span className="hidden md:inline">|</span>
           <Link href="/terms" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Terms &amp; Conditions</Link>
           <span className="hidden md:inline">|</span>
-          <Link href="/privacy" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Privacy Policy</Link>
+          <Link href="/privacy-policy" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Privacy Policy</Link>
           <span className="hidden md:inline">|</span>
-          <Link href="/cookies" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Cookie Preferences</Link>
+          <Link href="/cookie-policy" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Cookie Policy</Link>
           <span className="hidden md:inline">|</span>
           <Link href="/contact" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Contact Us</Link>
         </div>

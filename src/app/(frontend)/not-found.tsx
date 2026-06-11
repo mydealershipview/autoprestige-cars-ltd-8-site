@@ -38,7 +38,7 @@ export default function NotFound() {
             Go Home
           </Link>
           <Link
-            href="/used-cars"
+            href="/usedcars"
             className="inline-flex items-center justify-center px-8 py-3 bg-transparent border border-white/20 text-white text-sm font-bold tracking-widest uppercase hover:bg-white/10 !transition-colors"
           >
             Browse Showroom

@@ -7,15 +7,15 @@ import type { ContactData } from "@/types/contact"
 
 const navItems = [
   { label: "HOME", href: "/" },
-  { label: "SHOWROOM", href: "/used-cars" },
-  // { label: "SOLD CARS", href: "/used-cars/sold" },
+  { label: "SHOWROOM", href: "/usedcars" },
+  { label: "SOLD CARS", href: "/usedcars/searchgroup/sold" },
   { label: "SERVICES", href: "/services" },
-  { label: "REG PLATES", href: "/reg-plates" },
+  { label: "REG PLATES", href: "/offers/reg-plates" },
   { label: "VALUATION", href: "/valuation" },
   { label: "FINANCE", href: "/finance" },
-  { label: "PROFILE", href: "/profile" },
+  { label: "PROFILE", href: "/contents/profile" },
   // { label: "WARRANTY", href: "/warranty" },
-  { label: "REVIEWS", href: "/reviews" },
+  { label: "REVIEWS", href: "/testimonials" },
   { label: "CONTACT US", href: "/contact" },
 ]
 
@@ -86,10 +86,10 @@ export default function HomeHeader({
   const [menuOpen, setMenuOpen] = useState(false)
 
   const requiredSidebarItems = [
-    { label: 'REG PLATES', href: '/reg-plates', insertIndex: 3 },
+    { label: 'REG PLATES', href: '/offers/reg-plates', insertIndex: 3 },
     { label: 'VALUATION', href: '/valuation', insertIndex: 4 },
     { label: 'FINANCE', href: '/finance', insertIndex: 5 },
-    { label: 'PROFILE', href: '/profile', insertIndex: 6 },
+    { label: 'PROFILE', href: '/contents/profile', insertIndex: 6 },
   ]
 
   const sidebarNavItems = requiredSidebarItems.reduce((items, requiredItem) => {

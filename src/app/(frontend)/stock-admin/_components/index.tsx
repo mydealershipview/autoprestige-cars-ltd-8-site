@@ -597,7 +597,7 @@ export default function StockAdminComponent() {
                               <span className="text-sm font-bold text-white">{price ? formatPrice(price) : 'POA'}</span>
                               <div className="flex items-center gap-1.5">
                                 <Link
-                                  href={`/used-cars/${slug}`}
+                                  href={`/usedcars/${slug}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide bg-white/5 border border-white/15 text-gray-300 hover:bg-white/10 px-2.5 py-1 rounded !transition-colors"
@@ -660,7 +660,7 @@ export default function StockAdminComponent() {
                           {/* Actions */}
                           <div className="flex justify-center items-center gap-1.5">
                             <Link
-                              href={`/used-cars/${slug}`}
+                              href={`/usedcars/${slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide bg-white/5 border border-white/15 text-gray-300 hover:bg-white/10 px-2 py-1.5 rounded !transition-colors"

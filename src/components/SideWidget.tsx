@@ -38,9 +38,9 @@ const SideWidget = ({ contactData, makes, models }: SideWidgetProps) => {
     const price = Math.ceil(loanAmount / 0.9);
 
     // Apply the calculated max price as a filter
-    router.push(`/used-cars?maxPrice=${price.toString()}&sortBy=price`)
+    router.push(`/usedcars?maxPrice=${price.toString()}&sortBy=price`)
     console.log(pathname)
-    // if (pathname.includes('/used-cars')) {
+    // if (pathname.includes('/usedcars')) {
     //   window.location.reload()
     // }
     setShowBudgetModal(false)

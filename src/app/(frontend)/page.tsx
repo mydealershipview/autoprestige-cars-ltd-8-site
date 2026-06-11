@@ -124,7 +124,7 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6">
             Browse our selection of hand-picked prestige and performance cars
           </p>
-          <Link href="/used-cars" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+          <Link href="/usedcars" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
             BROWSE SHOWROOM <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
@@ -235,7 +235,7 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6 leading-relaxed">
             {displayName} specialises in supplying prestige and performance vehicles with standout design and confidence-inspiring performance.
           </p>
-          <Link href="/profile" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
+          <Link href="/contents/profile" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
             READ MORE <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>

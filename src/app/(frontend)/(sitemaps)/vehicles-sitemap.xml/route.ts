@@ -53,7 +53,7 @@ const getVehiclesSitemap = unstable_cache(
         .map((vehicle) => {
           const slug = generateVehicleSlug(vehicle)
           return {
-            loc: `${SITE_URL}/used-cars/${slug}`,
+            loc: `${SITE_URL}/usedcars/${slug}`,
             lastmod: vehicle.metadata.lastUpdated || dateFallback,
             changefreq: 'weekly' as const,
             priority: 0.8,
@@ -77,7 +77,7 @@ const getVehiclesSitemap = unstable_cache(
           .map((vehicle) => {
             const slug = generateVehicleSlug(vehicle)
             return {
-              loc: `${SITE_URL}/used-cars/${slug}`,
+              loc: `${SITE_URL}/usedcars/${slug}`,
               lastmod: vehicle.metadata.lastUpdated || dateFallback,
               changefreq: 'weekly' as const,
               priority: 0.8,

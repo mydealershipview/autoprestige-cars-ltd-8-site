@@ -1,8 +1,8 @@
 
 import type { Metadata } from 'next'
-import UsedCarsComponent from '../_components/sold-cars'
+import UsedCarsComponent from '../../_components/sold-cars'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
-import NotFound from '../../not-found'
+import NotFound from '../../../not-found'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
@@ -32,6 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function UsedCarsPage() {
-  return <NotFound />
+  // return <NotFound />
   return <UsedCarsComponent listingsData={null} />
 }

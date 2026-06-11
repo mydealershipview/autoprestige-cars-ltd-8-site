@@ -14,7 +14,7 @@ module.exports = {
     '/vehicles-makes-sitemap.xml',
     '/*', 
     '/posts/*',
-    '/used-cars/*' // Exclude dynamic vehicle pages since they're in vehicles-sitemap.xml
+    '/usedcars/*' // Exclude dynamic vehicle pages since they're in vehicles-sitemap.xml
   ],
   robotsTxtOptions: {
     additionalSitemaps: [

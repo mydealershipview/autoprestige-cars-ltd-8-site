@@ -203,7 +203,7 @@ export default async function IndividualListingPage({ params }: { params: Promis
           <h1 className="text-2xl font-black tracking-widest uppercase text-white mb-4">Vehicle Not Found</h1>
           <p className="text-white/60 text-sm mb-8">{'The vehicle you\'re looking for could not be found.'}</p>
           <Link
-            href="/used-cars"
+            href="/usedcars"
             className="inline-flex items-center justify-center px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold tracking-widest uppercase !transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

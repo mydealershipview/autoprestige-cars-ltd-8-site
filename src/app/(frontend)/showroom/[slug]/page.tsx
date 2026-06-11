@@ -29,5 +29,5 @@ export default async function ShowroomSlugRedirectPage({
 }) {
   const { slug } = await params
   const resolved = await searchParams
-  redirect(`/used-cars/${slug}${toQueryString(resolved)}`)
+  redirect(`/usedcars/${slug}${toQueryString(resolved)}`)
 }

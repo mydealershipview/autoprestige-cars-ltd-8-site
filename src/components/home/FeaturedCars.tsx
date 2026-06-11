@@ -71,7 +71,7 @@ export function FeaturedCars() {
               className="bg-[#1c1c1c] flex flex-col group h-full w-full"
             >
               {/* Image Section */}
-              <Link href={`/used-cars/${car.id}`} className="aspect-[4/3] w-full overflow-hidden relative block bg-black">
+              <Link href={`/usedcars/${car.id}`} className="aspect-[4/3] w-full overflow-hidden relative block bg-black">
                 <img 
                   src={car.img} 
                   alt={`${car.make} ${car.model}`} 
@@ -86,7 +86,7 @@ export function FeaturedCars() {
               <div className="p-6 md:p-8 flex flex-col flex-grow text-center">
                 
                 {/* Title */}
-                <Link href={`/used-cars/${car.id}`} className="mb-4 block text-white hover:text-zinc-300 !transition-colors">
+                <Link href={`/usedcars/${car.id}`} className="mb-4 block text-white hover:text-zinc-300 !transition-colors">
                   <h3 className="text-[13px] md:text-sm font-light tracking-widest uppercase leading-relaxed">
                     {car.make} {car.model} <br />
                     {car.trim}

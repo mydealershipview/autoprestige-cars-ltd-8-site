@@ -69,7 +69,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
           <h1 className="text-4xl md:text-5xl font-black tracking-wide uppercase mb-6">{plate.plate}</h1>
 
           <Link
-            href="/reg-plates"
+            href="/offers/reg-plates"
             className="inline-block border border-blue-800/60 bg-black px-4 py-2 text-sm font-semibold text-white/90 hover:text-white hover:border-blue-500 !transition-colors"
           >
             {'<<< Go Back'}

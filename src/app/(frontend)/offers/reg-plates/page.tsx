@@ -40,7 +40,7 @@ export default function RegPlatesPage() {
           {REG_PLATES.map((plate) => (
             <Link
               key={plate.slug}
-              href={`/reg-plates/${plate.slug}`}
+              href={`/offers/reg-plates/${plate.slug}`}
               className="group border border-white/10 bg-[#111111] hover:border-blue-500/50 !transition-colors min-h-[420px] p-4 flex flex-col"
             >
               <div className="flex-1" />

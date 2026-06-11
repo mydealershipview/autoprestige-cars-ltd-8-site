@@ -65,7 +65,7 @@ export default function RegPlatesSupportFooter() {
             Privacy Policy
           </Link>{' '}
           |{' '}
-          <Link href="/cookies" className="hover:text-blue-400 !transition-colors">
+          <Link href="/cookie-policy" className="hover:text-blue-400 !transition-colors">
             Cookie Policy
           </Link>
         </p>

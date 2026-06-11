@@ -58,46 +58,46 @@ const getVehiclesMakesSitemap = unstable_cache(
 
       const sitemap = [
         {
-          loc: `${SITE_URL}/used-cars`,
+          loc: `${SITE_URL}/usedcars`,
           lastmod: dateFallback,
           changefreq: 'daily' as const,
           priority: 0.9,
         },
         ...makes.map((make) => ({
           loc: xmlEncodeUrl(
-            `${SITE_URL}/used-cars?make=${encodeURIComponent(make.name)}`
+            `${SITE_URL}/usedcars?make=${encodeURIComponent(make.name)}`
           ),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.7,
         })),
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?fuelType=Petrol`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?fuelType=Petrol`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.6,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?fuelType=Diesel`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?fuelType=Diesel`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.6,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?fuelType=Electric`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?fuelType=Electric`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.6,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?fuelType=Hybrid`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?fuelType=Hybrid`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.6,
         },
         {
           loc: xmlEncodeUrl(
-            `${SITE_URL}/used-cars?transmissionType=Automatic`
+            `${SITE_URL}/usedcars?transmissionType=Automatic`
           ),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
@@ -105,52 +105,52 @@ const getVehiclesMakesSitemap = unstable_cache(
         },
         {
           loc: xmlEncodeUrl(
-            `${SITE_URL}/used-cars?transmissionType=Manual`
+            `${SITE_URL}/usedcars?transmissionType=Manual`
           ),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.6,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?bodyType=Hatchback`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?bodyType=Hatchback`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.5,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?bodyType=Saloon`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?bodyType=Saloon`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.5,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?bodyType=Estate`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?bodyType=Estate`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.5,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?bodyType=SUV`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?bodyType=SUV`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.5,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?maxPrice=10000`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?maxPrice=10000`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.5,
         },
         {
           loc: xmlEncodeUrl(
-            `${SITE_URL}/used-cars?minPrice=10000&maxPrice=20000`
+            `${SITE_URL}/usedcars?minPrice=10000&maxPrice=20000`
           ),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.5,
         },
         {
-          loc: xmlEncodeUrl(`${SITE_URL}/used-cars?minPrice=20000`),
+          loc: xmlEncodeUrl(`${SITE_URL}/usedcars?minPrice=20000`),
           lastmod: dateFallback,
           changefreq: 'weekly' as const,
           priority: 0.5,
@@ -194,14 +194,14 @@ const getVehiclesMakesSitemap = unstable_cache(
 
         return [
           {
-            loc: `${SITE_URL}/used-cars`,
+            loc: `${SITE_URL}/usedcars`,
             lastmod: dateFallback,
             changefreq: 'daily' as const,
             priority: 0.9,
           },
           ...makes.map((make) => ({
             loc: xmlEncodeUrl(
-              `${SITE_URL}/used-cars?make=${encodeURIComponent(make.name)}`
+              `${SITE_URL}/usedcars?make=${encodeURIComponent(make.name)}`
             ),
             lastmod: dateFallback,
             changefreq: 'weekly' as const,
@@ -230,14 +230,14 @@ const getVehiclesMakesSitemap = unstable_cache(
 
         return [
           {
-            loc: `${SITE_URL}/used-cars`,
+            loc: `${SITE_URL}/usedcars`,
             lastmod: dateFallback,
             changefreq: 'daily' as const,
             priority: 0.9,
           },
           ...commonMakes.map((make) => ({
             loc: xmlEncodeUrl(
-              `${SITE_URL}/used-cars?make=${encodeURIComponent(make)}`
+              `${SITE_URL}/usedcars?make=${encodeURIComponent(make)}`
             ),
             lastmod: dateFallback,
             changefreq: 'weekly' as const,
