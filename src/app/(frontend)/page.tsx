@@ -11,10 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://template-8.mydealershipview.com'
   const title = `${dealership.name} | Prestige Vehicle Dealership`
   const description =
-    dealership.seoText?.length > 100
-      ? dealership.seoText
-      : `Browse quality used prestige vehicles at ${dealership.name} in ${dealership.address.city || 'Bradford'}. Car finance, part exchange, and warranty available. Visit our showroom or apply online today.`
-
+    dealership.seoText || `${dealership.name} - ${dealership.tagline || 'Trusted used car specialists.'}`
+    
   return {
     title,
     description,

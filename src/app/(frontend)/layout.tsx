@@ -59,9 +59,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const serverUrl = getServerSideURL()
   const title = `${dealership.name} | Quality Used Cars`
   const description =
-    dealership.seoText?.length > 100
-      ? dealership.seoText
-      : `Browse quality used prestige vehicles at ${dealership.name} in ${dealership.address.city || 'Bradford'}. Car finance, part exchange, and warranty available. Visit our showroom or apply online today.`
+    dealership.seoText ||
+    `Browse quality used prestige vehicles at ${dealership.name} in ${dealership.address.city || 'Bradford'}. Car finance, part exchange, and warranty available. Visit our showroom or apply online today.`
 
   return {
     metadataBase: new URL(serverUrl),
