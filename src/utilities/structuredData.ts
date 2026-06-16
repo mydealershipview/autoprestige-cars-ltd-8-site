@@ -21,16 +21,27 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         alternateName: dealership.name,
         description:
           dealership.seoText ||
-          `${dealership.name} is a trusted used car dealership offering prestige dealership vehicles and customer-first support.`,
+          `${dealership.name} is a trusted independent used car dealership in ${dealership.address.city || 'Bradford'}, West Yorkshire, specialising in prestige and performance vehicles with car finance, part exchange, and warranty available.`,
         url: baseUrl,
         telephone: dealership.phone,
         email: dealership.email,
         address: {
           '@type': 'PostalAddress',
           streetAddress: addressLine,
-          addressLocality: dealership.address.city,
+          addressLocality: dealership.address.city || 'Bradford',
+          addressRegion: 'West Yorkshire',
           postalCode: dealership.address.postcode,
           addressCountry: dealership.address.country || 'GB',
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: dealership.address.lat || '53.7959',
+          longitude: dealership.address.lng || '-1.7594',
+        },
+        areaServed: {
+          '@type': 'City',
+          name: dealership.address.city || 'Bradford',
+          sameAs: 'https://en.wikipedia.org/wiki/Bradford',
         },
         openingHoursSpecification: [
           {
@@ -132,6 +143,52 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             item: baseUrl
           }
         ]
+      },
+      {
+        '@type': 'FAQPage',
+        '@id': `${baseUrl}/#faq`,
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What types of vehicles does Autoprestige Cars sell?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: `${dealership.name} specialises in prestige and performance vehicles from leading manufacturers including BMW, Mercedes-Benz, Audi, Land Rover, and Porsche. Every vehicle is hand-picked and undergoes a rigorous multi-point inspection before sale.`,
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Do you offer car finance?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: `Yes, ${dealership.name} offers flexible car finance options including Hire Purchase (HP) and Personal Contract Purchase (PCP). As an FCA-authorised credit broker (FCA No. ${dealership.fcaNumber || '715892'}), we work with a panel of carefully selected lenders to find competitive rates. Apply online or speak to our finance team.`,
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I part exchange my current car?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: `Yes, ${dealership.name} offers competitive part exchange valuations. Simply provide your vehicle details online or visit our showroom in ${dealership.address.city || 'Bradford'} for a no-obligation valuation. We accept part exchanges against any vehicle in our inventory, or we can purchase your car outright.`,
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Do your vehicles come with a warranty?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: `Yes, all vehicles from ${dealership.name} come with warranty protection. We partner with leading providers including the RAC to offer extended warranty coverage. Plans range from basic powertrain protection to fully comprehensive packages. Speak to our team about the right cover for your vehicle.`,
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Where is Autoprestige Cars located?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: `${dealership.name} is based in ${dealership.address.city || 'Bradford'}, West Yorkshire. Our showroom is open Monday to Friday 9am–6pm, Saturday 9am–5pm, and Sunday by appointment. Call us on ${dealership.phone || '01274 488500'} or visit our contact page for directions.`,
+            },
+          },
+        ],
       }
     ]
   }

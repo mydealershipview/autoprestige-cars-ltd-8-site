@@ -16,6 +16,8 @@ const AddressSchema = new Schema(
     city: { type: String, default: "" },
     postcode: { type: String, default: "" },
     country: { type: String, default: "UK" },
+    lat: { type: String, default: "" },
+    lng: { type: String, default: "" },
   },
   { _id: false }
 );

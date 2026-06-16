@@ -186,6 +186,7 @@ export default function HomeHeader({
                 <Link
                     key="contact-form"
                     href="/contact#contact-form"
+                    aria-label="Contact form"
                     className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
                   >
                     {getSocialIcon('form')}

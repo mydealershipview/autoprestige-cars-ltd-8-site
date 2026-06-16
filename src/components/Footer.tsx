@@ -158,6 +158,7 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
                   <Link
                     key="contact-form"
                     href="/contact#contact-form"
+                    aria-label="Contact form"
                     className="flex items-center justify-center w-12 h-12 border border-white/20 hover:border-blue-500 hover:text-blue-400 !transition-colors"
                   >
                     {getSocialIcon("form")}

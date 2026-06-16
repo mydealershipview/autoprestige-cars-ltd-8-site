@@ -34,6 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="64x64" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href="/logo.png" rel="apple-touch-icon" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -58,8 +59,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const serverUrl = getServerSideURL()
   const title = `${dealership.name} | Quality Used Cars`
   const description =
-    dealership.seoText ||
-    `Browse quality used prestige vehicles at ${dealership.name} in ${dealership.address.city || 'Bradford'}. Car finance, part exchange, and warranty available. Visit our showroom or apply online today.`
+    dealership.seoText?.length > 100
+      ? dealership.seoText
+      : `Browse quality used prestige vehicles at ${dealership.name} in ${dealership.address.city || 'Bradford'}. Car finance, part exchange, and warranty available. Visit our showroom or apply online today.`
 
   return {
     metadataBase: new URL(serverUrl),

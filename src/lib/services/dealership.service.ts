@@ -28,6 +28,8 @@ function buildDefaults(): DealershipInfo {
       city: "London",
       postcode: "W1A 1AA",
       country: "UK",
+      lat: "",
+      lng: "",
     },
     logoUrl: "",
     social: {
@@ -87,6 +89,8 @@ export const getDealershipInfo = cache(async (): Promise<DealershipInfo> => {
         city: doc.address?.city ?? "",
         postcode: doc.address?.postcode ?? "",
         country: doc.address?.country ?? "UK",
+        lat: doc.address?.lat ?? "",
+        lng: doc.address?.lng ?? "",
       },
       logoUrl: doc.logoUrl,
       social: {
