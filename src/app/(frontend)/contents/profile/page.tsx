@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Profile | Autoprestige',
     description:
-      'Family run independent sports and prestige car specialist with over 15 years experience.',
+      'Purveyors of Fine Automobiles. Family run independent sports and prestige car specialist with over years experience.',
     type: 'website',
     locale: 'en_GB',
   },

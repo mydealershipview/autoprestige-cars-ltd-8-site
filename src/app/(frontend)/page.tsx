@@ -9,10 +9,10 @@ import { getDealershipInfo } from '@/lib/services/dealership.service'
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://template-8.mydealershipview.com'
-  const title = `${dealership.name} | Prestige Vehicle Dealership`
+  const title = `${dealership.name} | Purveyors of Fine Automobiles`
   const description =
-    dealership.seoText || `${dealership.name} - ${dealership.tagline || 'Trusted used car specialists.'}`
-    
+    dealership.seoText || `${dealership.name} - ${dealership.tagline || 'Purveyors of Fine Automobiles. Trusted used car specialists.'}`
+
   return {
     title,
     description,
@@ -27,6 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'prestige vehicles',
       'car dealership',
       'prestige car dealer',
+      'purveyors of fine automobiles',
       dealership.name,
       dealership.address.city,
     ]
@@ -43,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${serverUrl}/website-template-OG.webp`,
           width: 1200,
           height: 630,
-          alt: `${dealership.name} — Prestige Vehicles in ${dealership.address.city || 'Bradford'}`,
+          alt: `${dealership.name} — Purveyors of Fine Automobiles in ${dealership.address.city || 'Bradford'}`,
         },
       ],
     },
@@ -112,10 +113,10 @@ const Home = async () => {
             
             <div className="flex flex-col">
               <h1 className="text-3xl lg:text-4xl font-black tracking-widest uppercase mb-1 drop-shadow-lg">
-                {displayName} — Prestige Vehicle Dealership
+                {displayName}
               </h1>
               <p className="text-sm lg:text-base text-gray-200 tracking-widest font-medium uppercase drop-shadow-md">
-                {displayTagline}
+                Purveyors of Fine Automobiles
               </p>
             </div>
           </div>
@@ -209,9 +210,6 @@ const Home = async () => {
           <p className="text-base text-gray-300 font-medium mb-6">
             Protect your new car with warranty from leading third party providers or our in house warranty
           </p>
-          {/* <Link href="/warranty" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
-            VIEW PACKAGES <ChevronRight className="h-4 w-4 text-blue-400" />
-          </Link> */}
         </AnimatedCard>
       </section>
 
@@ -250,7 +248,7 @@ const Home = async () => {
         <div className="absolute inset-0 z-0">
           <img 
             src="/car_5.jpg" 
-            alt={`Welcome to ${displayName} — prestige and performance vehicles in Bradford, West Yorkshire`} 
+            alt={`Welcome to ${displayName} — purveyors of fine automobiles, prestige and performance vehicles in Bradford, West Yorkshire`} 
             className="w-full h-full object-cover"
             width="1920"
             height="1080"
@@ -274,6 +272,32 @@ const Home = async () => {
             READ MORE <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
+      </section>
+
+      {/* FAQ & Trust Section — GEO-optimised for AI citation */}
+      <section className="relative py-20 px-6 lg:px-12 bg-[#0a0a0a]">
+        <div className="max-w-4xl mx-auto">
+          <h4 className="text-2xl lg:text-3xl font-black tracking-widest uppercase mb-8 text-center">
+            Purveyors of Fine Automobiles in {dealership.address.city || 'Bradford'}
+          </h4>
+
+          <div className="text-gray-300 text-sm lg:text-base leading-relaxed space-y-6">
+            <h5>
+              Welcome to {displayName}, your trusted independent car dealership based in {dealership.address.city || 'Bradford'}, West Yorkshire. We specialise in sourcing and supplying the finest prestige and performance vehicles, offering a carefully curated selection of hand-picked cars from leading manufacturers including BMW, Mercedes-Benz, Audi, Land Rover, and Porsche. With over a decade of experience in the prestige car market, we have built a reputation for quality, transparency, and exceptional customer service.
+            </h5>
+
+            <h5 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Do you offer car finance?</h5>
+            <h6>
+              Yes, we offer flexible finance options to suit your budget. As an FCA-authorised credit broker (FCA No. {dealership.fcaNumber || '715892'}), we work with a panel of carefully selected lenders to find the most competitive rates. Apply online in minutes, or speak to our finance team on <span className="text-white font-semibold">{dealership.phone || '01274 488500'}</span>. All finance is subject to status — UK residents aged 18+ only.
+            </h6>
+
+
+            <h5 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Where are you based?</h5>
+            <h6>
+              Our showroom is located in {dealership.address.city || 'Bradford'}, West Yorkshire. We serve customers across Bradford, Leeds, Huddersfield, Wakefield, Halifax, and throughout West Yorkshire. Call us on <span className="text-white font-semibold">{dealership.phone || '01274 488500'}</span> to arrange a viewing or test drive, or visit our contact page for directions.
+            </h6>
+          </div>
+        </div>
       </section>
 
       {/* Recently Sold Slider */}

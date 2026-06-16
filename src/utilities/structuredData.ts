@@ -21,7 +21,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         alternateName: dealership.name,
         description:
           dealership.seoText ||
-          `${dealership.name} is a trusted independent used car dealership in ${dealership.address.city || 'Bradford'}, West Yorkshire, specialising in prestige and performance vehicles with car finance, part exchange, and warranty available.`,
+          `${dealership.name} is Purveyors of Fine Automobiles, a trusted independent used car dealership in ${dealership.address.city || 'Bradford'}, West Yorkshire, specialising in prestige and performance vehicles with car finance, part exchange, and warranty available.`,
         url: baseUrl,
         telephone: dealership.phone,
         email: dealership.email,
