@@ -4,6 +4,8 @@ export type Address = {
   city: string;
   postcode: string;
   country: string;
+  lat?: string;
+  lng?: string;
 };
 
 export type SocialLinks = {
