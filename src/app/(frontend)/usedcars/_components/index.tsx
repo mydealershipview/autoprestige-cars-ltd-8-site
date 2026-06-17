@@ -1078,12 +1078,12 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                         </div>
 
                         {/* MORE button */}
-                        {/* <Link
+                        <Link
                           href={`/usedcars/${slug}`}
                           className="block text-center bg-blue-500 hover:bg-blue-400 !transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
                         >
                           More &rsaquo;
-                        </Link> */}
+                        </Link>
                       </div>
                     )
                   })}
