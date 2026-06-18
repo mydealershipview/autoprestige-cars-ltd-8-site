@@ -6,7 +6,7 @@ import { ContactData } from "@/types/contact"
 // Fallback social links
 export const fallbackSocialLinks = [
   { icon: Facebook, href: "https://facebook.com", label: "Facebook", platform: "facebook" },
-  { icon: Twitter, href: "https://twitter.com", label: "Twitter", platform: "twitter" },
+  // { icon: Twitter, href: "https://twitter.com", label: "Twitter", platform: "twitter" },
   { icon: Instagram, href: "https://instagram.com", label: "Instagram", platform: "instagram" },
   { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn", platform: "linkedin" },
   { icon: Youtube, href: "https://youtube.com", label: "YouTube", platform: "youtube" }
