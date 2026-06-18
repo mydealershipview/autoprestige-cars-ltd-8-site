@@ -83,10 +83,10 @@ export default function PartExchangeModal({
         </div>
 
         <div className="overflow-y-auto hide-scrollbar pr-2 flex-1">
-          <div className="mb-8 p-4 bg-zinc-900 border border-white/5">
-            <p className="text-sm text-zinc-400 uppercase tracking-widest mb-1">Interested in</p>
-            <p className="text-lg font-medium">{vehicleMake} {vehicleModel}</p>
-            <p className="text-sm text-zinc-400 mt-1">Price: £{vehiclePrice ? new Intl.NumberFormat('en-GB').format(vehiclePrice) : 'POA'}</p>
+          <div className="mb-8 p-4 border-l-2 border-amber-400 bg-amber-400/8">
+            <p className="text-sm text-amber-400 uppercase tracking-widest mb-1">Interested in</p>
+            <p className="text-lg font-medium text-white">{vehicleMake} {vehicleModel}</p>
+            <p className="text-sm text-amber-200 mt-1">Price: £{vehiclePrice ? new Intl.NumberFormat('en-GB').format(vehiclePrice) : 'POA'}</p>
           </div>
 
           <form className="space-y-8" onSubmit={handleSubmit}>
@@ -120,7 +120,7 @@ export default function PartExchangeModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Registration</label>
-                  <input value={userRegistration} onChange={(e) => setUserRegistration(e.target.value)} type="text" required className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none focus:border-white/30 uppercase" placeholder="e.g. AB12 CDE" />
+                  <input value={userRegistration} onChange={(e) => setUserRegistration(e.target.value)} type="text" required className="w-full font-semibold uppercase bg-yellow-400 border border-yellow-400 text-black placeholder-black/50 p-3 text-sm focus:outline-none focus:border-yellow-300 !transition-colors" placeholder="e.g. AB12 CDE" />
                 </div>
                 <div>
                   <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Current Mileage</label>

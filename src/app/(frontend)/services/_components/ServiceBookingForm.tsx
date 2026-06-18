@@ -185,7 +185,7 @@ export default function ServiceBookingForm() {
               value={formData.registration}
               onChange={handleChange}
               placeholder="VRM"
-              className={`${inputClass} bg-yellow-400 text-black placeholder-black/50 border-yellow-400 focus:border-yellow-300`}
+              className={`${inputClass} bg-yellow-400 text-black! font-semibold placeholder-black/50 border-yellow-400 focus:border-yellow-300 uppercase`}
             />
           </div>
 

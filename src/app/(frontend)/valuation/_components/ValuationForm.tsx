@@ -267,7 +267,7 @@ export default function ValuationForm() {
               required
               value={formData.registration}
               onChange={handleChange}
-              className={`${inputClass} uppercase`}
+              className="w-full font-semibold uppercase bg-yellow-400 border border-yellow-400 text-black placeholder-black/50 px-4 py-3 focus:outline-none focus:border-yellow-300 !transition-colors text-sm uppercase"
               placeholder="AB12 CDE"
             />
           </div>
