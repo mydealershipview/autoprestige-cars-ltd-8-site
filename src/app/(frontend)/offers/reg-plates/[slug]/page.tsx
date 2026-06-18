@@ -2,27 +2,20 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
-  getRegPlateBySlug,
-  REG_PLATES,
   REG_PLATES_PHONE,
-  REG_PLATES_TEASER,
 } from '@/data/regPlates'
+import { getRegPlateBySlugFromDB } from '@/lib/services/regPlates.service'
 import RegPlatesSupportFooter from '../_components/RegPlatesSupportFooter'
 
 type RegPlateDetailPageProps = {
   params: Promise<{ slug: string }>
 }
 
-export const dynamic = 'force-static'
-export const revalidate = 600
-
-export function generateStaticParams() {
-  return REG_PLATES.map((plate) => ({ slug: plate.slug }))
-}
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: RegPlateDetailPageProps): Promise<Metadata> {
   const { slug } = await params
-  const plate = getRegPlateBySlug(slug)
+  const plate = await getRegPlateBySlugFromDB(slug)
 
   if (!plate) {
     return {
@@ -44,7 +37,7 @@ export async function generateMetadata({ params }: RegPlateDetailPageProps): Pro
 
 export default async function RegPlateDetailPage({ params }: RegPlateDetailPageProps) {
   const { slug } = await params
-  const plate = getRegPlateBySlug(slug)
+  const plate = await getRegPlateBySlugFromDB(slug)
 
   if (!plate) {
     notFound()
@@ -76,8 +69,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
           </Link>
 
           <p className="mt-8 text-3xl md:text-5xl leading-tight font-black text-white/90">
-            Should you require any further assistance please click the button, fill out the form and
-            we&apos;ll be in touch as soon as possible.
+            {plate.details}
           </p>
 
           <p className="mt-6 text-lg text-white/80">
@@ -87,10 +79,12 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
             </a>
           </p>
 
-          <p className="mt-4 text-xl font-bold uppercase text-white">PRICE - POA</p>
+          <p className="mt-4 text-xl font-bold uppercase text-white">
+            {plate.price == null ? 'PRICE - POA' : `PRICE - £${new Intl.NumberFormat('en-GB').format(plate.price)}`}
+          </p>
 
           <div className="mt-10 border-t border-white/10 pt-8">
-            <p className="text-lg text-white/75">{REG_PLATES_TEASER}</p>
+            <p className="text-lg text-white/75">{plate.teaser}</p>
           </div>
         </div>
 

@@ -78,7 +78,7 @@ export type RegPlateRecord = {
   teaser: string
 }
 
-function plateToSlug(plate: string): string {
+export function plateToSlug(plate: string): string {
   return plate
     .toLowerCase()
     .trim()

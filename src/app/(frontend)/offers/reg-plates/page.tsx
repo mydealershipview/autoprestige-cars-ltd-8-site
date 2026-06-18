@@ -1,14 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
-  REG_PLATES,
   REG_PLATES_PHONE,
-  REG_PLATES_TEASER,
 } from '@/data/regPlates'
+import { getRegPlates } from '@/lib/services/regPlates.service'
 import RegPlatesSupportFooter from './_components/RegPlatesSupportFooter'
 
-export const dynamic = 'force-static'
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Reg Plates | Autoprestige',
@@ -21,7 +19,9 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RegPlatesPage() {
+export default async function RegPlatesPage() {
+  const plates = await getRegPlates()
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-[1480px] px-4 pt-28 pb-16">
@@ -36,8 +36,16 @@ export default function RegPlatesPage() {
           REG PLATES AT AUTOPRESTIGE
         </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-          {REG_PLATES.map((plate) => (
+        {plates.length === 0 ? (
+          <div className="border border-white/10 bg-[#111111] px-6 py-12 text-center">
+            <p className="text-xl font-bold uppercase tracking-wide text-white">
+              No reg plates available
+            </p>
+            <p className="mt-2 text-white/60">Please contact us for current private registrations.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+            {plates.map((plate) => (
             <Link
               key={plate.slug}
               href={`/offers/reg-plates/${plate.slug}`}
@@ -48,14 +56,20 @@ export default function RegPlatesPage() {
                 {plate.plate}
               </h2>
               <p className="mt-4 text-center text-white/75 leading-relaxed text-lg">
-                {REG_PLATES_TEASER}
+                {plate.teaser}
               </p>
+              {plate.showPriceOnCard && (
+                <p className="mt-4 text-center text-xl font-black uppercase text-white">
+                  {plate.price == null ? 'Price - POA' : `£${new Intl.NumberFormat('en-GB').format(plate.price)}`}
+                </p>
+              )}
               <span className="mt-6 w-full bg-blue-500 group-hover:bg-blue-600 !transition-colors text-white text-center font-semibold tracking-wide py-3">
                 More Details
               </span>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <RegPlatesSupportFooter />
       </div>

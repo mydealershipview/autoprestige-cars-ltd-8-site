@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       response.cookies.set('stock_admin_auth', 'authenticated', {
         httpOnly: true,
         sameSite: 'lax',
-        path: '/stock-admin',
+        path: '/',
         maxAge: 60 * 60 * 24 * 30, // 30 days
       })
       return response
@@ -51,6 +51,13 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE() {
   const response = NextResponse.json({ success: true })
+
+  response.cookies.set('stock_admin_auth', '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  })
 
   response.cookies.set('stock_admin_auth', '', {
     httpOnly: true,
