@@ -45,7 +45,9 @@ async function fetchAllListings(): Promise<AutoTraderVehicle[]> {
       const results = data.data?.vehicles || []
       
       if (results.length > 0) {
-        const filteredResults = results.filter((vehicle: any) => vehicle.metadata.lifecycleState === 'FORECOURT')
+        const filteredResults = results.filter((vehicle: any) => vehicle.metadata.lifecycleState === 'FORECOURT' && ( vehicle.adverts?.retailAdverts?.advertiserAdvert?.status === 'PUBLISHED'
+           || vehicle.advertiserAdvertStatus === 'PUBLISHED'
+          ))
         allListings.push(...filteredResults)
         
         // Check if there are more pages
