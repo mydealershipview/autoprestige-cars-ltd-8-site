@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { fetchAutoTraderListings, AutoTraderVehicle } from '../../../../utilities/autotrader'
 import { mergeVehicleWithPayloadData, fetchPayloadVehicleData, mergeVehiclesWithPayloadData } from '../../../../utilities/mergePayloadData'
 import { fetchOverridesMap, applyOverrideToVehicle } from '../../../../utilities/vehicleOverrides'
+import { getSoldCarVehicleByStockId } from '@/lib/services/soldCars.service'
 
 // Cache for storing all listings
 let allListingsCache: AutoTraderVehicle[] | null = null
@@ -197,17 +198,28 @@ export async function GET(
           vehicle = payloadVehicle
           console.log(`Found vehicle ${stockId} in Payload CMS`)
         } else {
+          const soldVehicle = await getSoldCarVehicleByStockId(stockId)
+          if (soldVehicle) {
+            vehicle = soldVehicle
+            console.log(`Found sold vehicle ${stockId} in local sold cars DB`)
+          } else {
+            return NextResponse.json(
+              { error: 'Vehicle not found' },
+              { status: 404 }
+            )
+          }
+        }
+      } catch (payloadError) {
+        console.error('Error fetching vehicle from Payload:', payloadError)
+        const soldVehicle = await getSoldCarVehicleByStockId(stockId)
+        if (soldVehicle) {
+          vehicle = soldVehicle
+        } else {
           return NextResponse.json(
             { error: 'Vehicle not found' },
             { status: 404 }
           )
         }
-      } catch (payloadError) {
-        console.error('Error fetching vehicle from Payload:', payloadError)
-        return NextResponse.json(
-          { error: 'Vehicle not found' },
-          { status: 404 }
-        )
       }
     }
 
