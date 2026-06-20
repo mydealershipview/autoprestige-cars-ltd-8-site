@@ -142,7 +142,8 @@ export function SoldCarsSlider() {
 
               return (
                 <SwiperSlide key={vehicle.metadata?.stockId || `${slug}-${i}`}>
-                  <Link href={`/usedcars/${slug}`} className="block group outline-none">
+                  {/* <Link href={`/usedcars/${slug}`} className="block group outline-none"> */}
+                  <div className="block group outline-none">
                     <div className="bg-zinc-900 border border-zinc-700 overflow-hidden group-hover:border-zinc-500 transition-colors duration-300">
 
                       {/* Image */}
@@ -209,7 +210,7 @@ export function SoldCarsSlider() {
                       {/* Blue hover accent line */}
                       <div className="h-0.5 w-0 bg-blue-500 transition-all duration-300 group-hover:w-full" />
                     </div>
-                  </Link>
+                  </div>
                 </SwiperSlide>
               )
             })}
