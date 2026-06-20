@@ -977,7 +977,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
                                 Our Price
                               </p>
-                              <p className="text-sm font-bold text-white leading-tight">
+                              <p className={`text-sm font-bold leading-tight ${isSold ? 'line-through text-gray-500' : 'text-white'}`}>
                                 {vehiclePrice ? formatPrice(vehiclePrice) : 'POA'}
                               </p>
                             </div>
@@ -991,7 +991,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                                     Soft Search
                                   </span>
                                 </div>
-                                <p className="text-sm font-bold text-blue-400 leading-tight">{monthlyPrice}/mo</p>
+                                <p className={`text-sm font-bold leading-tight ${isSold ? 'line-through text-gray-500' : 'text-blue-400'}`}>{monthlyPrice}/mo</p>
                                 <p className="text-[8px] text-gray-200 font-medium leading-tight mt-0.5">
                                   For illustration only ·{' '}
                                   <Link
