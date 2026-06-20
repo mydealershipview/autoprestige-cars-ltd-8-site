@@ -981,7 +981,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                                 {vehiclePrice ? formatPrice(vehiclePrice) : 'POA'}
                               </p>
                             </div>
-                            {vehiclePrice && monthlyPrice !== 'N/A' && (
+                            {!isSold && vehiclePrice && monthlyPrice !== 'N/A' && (
                               <div>
                                 <div className="flex items-center gap-1.5">
                                   <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
