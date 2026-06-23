@@ -266,6 +266,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   const handlePageChange = (page: number) => {
     updateURL(filters, page, sortBy, sortOrder)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const formatMileage = (mileage: number | null) => {
