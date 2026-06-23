@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
@@ -68,6 +68,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   // Get current page from URL params
   const currentPage = parseInt(searchParams.get('page') || '1', 10)
+  const headerRef = useRef<HTMLHeadingElement>(null)
 
   // Get sorting from URL params
   useEffect(() => {
@@ -266,7 +267,10 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   const handlePageChange = (page: number) => {
     updateURL(filters, page, sortBy, sortOrder)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    headerRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
   }
 
   const formatMileage = (mileage: number | null) => {
@@ -479,7 +483,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
       {/* Page header */}
       <div className="text-center py-9 border-b border-white/10">
-        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-[0.2em] uppercase">Our Showroom</h1>
+        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-[0.2em] uppercase" ref={headerRef}>Our Showroom</h1>
         <p className="text-sm tracking-[0.15em] text-gray-400 mt-2 uppercase font-medium">
           {loading ? '...' : ``}
         </p>
