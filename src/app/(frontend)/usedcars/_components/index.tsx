@@ -474,7 +474,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   ]
 
   return (
-    <main className="min-h-screen bg-[#111111] text-white">
+    <main className="min-h-screen bg-[#111111] text-white overflow-x-hidden">
       {/* Navbar spacer — nav is rendered globally via Layout */}
       <div className="h-20" />
 
@@ -896,7 +896,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     return (
                       <div
                         key={stockId || slug}
-                        className="bg-[#1a1a1a] flex flex-col overflow-hidden group w-[350px] md:w-auto max-w-[400px] md:max-w-[450px] mx-auto md:mx-0"
+                        className="bg-[#1a1a1a] flex flex-col overflow-hidden group w-full max-w-[400px] md:max-w-[450px] mx-auto md:mx-0"
                       >
                         {/* Image */}
                         <div className="relative h-64 md:h-54 overflow-hidden">
