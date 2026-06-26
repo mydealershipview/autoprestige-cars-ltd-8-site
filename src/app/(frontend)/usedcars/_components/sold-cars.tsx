@@ -276,20 +276,27 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   }
 
   const calculateMonthlyPayment = (price: number | null): string => {
-    if (!price || price <= 0) return 'N/A'
-    const deposit = price * 0.2
-    const principal = price - deposit
+    if (!price || price <= 0) return 'N/A';
+
+    const deposit = price * 0.2;
+    const principal = price - deposit;
+
     // 8.9% APR, 60 months
-    const monthlyRate = Math.pow(1.089, 1 / 12) - 1
-    const n = 60
-    const monthly = (principal * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1)
+    const annualRate = 0.089;
+    const monthlyRate = annualRate / 12;
+    const n = 60;
+
+    const monthly =
+      (principal * monthlyRate * Math.pow(1 + monthlyRate, n)) /
+      (Math.pow(1 + monthlyRate, n) - 1);
+
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(monthly)
-  }
+    }).format(monthly);
+  };
 
   const isULEZCompliant = (vehicle: AutoTraderVehicle): boolean => {
     const emissionClass = (vehicle.vehicle.emissionClass || '').toLowerCase()
@@ -410,13 +417,21 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   ]
 
   const estimateMonthlyFromPrice = (price: number): number => {
-    if (price <= 0) return 0
-    const deposit = price * 0.2
-    const principal = price - deposit
-    const monthlyRate = Math.pow(1.089, 1 / 12) - 1
-    const n = 60
-    return (principal * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1)
-  }
+    if (price <= 0) return 0;
+
+    const deposit = price * 0.2;
+    const principal = price - deposit;
+
+    // 8.9% APR, 60 months
+    const annualRate = 0.089;
+    const monthlyRate = annualRate / 12;
+    const n = 60;
+
+    return (
+      (principal * monthlyRate * Math.pow(1 + monthlyRate, n)) /
+      (Math.pow(1 + monthlyRate, n) - 1)
+    );
+  };
 
   const estimatePriceFromMonthly = (monthly: number): number => {
     if (monthly <= 0) return 0
