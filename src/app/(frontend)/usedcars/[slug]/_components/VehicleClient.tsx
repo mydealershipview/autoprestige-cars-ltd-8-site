@@ -183,7 +183,7 @@ export default function VehicleClient({
 
   const calculateMonthlyPayment = (priceValue: number | null) => {
     if (!priceValue || priceValue <= 0) return 'N/A'
-    const deposit = priceValue * 0.1
+    const deposit = priceValue * 0.2
     const loanAmount = priceValue - deposit
     const monthlyRate = 0.089 / 12
     const numPayments = 60
