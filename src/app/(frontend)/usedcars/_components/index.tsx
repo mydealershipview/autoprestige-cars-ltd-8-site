@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 import { Make, Model } from '@/utilities/types'
@@ -9,6 +10,17 @@ import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { ChevronDown, Search, CreditCard, Camera, Video, SlidersHorizontal, X } from 'lucide-react'
 import ReserveModal from '../[slug]/_components/modals/ReserveModal'
+
+const SoldVehiclesShowcase = dynamic(() => import('./SoldVehiclesShowcase'), {
+  ssr: false,
+  loading: () => (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className="h-56 animate-pulse rounded bg-[#181818]" />
+      ))}
+    </div>
+  ),
+})
 
 interface UsedCarsComponentProps {
   listingsData?: unknown
@@ -46,6 +58,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   const searchParams = useSearchParams()
 
   const [listings, setListings] = useState<AutoTraderVehicle[]>([])
+  const [showcaseSoldVehicles, setShowcaseSoldVehicles] = useState<AutoTraderVehicle[]>([])
+  const [showcaseLoading, setShowcaseLoading] = useState(true)
   const [reserveVehicle, setReserveVehicle] = useState<ReserveVehicleData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -184,6 +198,24 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     filters.minMileage,
     filters.maxMileage,
   ])
+
+  useEffect(() => {
+    setShowcaseLoading(true)
+    fetch('/api/sold-listings?page=1&pageSize=12&sortBy=price&sortOrder=desc', { cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json()
+      })
+      .then((data) => {
+        setShowcaseSoldVehicles(data.results || [])
+      })
+      .catch(() => {
+        setShowcaseSoldVehicles([])
+      })
+      .finally(() => {
+        setShowcaseLoading(false)
+      })
+  }, [])
 
   const updateURL = useCallback(
     (
@@ -539,6 +571,16 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             </div>
           </div>
 
+          <div className="border-b border-white/10 p-3">
+            <Link
+              href="/usedcars/searchgroup/sold"
+              className="flex items-center justify-between rounded border border-blue-400/30 bg-blue-400/10 px-3 py-3 text-xs font-extrabold uppercase tracking-wide text-blue-200 !transition-colors hover:bg-blue-400/15 hover:text-white"
+            >
+              Sold Cars
+              <span className="text-base leading-none">&rsaquo;</span>
+            </Link>
+          </div>
+
           {/* Manufacturer */}
           <FilterSection sectionKey="manufacturer" label="Manufacturer" isActive={!!filters.make}>
             <select
@@ -787,6 +829,30 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               <option value="year-desc">Year: Newest First</option>
             </select>
           </div>
+
+          {(showcaseLoading || showcaseSoldVehicles.length > 0) && (
+            <section className="border-b border-white/10 bg-[#0d0d0d] px-4 py-5">
+              <div className="mb-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300">
+                    Previously Sold
+                  </p>
+                </div>
+              </div>
+
+              {showcaseLoading && (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="h-56 animate-pulse rounded bg-[#181818]" />
+                  ))}
+                </div>
+              )}
+
+              {!showcaseLoading && showcaseSoldVehicles.length > 0 && (
+                <SoldVehiclesShowcase vehicles={showcaseSoldVehicles} />
+              )}
+            </section>
+          )}
 
           {/* Finance disclaimer */}
           <div className="text-center px-6 py-3 border-b border-white/5 bg-[#111111]">
@@ -1168,4 +1234,3 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     </main>
   )
 }
-
