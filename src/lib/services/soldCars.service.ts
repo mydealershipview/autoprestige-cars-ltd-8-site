@@ -190,7 +190,7 @@ export async function fetchSoldVehiclesFromDMS(): Promise<AutoTraderVehicle[]> {
   }
 
   const pageSize = 100
-  const soldListings: AutoTraderVehicle[] = []
+  let soldListings: AutoTraderVehicle[] = []
 
   try {
     let currentPage = 1
@@ -223,7 +223,9 @@ export async function fetchSoldVehiclesFromDMS(): Promise<AutoTraderVehicle[]> {
         hasMoreData = false
       }
     }
+    
 
+    soldListings = soldListings.filter(vehicle => vehicle.registration !== 'YJ16XAO')
     dmsSoldCache = soldListings
     dmsSoldCacheTimestamp = Date.now()
     return soldListings
