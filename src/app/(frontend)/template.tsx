@@ -44,7 +44,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
               }}
             >
               <img
-                src="/logo.png"
+                src="/logo2.png"
                 alt="Logo"
                 className="w-full h-auto object-contain"
               />

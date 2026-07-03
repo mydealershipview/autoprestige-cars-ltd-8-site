@@ -3,23 +3,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
-  ArrowLeft,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  MessageCircle,
+  ExternalLink,
+  Phone,
   X,
-  Maximize2,
-  MapPin,
 } from 'lucide-react'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
-
-import {
-  ReserveModal,
-  CallUsModal,
-  FinanceModal,
-  PartExchangeModal,
-  EmailModal,
-} from './modals'
 
 interface VehicleClientProps {
   vehicle: AutoTraderVehicle
@@ -29,19 +20,91 @@ interface VehicleClientProps {
   emailAddress: string
 }
 
+const money = (value: number | null | undefined) =>
+  value
+    ? new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(value)
+    : 'POA'
+
+const mileage = (value: number | null | undefined) =>
+  value ? `${new Intl.NumberFormat('en-GB').format(value)} miles` : 'N/A'
+
+interface SpecRow {
+  label: string
+  value: string
+  positive?: boolean
+}
+
 export default function VehicleClient({
   vehicle,
-  dealershipName,
   phoneNumber,
-  whatsappNumber,
   emailAddress,
 }: VehicleClientProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const lightboxThumbsRef = useRef<HTMLDivElement>(null)
 
-  const openLightbox = (idx: number) => {
-    setLightboxIndex(idx)
+  const make = vehicle.vehicle.make || vehicle.vehicle.standard?.make || ''
+  const model = vehicle.vehicle.model || vehicle.vehicle.standard?.model || ''
+  const year = vehicle.vehicle.yearOfManufacture
+  const price =
+    vehicle.adverts?.forecourtPrice?.amountGBP ||
+    vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP ||
+    vehicle.adverts?.retailAdverts?.suppliedPrice?.amountGBP
+  const images = (vehicle.media?.images || []).filter((image) => {
+    const href = image?.href?.toLowerCase() || ''
+    return href && !href.includes('youtube.com') && !href.includes('youtu.be') && !href.includes('vimeo.com')
+  })
+  const hasImages = images.length > 0
+  const activeImage = hasImages ? images[activeImageIndex].href : '/placeholder.svg'
+  const cleanPhone = phoneNumber || '07441 940552'
+  const telHref = `tel:${cleanPhone.replace(/\D/g, '')}`
+  const autoTraderUrl = vehicle.advertiser?.website || ''
+  const description =
+    vehicle.adverts?.retailAdverts?.description ||
+    `${year || ''} ${make} ${model} available now. Contact us for more information or to arrange a viewing.`
+
+  const tags = [
+    vehicle.vehicle.transmissionType || vehicle.vehicle.standard?.transmissionType,
+    vehicle.vehicle.bodyType || vehicle.vehicle.standard?.bodyType,
+    vehicle.vehicle.badgeEngineSizeLitres ? `${vehicle.vehicle.badgeEngineSizeLitres.toFixed(1)}L` : null,
+    vehicle.vehicle.colour || vehicle.vehicle.standard?.colour,
+  ].filter(Boolean)
+
+  const primarySpecRows: SpecRow[] = [
+    { label: 'Make', value: make || 'N/A' },
+    { label: 'Model', value: model || 'N/A' },
+    { label: 'Year', value: year?.toString() || 'N/A' },
+    { label: 'Body Style', value: vehicle.vehicle.bodyType || vehicle.vehicle.standard?.bodyType || 'N/A' },
+    { label: 'Colour', value: vehicle.vehicle.colour || vehicle.vehicle.standard?.colour || 'N/A' },
+    { label: 'Doors', value: vehicle.vehicle.doors?.toString() || 'N/A' },
+    {
+      label: 'Engine Size',
+      value: vehicle.vehicle.badgeEngineSizeLitres ? `${vehicle.vehicle.badgeEngineSizeLitres.toFixed(1)}L` : 'N/A',
+    },
+    { label: 'Fuel Type', value: vehicle.vehicle.fuelType || vehicle.vehicle.standard?.fuelType || 'N/A' },
+    {
+      label: 'Transmission',
+      value: vehicle.vehicle.transmissionType || vehicle.vehicle.standard?.transmissionType || 'N/A',
+    },
+  ]
+
+  const secondarySpecRows: SpecRow[] = [
+    { label: 'Mileage', value: mileage(vehicle.vehicle.odometerReadingMiles) },
+    {
+      label: 'Previous Owners',
+      value: vehicle.vehicle.owners ? `${vehicle.vehicle.owners} owner${vehicle.vehicle.owners === 1 ? '' : 's'}` : 'Unknown',
+    },
+    { label: 'Service History', value: vehicle.vehicle.serviceHistory || 'Unknown' },
+    { label: 'HPI Clear', value: 'Yes', positive: true },
+  ]
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index)
     document.body.style.overflow = 'hidden'
   }
 
@@ -50,18 +113,28 @@ export default function VehicleClient({
     document.body.style.overflow = ''
   }
 
-  const lightboxPrev = () =>
-    setLightboxIndex((prev) => (prev !== null ? (prev === 0 ? images.length - 1 : prev - 1) : null))
+  const previousImage = () => {
+    setActiveImageIndex((index) => (index === 0 ? images.length - 1 : index - 1))
+  }
 
-  const lightboxNext = () =>
-    setLightboxIndex((prev) => (prev !== null ? (prev === images.length - 1 ? 0 : prev + 1) : null))
+  const nextImage = () => {
+    setActiveImageIndex((index) => (index === images.length - 1 ? 0 : index + 1))
+  }
+
+  const lightboxPrevious = () => {
+    setLightboxIndex((index) => (index === null ? null : index === 0 ? images.length - 1 : index - 1))
+  }
+
+  const lightboxNext = () => {
+    setLightboxIndex((index) => (index === null ? null : index === images.length - 1 ? 0 : index + 1))
+  }
 
   useEffect(() => {
     if (lightboxIndex === null) return
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeLightbox()
-      if (e.key === 'ArrowLeft') lightboxPrev()
-      if (e.key === 'ArrowRight') lightboxNext()
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeLightbox()
+      if (event.key === 'ArrowLeft') lightboxPrevious()
+      if (event.key === 'ArrowRight') lightboxNext()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -73,512 +146,224 @@ export default function VehicleClient({
     thumb?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [lightboxIndex])
 
-  // Modal States
-  const [showReserve, setShowReserve] = useState(false)
-  const [showCallUs, setShowCallUs] = useState(false)
-  const [showFinance, setShowFinance] = useState(false)
-  const [showPartExchange, setShowPartExchange] = useState(false)
-  const [showEmail, setShowEmail] = useState(false)
-
-  const make = vehicle.vehicle.make || vehicle.vehicle.standard?.make || ''
-  const model = vehicle.vehicle.model || vehicle.vehicle.standard?.model || ''
-  const derivative = vehicle.vehicle.derivative || vehicle.vehicle.standard?.derivative || ''
-
-  const isSold = vehicle.metadata?.lifecycleState === 'SOLD'
-
-  const price = vehicle.adverts?.forecourtPrice?.amountGBP || vehicle.adverts?.retailAdverts?.suppliedPrice?.amountGBP
-  const wasPrice = vehicle.adverts?.soldPrice?.amountGBP || null
-
-  const images = (vehicle.media?.images || []).filter((image) => {
-    const href = image?.href?.toLowerCase() || ''
-    return href && !href.includes('youtube.com') && !href.includes('youtu.be') && !href.includes('vimeo.com')
-  })
-  const hasImages = images.length > 0
-  const activeImage = hasImages ? images[activeImageIndex].href : '/placeholder.svg'
-  const secondaryImage = hasImages && activeImageIndex + 1 < images.length
-    ? images[activeImageIndex + 1].href
-    : null
-
-  const getVehicleImageUrl = (vehicle: AutoTraderVehicle): string => {
-    if (vehicle.media?.images && vehicle.media.images.length > 0) {
-      const exteriorImages = vehicle.media.images
-      const imagesToUse = exteriorImages.length > 0 ? exteriorImages : vehicle.media.images.filter((img: any) =>
-        !img.classificationTags?.some((tag: any) => tag.label === 'Promotional Material')
-      )
-
-      if (imagesToUse.length > 0) {
-        return imagesToUse[0].href // Return first actual vehicle image
-      }
-    }
-    // Fallback to default image if no vehicle images found
-    return 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&crop=center'
-  }
-
-  const nextImage = () => setActiveImageIndex((prev) => (prev + 2 >= images.length ? 0 : prev + 2))
-  const prevImage = () => setActiveImageIndex((prev) =>
-    prev < 2 ? (images.length % 2 === 0 ? images.length - 2 : images.length - 1) : prev - 2
-  )
-
-  const vehicleImageUrl = getVehicleImageUrl(vehicle)
-
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=U86tH2vLnYI0LyA2D5'
-    script.async = true
-    document.head.appendChild(script)
-
-    const setupCalculator = () => {
-      const button = document.getElementById('cw_standalone_calculate_button')
-      if (button && (window as any).codeweavers) {
-        button.onclick = function () {
-          loadPlugin()
-        }
-        loadPlugin() // Auto-load on initial load
-      } else {
-        setTimeout(setupCalculator, 100)
-      }
-    }
-
-    const loadPlugin = () => {
-      if ((window as any).codeweavers) {
-        (window as any).codeweavers.main({
-          pluginContentDivId: 'codeweavers-plugin',
-          vehicle: {
-            type: 'Car',
-            cashPrice: price?.toString() || "0", // AUTO-POPULATED WITH VEHICLE PRICE
-            mileage: vehicle?.vehicle?.odometerReadingMiles || "0",
-            isNew: "false",
-            identifierType: '',
-            identifier: " ",
-            imageUrl: vehicleImageUrl, // UPDATED: Use actual vehicle image instead of default
-            linkBackUrl: "https://www.autoprestigecars.co.uk/",
-            registration: {
-              number: vehicle.vehicle?.registration || vehicle?.registration || "NOVEHICLE",
-              date: vehicle?.vehicle?.firstRegistrationDate || "2000-01-01",
-            }
-          },
-          defaultParameters: {
-            deposit: {
-              defaultValue: 10,
-              defaultType: "Percentage"
-            },
-            term: {
-              defaultValue: 60,
-            },
-            annualMileage: {
-              defaultValue: 10000,
-            },
-          },
-        })
-      }
-    }
-
-    script.onload = setupCalculator
-
-    return () => {
-      document.head.removeChild(script)
-    }
-  }, [price, vehicleImageUrl])
-
-  const calculateMonthlyPayment = (priceValue: number | null) => {
-    if (!priceValue || priceValue <= 0) return 'N/A'
-    const deposit = priceValue * 0.2
-    const loanAmount = priceValue - deposit
-    const monthlyRate = 0.089 / 12
-    const numPayments = 60
-    const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1)
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
-      minimumFractionDigits: 2,
-    }).format(monthlyPayment)
-  }
-
-  const specRows = [
-    { label: 'Reg', value: vehicle.vehicle.registration || 'N/A' },
-    { label: 'Year', value: vehicle.vehicle.yearOfManufacture ? vehicle.vehicle.yearOfManufacture.toString() : 'N/A' },
-    { label: 'Transmission', value: vehicle.vehicle.transmissionType || vehicle.vehicle.standard?.transmissionType || 'N/A' },
-    { label: 'Body Type', value: vehicle.vehicle.bodyType || vehicle.vehicle.standard?.bodyType || 'N/A' },
-    { label: 'Fuel Type', value: vehicle.vehicle.fuelType || vehicle.vehicle.standard?.fuelType || 'N/A' },
-    { label: 'Engine Size', value: vehicle.vehicle.badgeEngineSizeLitres ? `${vehicle.vehicle.badgeEngineSizeLitres.toFixed(1)}L` : 'N/A' },
-    { label: 'Doors', value: vehicle.vehicle.doors ? vehicle.vehicle.doors.toString() : 'N/A' },
-    { label: 'Mileage', value: vehicle.vehicle.odometerReadingMiles ? `${new Intl.NumberFormat('en-GB').format(vehicle.vehicle.odometerReadingMiles)} mi` : 'N/A' },
-  ]
-
-  const handleWhatsapp = () => {
-    const message = `Hello, I'm interested in the ${make} ${model} ${vehicle.vehicle.registration ? `(${vehicle.vehicle.registration})` : ''}. Could you please provide more information?`
-    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
-
-    window.open(whatsappUrl, '_blank')
-  }
-
   return (
-    <main className="min-h-screen bg-black text-white pt-22 pb-20">
-      <div className="mx-auto w-full max-w-[1600px] px-3 md:px-6">
-        <div className="mb-3 grid grid-cols-1 gap-3 border border-white/15 p-4 lg:grid-cols-[1fr_auto]">
-          <Link href="/usedcars" className="inline-flex items-center gap-2 border border-white/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-200 hover:bg-white/10">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Results
-          </Link>
-        </div>
+    <main className="min-h-screen bg-[#111] pb-16 text-white">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <nav className="mb-7 flex flex-wrap items-center gap-3 text-sm font-semibold text-gray-500">
+          <Link href="/" className="transition-colors hover:text-white">Home</Link>
+          <span>/</span>
+          <Link href="/usedcars" className="transition-colors hover:text-white">Stock</Link>
+          <span>/</span>
+          <span className="text-gray-200">{year} {make} {model}</span>
+        </nav>
 
-        <div className="relative grid grid-cols-1 overflow-hidden border border-white/15 lg:grid-cols-2">
-            {hasImages && images.length > 1 && (
-              <>
-                <button onClick={prevImage} className="absolute left-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button onClick={nextImage} className="absolute right-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              </>
-            )}
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_400px]">
+          <div className="min-w-0">
+            <section className="overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1a]">
+              <div className="relative aspect-[16/10] bg-black">
+                {hasImages ? (
+                  <img
+                    src={activeImage}
+                    alt={`${make} ${model}`}
+                    className="h-full w-full cursor-pointer object-cover"
+                    onClick={() => openLightbox(activeImageIndex)}
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-sm font-bold uppercase tracking-[0.16em] text-gray-600">
+                    No Image Available
+                  </div>
+                )}
 
-          <div className="relative h-[320px] bg-zinc-900 sm:h-[420px] lg:h-[560px] xl:h-[620px] group/left overflow-hidden">
-            {hasImages ? (
-              <>
-                <div
-                  className="absolute inset-0 bg-center bg-cover blur-xl scale-110"
-                  style={{ backgroundImage: `url(${activeImage})` }}
-                />
-                <div className="absolute inset-0 bg-black/40" />
-                <img
-                  src={activeImage}
-                  alt={`${make} ${model}`}
-                  className={`relative h-full w-full object-contain cursor-pointer ${isSold ? 'brightness-50' : ''}`}
-                  onClick={() => openLightbox(activeImageIndex)}
-                />
-                <button
-                  onClick={() => openLightbox(activeImageIndex)}
-                  className="absolute top-3 right-3 z-10 bg-black/60 p-1.5 text-white opacity-0 group-hover/left:opacity-100 transition-opacity hover:bg-black/90"
-                  aria-label="View fullscreen"
-                >
-                  <Maximize2 className="h-4 w-4" />
-                </button>
-              </>
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-500">
-                No Image Available
-              </div>
-            )}
-
-            {isSold && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="border-4 border-red-500 px-8 py-4 -rotate-12">
-                  <span className="text-5xl font-black uppercase tracking-[0.2em] text-red-500 drop-shadow-lg">SOLD</span>
-                </div>
-              </div>
-            )}
-
-            <div className="absolute bottom-3 left-3 bg-black/70 px-2 py-1 text-xs font-semibold text-zinc-200">
-              {images.length > 0
-                ? `${activeImageIndex + 1}–${Math.min(activeImageIndex + 2, images.length)} / ${images.length}`
-                : '0 / 0'}
-            </div>
-          </div>
-
-          <div className="relative h-[320px] border-t border-white/10 bg-zinc-950 sm:h-[420px] lg:h-[560px] lg:border-l lg:border-t-0 xl:h-[620px] group/right overflow-hidden">
-            {secondaryImage ? (
-              <>
-                <div
-                  className="absolute inset-0 bg-center bg-cover blur-xl scale-110"
-                  style={{ backgroundImage: `url(${secondaryImage})` }}
-                />
-                <div className="absolute inset-0 bg-black/40" />
-                <img
-                  src={secondaryImage}
-                  alt={`${make} ${model} secondary view`}
-                  className="relative h-full w-full object-contain cursor-pointer"
-                  width="1200"
-                  height="900"
-                  loading="lazy"
-                  onClick={() => openLightbox(activeImageIndex + 1)}
-                />
-                <button
-                  onClick={() => openLightbox(activeImageIndex + 1)}
-                  className="absolute top-3 right-3 z-10 bg-black/60 p-1.5 text-white opacity-0 group-hover/right:opacity-100 transition-opacity hover:bg-black/90"
-                  aria-label="View fullscreen"
-                >
-                  <Maximize2 className="h-4 w-4" />
-                </button>
-              </>
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm uppercase tracking-[0.12em] text-zinc-500">
-                More Photos Coming Soon
-              </div>
-            )}
-          </div>
-        </div>
-
-        {hasImages && (
-          <div className="mb-4 flex gap-2 overflow-x-auto border-x border-b border-white/15 bg-black px-2 py-2 hide-scrollbar">
-            {images.map((img, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveImageIndex(idx % 2 === 0 ? idx : idx - 1)}
-                className={`relative h-20 w-30 shrink-0 overflow-hidden border ${
-                  idx === activeImageIndex || idx === activeImageIndex + 1 ? 'border-blue-400 border-2' : 'border-white/20'
-                }`}
-              >
-                <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" width="96" height="64" loading="lazy" />
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-          <section className="border border-white/12 bg-black p-6 md:p-8">
-            <h1 className="mb-2 text-3xl font-semibold uppercase tracking-[0.06em] text-white md:text-4xl">
-              {make} {model}
-            </h1>
-            {derivative && (
-              <p className="mb-6 text-sm uppercase tracking-[0.15em] text-zinc-400">{derivative}</p>
-            )}
-
-            {/* Attention Grabber banner */}
-            {vehicle.adverts?.retailAdverts?.attentionGrabber && (
-              <div className="mb-3 border-l-2 border-amber-400 bg-amber-400/8 px-4 py-2.5 text-sm font-medium text-amber-200">
-                {vehicle.adverts.retailAdverts.attentionGrabber}
-              </div>
-            )}
-            {/* Reservation Status banner */}
-            {vehicle.adverts?.retailAdverts?.reservationStatus && (
-              <div className="mb-6 border-l-2 border-blue-400 bg-blue-400/8 px-4 py-2.5 text-sm font-medium text-blue-200">
-                {vehicle.adverts.retailAdverts.reservationStatus}
-              </div>
-            )}
-
-            {vehicle.adverts?.retailAdverts?.description ? (
-              <div className="text-sm leading-7 text-zinc-300">
-                {vehicle.adverts.retailAdverts.description}
-              </div>
-            ) : (
-              <p className="text-sm text-zinc-400">Description coming soon.</p>
-            )}
-
-            <div id='cw_standalone_calculate_button' className='mt-10'>
-              <div style={{ width: '100%' }}>
-                <div
-                  id="codeweavers-plugin"
-                  className="overflow-hidden bg-white/5 min-h-100"
-                ></div>
-              </div>
-            </div>
-          </section>
-
-          <aside className="border border-white/12 bg-black p-5">
-            <p className="border-b border-white/10 pb-3 text-xs uppercase tracking-[0.14em] text-zinc-400">{dealershipName}</p>
-
-            {vehicle.metadata?.stockId && (
-              <div className="flex items-center justify-between border-b border-white/8 py-2.5">
-                <span className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Stock ID:</span>
-                <span className="font-mono text-[11px] font-semibold tracking-wider text-zinc-300">{vehicle.metadata.stockId}</span>
-              </div>
-            )}
-
-            {isSold && (
-              <div className="mt-3 flex items-center gap-2 bg-red-600/15 border border-red-500/40 px-3 py-2">
-                <span className="text-xs font-black uppercase tracking-[0.18em] text-red-400">SOLD</span>
-                <span className="text-xs text-red-300/80">This vehicle has been sold</span>
-              </div>
-            )}
-
-            <div className="mt-4 grid grid-cols-2 gap-3 border-b border-white/10 pb-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Our Price</p>
-                <p className="text-4xl font-bold text-white">{price ? `£${new Intl.NumberFormat('en-GB').format(price)}` : 'POA'}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Est. Monthly</p>
-                <p className="text-3xl font-bold text-blue-400">{price ? `${calculateMonthlyPayment(price)}/mo` : 'N/A'}</p>
-                {wasPrice && <p className="mt-1 text-xs text-zinc-400 line-through">Was £{new Intl.NumberFormat('en-GB').format(wasPrice)}</p>}
-                {price && (
-                  <p className="mt-1.5 text-[12px] font-medium text-zinc-200 leading-snug">
-                    For illustration only &middot;{' '}
-                    <Link
-                      href={`/finance?${new URLSearchParams({
-                        price: price.toString(),
-                        ...(vehicle.vehicle?.odometerReadingMiles ? { mileage: vehicle.vehicle.odometerReadingMiles.toString() } : {}),
-                        imageUrl: vehicleImageUrl,
-                        ...(vehicle.vehicle?.registration ? { registration: vehicle.vehicle.registration } : {}),
-                        ...(vehicle.vehicle?.firstRegistrationDate ? { firstRegistrationDate: vehicle.vehicle.firstRegistrationDate } : {}),
-                        ...(vehicle.metadata?.stockId ? { stockId: vehicle.metadata.stockId } : {}),
-                      }).toString()}`}
-                      className="text-blue-400 hover:text-blue-300 transition-colors"
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={previousImage}
+                      className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/70"
+                      aria-label="Previous image"
                     >
-                      Get Quotes
-                    </Link>
-                  </p>
+                      <ChevronLeft className="h-6 w-6" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/70"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </button>
+                    <span className="absolute bottom-4 right-4 rounded-full bg-black/60 px-3 py-1.5 text-sm font-bold text-white">
+                      {activeImageIndex + 1} / {images.length}
+                    </span>
+                  </>
                 )}
               </div>
-            </div>
 
-            <div className="mt-4">
-              {specRows.map((item, i) => (
-                <div key={item.label} className={`grid grid-cols-2 text-sm py-2 ${i < specRows.length - 1 ? 'border-b border-white/8' : ''}`}>
-                  <span className="text-zinc-500">{item.label}</span>
-                  <span className="text-right font-semibold text-white">{item.value}</span>
+              {hasImages && (
+                <div className="flex gap-3 overflow-x-auto p-4">
+                  {images.map((image, index) => (
+                    <button
+                      key={`${image.href}-${index}`}
+                      onClick={() => setActiveImageIndex(index)}
+                      className={`h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+                        index === activeImageIndex ? 'border-[#c8e63c]' : 'border-transparent opacity-70 hover:opacity-100'
+                      }`}
+                      aria-label={`Show image ${index + 1}`}
+                    >
+                      <img src={image.href} alt="" className="h-full w-full object-cover" loading="lazy" />
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-
-            <div className="mt-4 grid gap-2">
-              {isSold && (
-                <p className="mb-1 text-xs leading-relaxed text-zinc-400 border border-white/10 bg-white/4 px-3 py-2">
-                  This vehicle has already been sold and is no longer available. Please browse our current stock or contact us for similar options.
-                </p>
               )}
-              <button onClick={() => setShowEmail(true)} disabled={isSold} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-100 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-white">
-                Enquire Now
-              </button>
-              <button onClick={handleWhatsapp} disabled={isSold} className="flex w-full items-center justify-center gap-2 bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-emerald-600">
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </button>
-              <button onClick={() => {
-                const section = document.getElementById("cw_standalone_calculate_button");
-                section?.scrollIntoView({ behavior: "smooth" });
-              }} disabled={isSold} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
-                Apply For Finance
-              </button>
-              <button onClick={() => setShowReserve(true)} disabled={isSold} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
-                Reserve Vehicle
-              </button>
-              <button onClick={() => setShowPartExchange(true)} disabled={isSold} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:border-white/15 disabled:hover:text-zinc-400">
-                Part Exchange
-              </button>
-            </div>
+            </section>
+
+            <section className="mt-8 rounded-2xl border border-white/10 bg-[#1a1a1a] p-6 sm:p-8">
+              <h2 className="mb-5 text-xl font-black text-white">About This Vehicle</h2>
+              <p className="text-base font-semibold leading-8 text-gray-300">{description}</p>
+            </section>
+
+            <section className="mt-8 rounded-2xl border border-white/10 bg-[#1a1a1a] p-6 sm:p-8">
+              <h2 className="mb-8 text-xl font-black text-white">Full Specifications</h2>
+              <div className="grid gap-8 xl:grid-cols-2 xl:gap-12">
+                {[primarySpecRows, secondarySpecRows].map((column, columnIndex) => (
+                  <div key={columnIndex}>
+                    {column.map((item) => (
+                      <div key={item.label} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-5 border-b border-white/8 py-4">
+                        <span className="min-w-0 text-base font-bold text-gray-500">{item.label}</span>
+                        <span className={`text-right text-base font-black ${item.positive ? 'text-emerald-400' : 'text-white'}`}>
+                          {item.positive ? (
+                            <span className="inline-flex items-center gap-2">
+                              <CheckCircle2 className="h-5 w-5" />
+                              {item.value}
+                            </span>
+                          ) : (
+                            item.value
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+            <section className="rounded-2xl border border-white/10 bg-[#1a1a1a] p-6">
+              <p className="mb-2 text-sm font-black uppercase tracking-[0.22em] text-gray-500">{make}</p>
+              <h1 className="text-4xl font-black leading-none text-white">{model}</h1>
+              <p className="mt-4 text-lg font-bold text-gray-400">
+                {[year, vehicle.vehicle.odometerReadingMiles ? `${new Intl.NumberFormat('en-GB').format(vehicle.vehicle.odometerReadingMiles)} mi` : null, vehicle.vehicle.fuelType || vehicle.vehicle.standard?.fuelType]
+                  .filter(Boolean)
+                  .join(' - ')}
+              </p>
+              <p className="mt-7 text-5xl font-black text-[#c8e63c]">{money(price)}</p>
+
+              {tags.length > 0 && (
+                <div className="mt-7 flex flex-wrap gap-3">
+                  {tags.map((tag) => (
+                    <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-gray-400">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <p className="mt-7 inline-flex items-center gap-2 text-sm font-black text-emerald-400">
+                <CheckCircle2 className="h-5 w-5" />
+                HPI Clear
+              </p>
+
+              <a
+                href={telHref}
+                className="mt-7 flex h-14 items-center justify-center gap-3 rounded-xl bg-[#c8e63c] text-lg font-black text-black transition-colors hover:bg-[#b8d632]"
+              >
+                <Phone className="h-5 w-5" />
+                {cleanPhone}
+              </a>
+
+              {autoTraderUrl && (
+                <a
+                  href={autoTraderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 flex h-14 items-center justify-center gap-3 rounded-xl border border-white/15 text-base font-black text-gray-300 transition-colors hover:border-[#c8e63c] hover:text-white"
+                >
+                  View on AutoTrader
+                  <ExternalLink className="h-5 w-5" />
+                </a>
+              )}
+            </section>
+
+            <section className="rounded-2xl border border-white/10 bg-[#1a1a1a] p-6">
+              <h2 className="mb-5 text-xl font-black text-white">Enquire About This Car</h2>
+              <form action={`mailto:${emailAddress || 'info@dealership.co.uk'}`} className="space-y-4">
+                <input
+                  name="name"
+                  placeholder="Your name *"
+                  className="h-14 w-full rounded-xl border border-white/10 bg-[#101010] px-4 text-base font-semibold text-white placeholder:text-slate-600 focus:border-[#c8e63c] focus:outline-none"
+                />
+                <input
+                  name="phone"
+                  placeholder="Phone number"
+                  className="h-14 w-full rounded-xl border border-white/10 bg-[#101010] px-4 text-base font-semibold text-white placeholder:text-slate-600 focus:border-[#c8e63c] focus:outline-none"
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email address *"
+                  className="h-14 w-full rounded-xl border border-white/10 bg-[#101010] px-4 text-base font-semibold text-white placeholder:text-slate-600 focus:border-[#c8e63c] focus:outline-none"
+                />
+                <textarea
+                  name="message"
+                  defaultValue={`I'm interested in the ${year || ''} ${make} ${model}...`}
+                  className="min-h-32 w-full resize-none rounded-xl border border-white/10 bg-[#101010] px-4 py-4 text-base font-semibold text-slate-500 placeholder:text-slate-600 focus:border-[#c8e63c] focus:outline-none"
+                />
+                <button className="h-14 w-full rounded-xl bg-[#c8e63c] text-base font-black uppercase tracking-wide text-black transition-colors hover:bg-[#b8d632]">
+                  Send Enquiry
+                </button>
+              </form>
+            </section>
           </aside>
         </div>
-
-        {/* Dealer Address */}
-        <div className="mt-4 flex items-start gap-4 border border-white/10 bg-zinc-950 px-5 py-4">
-          <div className="mt-0.5 shrink-0">
-            <MapPin className="h-4 w-4 text-blue-500" />
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Our Location</span>
-            <span className="text-sm text-zinc-200 leading-relaxed">
-              Autoprestige House, Cars Unlimited T/A Autoprestige, Rosse Street, Bradford, West Yorkshire, BD8 9AS, United Kingdom
-            </span>
-          </div>
-        </div>
-
       </div>
 
-      {/* Lightbox */}
-      {lightboxIndex !== null && (
+      {lightboxIndex !== null && hasImages && (
         <div
-          className="fixed inset-0 z-9999 flex flex-col bg-black/95 backdrop-blur-sm"
-          onClick={(e) => { if (e.target === e.currentTarget) closeLightbox() }}
+          className="fixed inset-0 z-9999 flex flex-col bg-black/95"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) closeLightbox()
+          }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
-            <span className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-400">
-              {make} {model} &mdash; {lightboxIndex + 1} / {images.length}
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <span className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
+              {make} {model} - {lightboxIndex + 1} / {images.length}
             </span>
-            <button onClick={closeLightbox} className="p-2 text-zinc-400 hover:text-white transition-colors">
+            <button onClick={closeLightbox} className="p-2 text-gray-400 transition-colors hover:text-white">
               <X className="h-5 w-5" />
             </button>
           </div>
-
-          {/* Main image */}
-          <div className="relative flex flex-1 items-center justify-center overflow-hidden min-h-0">
-            <button
-              onClick={lightboxPrev}
-              className="absolute left-3 z-10 bg-black/60 p-3 text-white hover:bg-black/90 transition-colors"
-            >
-              <ChevronLeft className="h-6 w-6" />
+          <div className="relative flex min-h-0 flex-1 items-center justify-center">
+            <button onClick={lightboxPrevious} className="absolute left-4 rounded-full bg-black/60 p-3 text-white hover:bg-black">
+              <ChevronLeft className="h-7 w-7" />
             </button>
-            <img
-              key={lightboxIndex}
-              src={images[lightboxIndex].href}
-              alt={`${make} ${model} image ${lightboxIndex + 1}`}
-              className="max-h-full max-w-full object-contain select-none"
-              width="1200"
-              height="900"
-            />
-            <button
-              onClick={lightboxNext}
-              className="absolute right-3 z-10 bg-black/60 p-3 text-white hover:bg-black/90 transition-colors"
-            >
-              <ChevronRight className="h-6 w-6" />
+            <img src={images[lightboxIndex].href} alt={`${make} ${model}`} className="max-h-full max-w-full object-contain" />
+            <button onClick={lightboxNext} className="absolute right-4 rounded-full bg-black/60 p-3 text-white hover:bg-black">
+              <ChevronRight className="h-7 w-7" />
             </button>
           </div>
-
-          {/* Thumbnail strip */}
-          <div
-            ref={lightboxThumbsRef}
-            className="flex gap-2 overflow-x-auto px-3 py-3 border-t border-white/10 shrink-0 hide-scrollbar"
-          >
-            {images.map((img, idx) => (
+          <div ref={lightboxThumbsRef} className="flex gap-2 overflow-x-auto border-t border-white/10 px-3 py-3">
+            {images.map((image, index) => (
               <button
-                key={idx}
-                onClick={() => setLightboxIndex(idx)}
-                className={`relative h-16 w-24 shrink-0 overflow-hidden border-2 transition-colors ${
-                  idx === lightboxIndex ? 'border-blue-400' : 'border-white/15 hover:border-white/40'
+                key={`${image.href}-lightbox-${index}`}
+                onClick={() => setLightboxIndex(index)}
+                className={`h-16 w-24 shrink-0 overflow-hidden rounded border-2 ${
+                  index === lightboxIndex ? 'border-[#c8e63c]' : 'border-white/15'
                 }`}
               >
-                <img src={img.href} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                <img src={image.href} alt="" className="h-full w-full object-cover" />
               </button>
             ))}
           </div>
         </div>
-      )}
-
-      {/* Modals */}
-      {showReserve && (
-        <ReserveModal
-          vehicleMake={make}
-          vehicleModel={model}
-          vehicleReg={vehicle.vehicle.registration || ''}
-          vehiclePrice={price}
-          stockId={vehicle.metadata?.stockId}
-          onClose={() => setShowReserve(false)}
-        />
-      )}
-      {showCallUs && (
-        <CallUsModal
-          phoneNumber={phoneNumber || ''}
-          vehicleMake={make}
-          vehicleModel={model}
-          vehicleReg={vehicle.vehicle.registration || ''}
-          vehiclePrice={price}
-          stockId={vehicle.metadata?.stockId}
-          onClose={() => setShowCallUs(false)}
-        />
-      )}
-      {showFinance && (
-        <FinanceModal
-          vehicleMake={make}
-          vehicleModel={model}
-          vehicleReg={vehicle.vehicle.registration || ''}
-          vehiclePrice={price}
-          stockId={vehicle.metadata?.stockId}
-          onClose={() => setShowFinance(false)}
-        />
-      )}
-      {showPartExchange && (
-        <PartExchangeModal
-          vehicleMake={make}
-          vehicleModel={model}
-          vehicleReg={vehicle.vehicle.registration || ''}
-          vehiclePrice={price}
-          stockId={vehicle.metadata?.stockId}
-          onClose={() => setShowPartExchange(false)}
-        />
-      )}
-      {showEmail && (
-        <EmailModal
-          emailAddress={emailAddress || 'info@dealership.co.uk'}
-          vehicleMake={make}
-          vehicleModel={model}
-          vehicleReg={vehicle.vehicle.registration || ''}
-          vehiclePrice={price}
-          stockId={vehicle.metadata?.stockId}
-          onClose={() => setShowEmail(false)}
-        />
       )}
     </main>
   )

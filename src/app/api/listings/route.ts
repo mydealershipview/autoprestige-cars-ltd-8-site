@@ -115,6 +115,7 @@ function filterListings(listings: AutoTraderVehicle[], filters: {
   fuelType?: string
   bodyType?: string
   transmissionType?: string
+  colour?: string
   minYear?: number
   maxYear?: number
 }): AutoTraderVehicle[] {
@@ -181,6 +182,14 @@ function filterListings(listings: AutoTraderVehicle[], filters: {
     if (filters.transmissionType) {
       const vehicleTransmission = vehicle.vehicle.transmissionType || vehicle.vehicle.standard?.transmissionType
       if (!vehicleTransmission || vehicleTransmission.toLowerCase() !== filters.transmissionType.toLowerCase()) {
+        return false
+      }
+    }
+
+    // Colour filter
+    if (filters.colour) {
+      const vehicleColour = vehicle.vehicle.colour || vehicle.vehicle.standard?.colour
+      if (!vehicleColour || vehicleColour.toLowerCase() !== filters.colour.toLowerCase()) {
         return false
       }
     }
@@ -275,6 +284,7 @@ export async function GET(request: NextRequest) {
     const fuelType = searchParams.get('fuelType') || undefined
     const bodyType = searchParams.get('bodyType') || undefined
     const transmissionType = searchParams.get('transmissionType') || undefined
+    const colour = searchParams.get('colour') || undefined
     const minYear = searchParams.get('minYear') ? parseInt(searchParams.get('minYear')!) : undefined
     const maxYear = searchParams.get('maxYear') ? parseInt(searchParams.get('maxYear')!) : undefined
     const sortBy = searchParams.get('sortBy') || 'dateAdded'
@@ -302,6 +312,7 @@ export async function GET(request: NextRequest) {
       fuelType,
       bodyType,
       transmissionType,
+      colour,
       minYear,
       maxYear,
     })

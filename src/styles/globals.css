@@ -164,12 +164,102 @@ button {
 }
 
 body {
-  background: hsl(var(--color-background));
-  color: hsl(var(--color-foreground));
+  background: #111111;
+  color: #f8fafc;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Motor Time green/dark frontend theme */
+:root {
+  --mtg-lime: #c8e63c;
+  --mtg-lime-hover: #b8d632;
+  --mtg-dark: #111111;
+  --mtg-panel: #191919;
+  --mtg-border: rgba(255, 255, 255, 0.1);
+}
+
+.bg-blue-300,
+.bg-blue-400,
+.bg-blue-500,
+.bg-blue-600,
+.bg-blue-700,
+.hover\:bg-blue-300:hover,
+.hover\:bg-blue-400:hover,
+.hover\:bg-blue-500:hover,
+.hover\:bg-blue-600:hover,
+.hover\:bg-blue-700:hover,
+.group:hover .group-hover\:bg-blue-400,
+.group:hover .group-hover\:bg-blue-500,
+.group:hover .group-hover\:bg-blue-600 {
+  background-color: var(--mtg-lime) !important;
+}
+
+.bg-blue-400\/8,
+.bg-blue-400\/10,
+.bg-blue-400\/15,
+.bg-blue-500\/8,
+.bg-blue-500\/10,
+.bg-blue-50 {
+  background-color: rgb(200 230 60 / 0.1) !important;
+}
+
+.text-blue-200,
+.text-blue-300,
+.text-blue-400,
+.text-blue-400\/70,
+.text-blue-400\/80,
+.text-blue-500,
+.text-blue-600,
+.text-blue-700,
+.hover\:text-blue-200:hover,
+.hover\:text-blue-300:hover,
+.hover\:text-blue-400:hover,
+.group:hover .group-hover\:text-blue-300,
+.group:hover .group-hover\:text-blue-400 {
+  color: var(--mtg-lime) !important;
+}
+
+.border-blue-200,
+.border-blue-300,
+.border-blue-400,
+.border-blue-400\/25,
+.border-blue-400\/30,
+.border-blue-500,
+.border-blue-500\/30,
+.border-blue-500\/50,
+.border-blue-700,
+.border-blue-800\/40,
+.border-blue-800\/60,
+.hover\:border-blue-400:hover,
+.hover\:border-blue-400\/50:hover,
+.hover\:border-blue-400\/60:hover,
+.hover\:border-blue-500:hover,
+.hover\:border-blue-500\/50:hover,
+.group:hover .group-hover\:border-blue-400,
+.group:hover .group-hover\:border-blue-400\/50,
+.group:hover .group-hover\:border-blue-500,
+.focus\:border-blue-400:focus,
+.focus\:border-blue-400\/50:focus {
+  border-color: var(--mtg-lime) !important;
+}
+
+.ring-blue-500,
+.ring-blue-500\/20,
+.focus\:ring-blue-500\/20:focus {
+  --tw-ring-color: rgb(200 230 60 / 0.25) !important;
+}
+
+.border-b-blue-500,
+.border-t-blue-500 {
+  border-color: var(--mtg-lime) !important;
+}
+
+.bg-\[\#1F2328\],
+.bg-\[\#0d0d0d\] {
+  background-color: var(--mtg-dark) !important;
 }
 
 /* Premium typography */
@@ -337,5 +427,3 @@ body {
   outline: none;
   box-shadow: 0 0 0 4px rgba(68, 144, 60, 0.2);
 }
-
-

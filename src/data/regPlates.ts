@@ -50,26 +50,20 @@ const REG_PLATE_NAMES = [
 ] as const
 
 
-export const REG_PLATES_PHONE = '01274 488500'
-export const REG_PLATES_MOBILE = '07739 967131'
+export const REG_PLATES_PHONE = '07441 940552'
+export const REG_PLATES_MOBILE = '07441 940552'
 
 export const REG_PLATES_TEASER =
   `Should you require any further assistance please click the button, fill out the form and we'll be in touch as soon as possible. Alternatively Call us on ${REG_PLATES_PHONE}`
 
 export const REG_PLATES_LOCATION_LINES = [
-  'Rosse Street',
-  'Bradford',
-  
-  'West Yorkshire',
-  'BD8 9AS',
+  '8A-8E Huss\'s Lane',
+  'Long Eaton',
+  'NG10 1GS',
 ] as const
 
 export const REG_PLATES_OPENING_TIMES = [
-  'Viewing by prior arrangement only',
-  'Mon - Thur: 10am - 6pm',
-  'Friday: 3pm - 6pm',
-  'Saturday: 11am - 4pm',
-  'Sunday: Closed',
+  'Open 7 days: 10:00 - 17:00',
 ] as const
 
 export type RegPlateRecord = {

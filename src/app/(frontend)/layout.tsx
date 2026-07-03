@@ -12,7 +12,7 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { generateStructuredData } from '@/utilities/structuredData'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-import '@/styles/globals.css'
+import '../../styles/globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import Layout from '@/components/Layout'
 
@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="64x64" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
-        <link href="/logo.png" rel="apple-touch-icon" />
+        <link href="/logo2.png" rel="apple-touch-icon" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

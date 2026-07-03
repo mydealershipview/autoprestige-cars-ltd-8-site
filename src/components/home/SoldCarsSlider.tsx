@@ -41,7 +41,7 @@ export function SoldCarsSlider() {
 
   // Always render the section wrapper so it's visible — show skeleton while loading
   return (
-    <section className="relative w-full overflow-hidden bg-[#0d0d0d] border-t-4 border-blue-500">
+    <section className="relative w-full overflow-hidden bg-[#0d0d0d] border-t-4 border-[#c8e63c]">
       {/* Diagonal line texture — matches page's angular aesthetic */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
@@ -55,7 +55,7 @@ export function SoldCarsSlider() {
         <div className="mb-10 flex items-end justify-between">
           <div>
             <div className="flex items-center mb-3">
-              <div className="w-6 h-5 bg-blue-500 mr-4 shrink-0 -skew-x-24" />
+              <div className="w-6 h-5 bg-[#c8e63c] mr-4 shrink-0 -skew-x-24" />
               <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase text-white leading-tight">
                 RECENTLY SOLD
               </h2>
@@ -70,14 +70,14 @@ export function SoldCarsSlider() {
             <button
               ref={prevRef}
               aria-label="Previous"
-              className="w-11 h-11 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
+              className="w-11 h-11 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-[#c8e63c] hover:text-[#c8e63c] transition-colors"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               ref={nextRef}
               aria-label="Next"
-              className="w-11 h-11 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
+              className="w-11 h-11 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-[#c8e63c] hover:text-[#c8e63c] transition-colors"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -207,7 +207,7 @@ export function SoldCarsSlider() {
                       </div>
 
                       {/* Blue hover accent line */}
-                      <div className="h-0.5 w-0 bg-blue-500 transition-all duration-300 group-hover:w-full" />
+                      <div className="h-0.5 w-0 bg-[#c8e63c] transition-all duration-300 group-hover:w-full" />
                     </div>
                   </div>
                 </SwiperSlide>
@@ -229,14 +229,14 @@ export function SoldCarsSlider() {
             <button
               onClick={() => swiperRef.current?.slidePrev()}
               aria-label="Previous"
-              className="w-10 h-10 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
+              className="w-10 h-10 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-[#c8e63c] hover:text-[#c8e63c] transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => swiperRef.current?.slideNext()}
               aria-label="Next"
-              className="w-10 h-10 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
+              className="w-10 h-10 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:border-[#c8e63c] hover:text-[#c8e63c] transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

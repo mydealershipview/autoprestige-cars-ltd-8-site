@@ -1,4 +1,5 @@
 import React from 'react'
+import { headers } from 'next/headers'
 import Navigation from './Navigation'
 import Footer from './Footer'
 import SideWidget from './SideWidget'
@@ -12,7 +13,11 @@ type Props = {
 const Layout = async ({ children }: Props) => {
   const fetchAvailableMakesAndModels = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/available-makes-models`)
+      const requestHeaders = await headers()
+      const host = requestHeaders.get('host')
+      const protocol = requestHeaders.get('x-forwarded-proto') || 'http'
+      const baseUrl = host ? `${protocol}://${host}` : process.env.NEXT_PUBLIC_SERVER_URL
+      const response = await fetch(`${baseUrl}/api/available-makes-models`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }

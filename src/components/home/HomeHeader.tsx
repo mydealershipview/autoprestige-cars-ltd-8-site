@@ -8,7 +8,6 @@ import type { ContactData } from "@/types/contact"
 const navItems = [
   { label: "HOME", href: "/" },
   { label: "SHOWROOM", href: "/usedcars" },
-  { label: "SOLD CARS", href: "/usedcars/searchgroup/sold" },
   { label: "SERVICES", href: "/services" },
   { label: "REG PLATES", href: "/offers/reg-plates" },
   { label: "VALUATION", href: "/valuation" },
@@ -81,7 +80,6 @@ export default function HomeHeader({
   contactData,
   dealershipName,
   dealershipTagline,
-  logoUrl,
 }: HomeHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -127,34 +125,27 @@ export default function HomeHeader({
     <>
       {/* Header */}
       {/* <header className="absolute inset-x-0 top-0 z-20 flex h-20 items-center justify-between px-6 lg:px-12 border-b border-white/10 bg-black/30 backdrop-blur-sm text-white"> */}
-      <header className="absolute inset-x-0 top-0 z-20 flex h-20 items-center justify-between px-6 lg:px-12 border-b border-white/10 bg-[#1F2328] text-white">
+      <header className="absolute inset-x-0 top-0 z-20 flex h-24 items-center justify-between border-b border-white/10 bg-[#111111] px-6 text-white lg:px-12">
         <div className="flex items-center gap-6">
           <button
             onClick={() => setMenuOpen(true)}
-            className="flex items-center gap-2 hover:text-blue-400 !transition-colors"
+            className="flex items-center gap-2 hover:text-[#c8e63c] !transition-colors"
             aria-label="Open navigation menu"
           >
-            <Menu className="h-6 w-6 text-blue-400" />
+            <Menu className="h-6 w-6 text-[#c8e63c]" />
             <span className="hidden sm:inline font-semibold tracking-wider">MENU</span>
           </button>
         </div>
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
-          <Link href="/" className="flex items-center hover:opacity-80 !transition-opacity">
-            {logoUrl ? (
-              <img src={logoUrl} alt={displayName} className="h-10 md:h-15 w-auto max-w-[250px] md:max-w-none object-contain" width="250" height="60" />
-            ) : (
-              <>
-                <div className="w-8 h-6 xl:w-10 xl:h-8 bg-blue-500 mr-2 -skew-x-[24deg]"></div>
-                <span className="text-2xl xl:text-3xl font-black tracking-widest uppercase">{displayName}</span>
-              </>
-            )}
+          <Link href="/" className="flex h-20 w-56 items-center overflow-hidden hover:opacity-90 !transition-opacity sm:w-64 lg:w-72">
+            <img src="/logo2.png" alt={displayName} className="h-full w-full scale-150 object-cover object-center" width="288" height="80" />
           </Link>
         </div>
 
         <div className="flex items-center gap-6">
-          <a href={primaryPhone ? `tel:${sanitizePhoneForTel(primaryPhone)}` : '#'} className="hidden lg:flex items-center gap-2 hover:text-blue-400 !transition-colors">
-            <Phone className="h-4 w-4 text-blue-400" />
+          <a href={primaryPhone ? `tel:${sanitizePhoneForTel(primaryPhone)}` : '#'} className="hidden lg:flex items-center gap-2 font-semibold text-[#c8e63c] hover:text-[#b8d632] !transition-colors">
+            <Phone className="h-4 w-4 text-[#c8e63c]" />
             <span className="font-semibold tracking-wider">{primaryPhone || 'Call us'}</span>
           </a>
           {socialLinks.length > 0 && (
@@ -168,7 +159,7 @@ export default function HomeHeader({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={link.platform}
-                    className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
+                    className="hover:text-[#c8e63c] !transition-colors flex items-center justify-center p-1"
                   >
                     {getSocialIcon(link.platform)}
                   </a>
@@ -179,7 +170,7 @@ export default function HomeHeader({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="whatsapp"
-                  className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
+                  className="hover:text-[#c8e63c] !transition-colors flex items-center justify-center p-1"
                 >
                   {getSocialIcon('whatsapp')}
                 </a>
@@ -187,7 +178,7 @@ export default function HomeHeader({
                     key="contact-form"
                     href="/contact#contact-form"
                     aria-label="Contact form"
-                    className="hover:text-blue-400 !transition-colors flex items-center justify-center p-1"
+                    className="hover:text-[#c8e63c] !transition-colors flex items-center justify-center p-1"
                   >
                     {getSocialIcon('form')}
                   </Link>
@@ -217,7 +208,7 @@ export default function HomeHeader({
           <span className="text-white text-xl font-black tracking-[0.3em] uppercase">NAVIGATE</span>
           <button
             onClick={() => setMenuOpen(false)}
-            className="text-white hover:text-blue-400 !transition-colors"
+            className="text-white hover:text-[#c8e63c] !transition-colors"
             aria-label="Close navigation menu"
           >
             <X className="h-6 w-6" />
@@ -231,7 +222,7 @@ export default function HomeHeader({
               <Link
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className={`block py-3 text-sm font-semibold tracking-[0.25em] uppercase !transition-colors hover:text-blue-400 ${
+                className={`block py-3 text-sm font-semibold tracking-[0.25em] uppercase !transition-colors hover:text-[#c8e63c] ${
                   i === 0 ? "text-white border-b border-white/30 pb-3" : "text-white/80"
                 }`}
               >
@@ -245,19 +236,19 @@ export default function HomeHeader({
         <div className="border-t border-white/10 px-10 py-8 flex flex-col gap-4">
           <a
             href={primaryPhone ? `tel:${sanitizePhoneForTel(primaryPhone)}` : '#'}
-            className="flex items-center gap-4 text-white hover:text-blue-400 !transition-colors group"
+            className="flex items-center gap-4 text-white hover:text-[#c8e63c] !transition-colors group"
           >
-            <span className="flex items-center justify-center w-9 h-9 rounded-full border border-blue-500 group-hover:bg-blue-500 !transition-colors shrink-0">
-              <Phone className="h-4 w-4 text-blue-400 group-hover:text-white !transition-colors" />
+            <span className="flex items-center justify-center w-9 h-9 rounded-full border border-[#c8e63c] group-hover:bg-[#c8e63c] !transition-colors shrink-0">
+              <Phone className="h-4 w-4 text-[#c8e63c] group-hover:text-white !transition-colors" />
             </span>
             <span className="font-semibold tracking-widest text-sm">{primaryPhone || 'Call us'}</span>
           </a>
           <a
             href={primaryEmail ? `mailto:${primaryEmail}` : '#'}
-            className="flex items-center gap-4 text-white hover:text-blue-400 !transition-colors group"
+            className="flex items-center gap-4 text-white hover:text-[#c8e63c] !transition-colors group"
           >
-            <span className="flex items-center justify-center w-9 h-9 rounded-full border border-blue-500 group-hover:bg-blue-500 !transition-colors shrink-0">
-              <svg className="h-4 w-4 text-blue-400 group-hover:text-white !transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <span className="flex items-center justify-center w-9 h-9 rounded-full border border-[#c8e63c] group-hover:bg-[#c8e63c] !transition-colors shrink-0">
+              <svg className="h-4 w-4 text-[#c8e63c] group-hover:text-white !transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </span>

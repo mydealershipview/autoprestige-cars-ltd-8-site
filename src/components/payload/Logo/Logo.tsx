@@ -6,8 +6,8 @@ import Image from 'next/image';
 export default function Logo() {
   // const logo = "https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-logo-light.svg"
   // const logoDark = "https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-logo-dark.svg"
-  const logo = "/logo.png"
-  const logoDark = "/logo.png"
+  const logo = "/logo2.png"
+  const logoDark = "/logo2.png"
 
   return (
     <div className='w-20 h-20 relative'>

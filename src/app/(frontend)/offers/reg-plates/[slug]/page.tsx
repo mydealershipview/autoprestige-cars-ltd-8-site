@@ -19,16 +19,16 @@ export async function generateMetadata({ params }: RegPlateDetailPageProps): Pro
 
   if (!plate) {
     return {
-      title: 'Reg Plate Not Found | Autoprestige',
+      title: 'Reg Plate Not Found | Motor Time Group',
     }
   }
 
   return {
-    title: `${plate.plate} | Reg Plates | Autoprestige`,
-    description: `View details for ${plate.plate} at Autoprestige reg plates.`,
+    title: `${plate.plate} | Reg Plates | Motor Time Group`,
+    description: `View details for ${plate.plate} at Motor Time Group reg plates.`,
     openGraph: {
-      title: `${plate.plate} | Reg Plates | Autoprestige`,
-      description: `View details for ${plate.plate} at Autoprestige reg plates.`,
+      title: `${plate.plate} | Reg Plates | Motor Time Group`,
+      description: `View details for ${plate.plate} at Motor Time Group reg plates.`,
       type: 'website',
       locale: 'en_GB',
     },

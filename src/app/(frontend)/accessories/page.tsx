@@ -23,7 +23,7 @@ export default async function AccessoriesPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?auto=format&fit=crop&w=1920&q=80"
-            alt="Audi RS6 Accessories — premium vehicle accessories at Autoprestige Cars Bradford"
+            alt="Audi RS6 Accessories — premium vehicle accessories at Motor Time Group Long Eaton"
             className="w-full h-full object-cover opacity-70"
             width="1920"
             height="1080"

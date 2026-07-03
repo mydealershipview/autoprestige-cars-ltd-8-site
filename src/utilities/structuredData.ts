@@ -86,7 +86,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         },
         logo: {
           '@type': 'ImageObject',
-          url: dealership.logoUrl || `${baseUrl}/logo.png`,
+          url: dealership.logoUrl || `${baseUrl}/logo2.png`,
         },
         sameAs: socialLinks,
       },
@@ -150,7 +150,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         mainEntity: [
           {
             '@type': 'Question',
-            name: 'What types of vehicles does Autoprestige Cars sell?',
+            name: 'What types of vehicles does Motor Time Group sell?',
             acceptedAnswer: {
               '@type': 'Answer',
               text: `${dealership.name} specialises in prestige and performance vehicles from leading manufacturers including BMW, Mercedes-Benz, Audi, Land Rover, and Porsche. Every vehicle is hand-picked and undergoes a rigorous multi-point inspection before sale.`,
@@ -169,7 +169,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             name: 'Can I part exchange my current car?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `Yes, ${dealership.name} offers competitive part exchange valuations. Simply provide your vehicle details online or visit our showroom in ${dealership.address.city || 'Bradford'} for a no-obligation valuation. We accept part exchanges against any vehicle in our inventory, or we can purchase your car outright.`,
+              text: `Yes, ${dealership.name} offers competitive part exchange valuations. Simply provide your vehicle details online or visit our showroom in ${dealership.address.city || 'Long Eaton'} for a no-obligation valuation. We accept part exchanges against any vehicle in our inventory, or we can purchase your car outright.`,
             },
           },
           {
@@ -182,10 +182,10 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
           },
           {
             '@type': 'Question',
-            name: 'Where is Autoprestige Cars located?',
+            name: 'Where is Motor Time Group located?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${dealership.name} is based in ${dealership.address.city || 'Bradford'}, West Yorkshire. Our showroom is open Monday to Friday 9am–6pm, Saturday 9am–5pm, and Sunday by appointment. Call us on ${dealership.phone || '01274 488500'} or visit our contact page for directions.`,
+              text: `${dealership.name} is based in ${dealership.address.city || 'Long Eaton'}, Nottingham. Our showroom is open Monday to Friday 9am–6pm, Saturday 9am–5pm, and Sunday by appointment. Call us on ${dealership.phone || '07441 940552'} or visit our contact page for directions.`,
             },
           },
         ],

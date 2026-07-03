@@ -5,6 +5,7 @@ import {
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import VehicleClient from './_components/VehicleClient'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
@@ -14,6 +15,29 @@ interface VehicleResponse {
   vehicle: AutoTraderVehicle
   similarProducts: AutoTraderVehicle[]
   totalSimilar: number
+}
+
+const parseVehicleSlug = (slug: string) => {
+  const parts = slug.split('-')
+  if (parts.length < 4) return null
+
+  const yearIndex = parts.findIndex((part) => /^\d{4}$/.test(part))
+  if (yearIndex <= 0 || yearIndex >= parts.length - 1) return null
+
+  const make = parts[0]
+  const model = parts.slice(1, yearIndex).join('-')
+  const year = parts[yearIndex]
+  const stockId = parts.slice(yearIndex + 1).join('-')
+
+  return { make, model, year, stockId }
+}
+
+const getCurrentBaseUrl = async () => {
+  const headerList = await headers()
+  const host = headerList.get('host')
+  const protocol = headerList.get('x-forwarded-proto') || (host?.startsWith('localhost') ? 'http' : 'https')
+
+  return host ? `${protocol}://${host}` : process.env.NEXT_PUBLIC_SERVER_URL || ''
 }
 
 // export const revalidate = 60 // Revalidate every hour
@@ -42,19 +66,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const dealershipName = dealership.name
   const dealershipCity = dealership.address.city || 'your area'
 
-  const parseSlug = (slug: string) => {
-    const parts = slug.split('-')
-    if (parts.length < 4) return null
-
-    const stockId = parts[parts.length - 1]
-    const year = parts[parts.length - 2]
-    const model = parts.slice(1, -2).join('-')
-    const make = parts[0]
-
-    return { make, model, year, stockId }
-  }
-
-  const slugData = parseSlug(slug)
+  const slugData = parseVehicleSlug(slug)
 
   // Fallback metadata
   const fallbackMetadata: Metadata = {
@@ -80,7 +92,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       make: slugData.make
     })
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`)
+    const baseUrl = await getCurrentBaseUrl()
+    const response = await fetch(`${baseUrl}/api/listing/${slugData.stockId}?${queryParams}`, {
+      cache: 'no-store',
+    })
 
     if (!response.ok) {
       return fallbackMetadata
@@ -151,20 +166,8 @@ export default async function IndividualListingPage({ params }: { params: Promis
   const dealership = await getDealershipInfo()
   const contactData = mapDealershipInfoToContactData(dealership)
 
-  const parseSlug = (slug: string) => {
-    const parts = slug.split('-')
-    if (parts.length < 4) return null
-
-    const stockId = parts[parts.length - 1]
-    const year = parts[parts.length - 2]
-    const model = parts.slice(1, -2).join('-')
-    const make = parts[0]
-
-    return { make, model, year, stockId }
-  }
-
   const fetchVehicleDetails = async () => {
-    const slugData = parseSlug(slug)
+    const slugData = parseVehicleSlug(slug)
     if (!slugData) {
       return null
     }
@@ -174,7 +177,10 @@ export default async function IndividualListingPage({ params }: { params: Promis
         make: slugData.make
       })
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`)
+      const baseUrl = await getCurrentBaseUrl()
+      const response = await fetch(`${baseUrl}/api/listing/${slugData.stockId}?${queryParams}`, {
+        cache: 'no-store',
+      })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

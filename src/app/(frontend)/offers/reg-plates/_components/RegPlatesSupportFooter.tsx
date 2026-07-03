@@ -59,7 +59,7 @@ export default function RegPlatesSupportFooter() {
       </div>
 
       <div className="px-8 py-10 space-y-4 text-sm text-white/70">
-        <p className="text-white/80">Autoprestige Cars - cars</p>
+        <p className="text-white/80">Motor Time Group - Used cars in Long Eaton</p>
         <p>
           <Link href="/privacy" className="hover:text-blue-400 !transition-colors">
             Privacy Policy
@@ -69,8 +69,8 @@ export default function RegPlatesSupportFooter() {
             Cookie Policy
           </Link>
         </p>
-        <p>Copyright (c) 2026 Autoprestige Cars. All Rights Reserved.</p>
-        <p>VAT Number - GB 219955471 | Company Number - 9681013 | FCA Number - 715892</p>
+        <p>Copyright (c) 2026 Motor Time Group Ltd. All Rights Reserved.</p>
+        <p>Company Number - 14925459</p>
         <p>
           Disclosure: Whilst every care has been taken to ensure all of the information on this
           site is accurate, please always check with your dealer as errors can occur.
@@ -84,7 +84,10 @@ export default function RegPlatesSupportFooter() {
           is subject to status and income. Terms and conditions apply. Applicants must be 18 years
           or over.
         </p>
-        <p>Autoprestige is the trading name of Cars Unlimited Ltd</p>
+        <p>
+          Motor Time Group Ltd is not FCA authorised or regulated. Finance is arranged through
+          third-party FCA-authorised partners. We do not provide financial advice.
+        </p>
       </div>
     </section>
   )

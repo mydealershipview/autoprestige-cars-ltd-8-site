@@ -6,24 +6,20 @@ export const dynamic = 'force-static'
 export const revalidate = 600
 
 export const metadata: Metadata = {
-  title: 'Profile | Autoprestige',
+  title: 'Profile | Motor Time Group',
   description:
-    'See Autoprestige profile - used prestige car dealer with dealership background, appointment details, and opening times.',
+    'See Motor Time Group profile - family-run car dealership based in Long Eaton, Nottingham with hand-picked quality used cars.',
   openGraph: {
-    title: 'Profile | Autoprestige',
+    title: 'Profile | Motor Time Group',
     description:
-      'Purveyors of Fine Automobiles. Family run independent sports and prestige car specialist with over years experience.',
+      'Family-run car dealership based in Long Eaton, Nottingham. Hand-picked quality used cars, prepared to retail-ready standard.',
     type: 'website',
     locale: 'en_GB',
   },
 }
 
 const openingTimes = [
-  'Viewing by prior arrangement only',
-  'Mon - Thur: 10am - 6pm',
-  'Friday: 3pm - 6pm',
-  'Saturday: 11am - 4pm',
-  'Sunday: Closed',
+  'Open 7 days: 10:00 - 17:00',
 ]
 
 export default function ProfilePage() {
@@ -31,16 +27,16 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto max-w-6xl px-6 pt-32 pb-16">
         <h1 className="text-2xl md:text-3xl font-black tracking-widest uppercase mb-2">
-          SEE AUTOPRESTIGE PROFILE - USED PRESTIGE CAR DEALER
+          SEE MOTOR TIME GROUP PROFILE - QUALITY USED CAR DEALER
         </h1>
         <div className="w-16 h-1 bg-blue-500 mb-10" />
 
         <div className="space-y-10 text-white/80">
           <section className="space-y-3">
-            <h2 className="text-xl font-black tracking-wide uppercase text-white">Autoprestige</h2>
+            <h2 className="text-xl font-black tracking-wide uppercase text-white">Motor Time Group</h2>
             <p className="leading-relaxed">
-              Autoprestige is a family run independent sports and prestige car specialist with over
-              15 years experience at selecting only the highest quality vehicles. Our reputation has
+              Motor Time Group is a family-run independent car dealership based in Long Eaton, Nottingham,
+              specialising in selecting only the highest quality vehicles. Our reputation has
               been built on supplying only the very best used cars carefully sourced from our
               network of trade partners, our own part exchanges or purchased directly from our own
               previous customers.
@@ -62,7 +58,7 @@ export default function ProfilePage() {
             <h2 className="text-xl font-black tracking-wide uppercase text-white">Sales</h2>
             <p className="leading-relaxed">
               A great majority of our sales come from recommendations from existing customers. At
-              Autoprestige we pride ourselves on selling the very best quality vehicles. We have
+              Motor Time Group we pride ourselves on selling the very best quality vehicles. We have
               exacting standards in the preparation and presentation of our vehicles which are all
               HPI checked prior to sale and carry either the balance of manufacturers warranty or
               with a 3 month comprehensive parts and labour warranty from our warranty partners.
@@ -83,10 +79,10 @@ export default function ProfilePage() {
               <h3 className="text-lg font-black uppercase tracking-wider text-white mb-4">Contact Details</h3>
               <p className="text-sm uppercase tracking-wider text-white/60 mb-1">Telephone:</p>
               <a
-                href="tel:01274488500"
+                href="tel:07441940552"
                 className="text-lg font-semibold text-white hover:text-blue-400 !transition-colors"
               >
-                01274 488500
+                07441 940552
               </a>
               <div className="mt-4">
                 <Link href="/contact" className="text-blue-400 hover:text-blue-300 underline text-sm">
@@ -98,17 +94,17 @@ export default function ProfilePage() {
             <article className="border border-white/10 p-6 bg-white/[0.02]">
               <h3 className="text-lg font-black uppercase tracking-wider text-white mb-4">Our Location</h3>
               <p className="leading-relaxed">
-                Rosse Street
+                8A-8E Huss's Lane
                 <br />
-                Bradford
+                Long Eaton
                 <br />
-                West Yorkshire
+                Nottingham
                 <br />
-                BD8 9AS
+                NG10 1GS
               </p>
               <div className="mt-4">
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Rosse+Street+Bradford+West+Yorkshire+BD8+9AS"
+                  href="https://www.google.com/maps/search/?api=1&query=8A-8E+Huss+Lane+Long+Eaton+Nottingham+NG10+1GS"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 underline text-sm"

@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 const ADMIN_CREDENTIALS = [
   {
     username: 'stockadmin',
-    password: 'AutoPrestige2025!',
+    password: 'MotorTimeGroup2025!',
   },
   {
-    username: 'autoprestige',
-    password: 'AutoPrestigeAdmin!',
+    username: 'motortimegroup',
+    password: 'MotorTimeGroupAdmin!',
   },
 ]
 

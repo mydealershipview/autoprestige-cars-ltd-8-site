@@ -9,11 +9,11 @@ import RegPlatesSupportFooter from './_components/RegPlatesSupportFooter'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Reg Plates | Autoprestige',
-  description: 'Browse static reg plates for sale at Autoprestige and view each plate details.',
+  title: 'Reg Plates | Motor Time Group',
+  description: 'Browse static reg plates for sale at Motor Time Group and view each plate details.',
   openGraph: {
-    title: 'Reg Plates | Autoprestige',
-    description: 'Browse static reg plates for sale at Autoprestige.',
+    title: 'Reg Plates | Motor Time Group',
+    description: 'Browse static reg plates for sale at Motor Time Group.',
     type: 'website',
     locale: 'en_GB',
   },
@@ -29,11 +29,11 @@ export default async function RegPlatesPage() {
           <p>
             Telephone: <span className="font-semibold text-white">{REG_PLATES_PHONE}</span> 
           </p>
-          <p className="mt-1 text-white/60">Autoprestige Cars - Used cars in Bradford</p>
+          <p className="mt-1 text-white/60">Motor Time Group - Used cars in Long Eaton</p>
         </div>
 
         <h1 className="text-3xl md:text-5xl font-black tracking-wide uppercase mb-8">
-          REG PLATES AT AUTOPRESTIGE
+          REG PLATES AT MOTOR TIME GROUP
         </h1>
 
         {plates.length === 0 ? (
