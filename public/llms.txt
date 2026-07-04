@@ -2,18 +2,18 @@
 > Purveyors of Fine Automobiles. Quality prestige used vehicles in Bradford, West Yorkshire. Car finance, part exchange, and warranty available.
 
 ## Main Pages
-- [Home](https://template-8.mydealershipview.com/): Our story and services — prestige and performance vehicles
-- [Showroom](https://template-8.mydealershipview.com/usedcars): Browse our prestige vehicle inventory
-- [Finance](https://template-8.mydealershipview.com/finance): Car finance options and online application
-- [Valuation](https://template-8.mydealershipview.com/valuation): Get a part-exchange valuation
-- [Contact](https://template-8.mydealershipview.com/contact): Visit or contact us in Bradford
+- [Home](https://autoprestigecars.co.uk/): Our story and services — prestige and performance vehicles
+- [Showroom](https://autoprestigecars.co.uk/usedcars): Browse our prestige vehicle inventory
+- [Finance](https://autoprestigecars.co.uk/finance): Car finance options and online application
+- [Valuation](https://autoprestigecars.co.uk/valuation): Get a part-exchange valuation
+- [Contact](https://autoprestigecars.co.uk/contact): Visit or contact us in Bradford
 
 ## Services
-- [Services](https://template-8.mydealershipview.com/services): All services overview
-- [Warranty](https://template-8.mydealershipview.com/services): Extended warranty information
-- [Sell Your Car](https://template-8.mydealershipview.com/valuation): Part exchange and outright purchase
+- [Services](https://autoprestigecars.co.uk/services): All services overview
+- [Warranty](https://autoprestigecars.co.uk/services): Extended warranty information
+- [Sell Your Car](https://autoprestigecars.co.uk/valuation): Part exchange and outright purchase
 
 ## Legal
-- [Terms & Conditions](https://template-8.mydealershipview.com/terms)
-- [Privacy Policy](https://template-8.mydealershipview.com/privacy-policy)
-- [Cookie Preferences](https://template-8.mydealershipview.com/cookie-policy)
+- [Terms & Conditions](https://autoprestigecars.co.uk/terms)
+- [Privacy Policy](https://autoprestigecars.co.uk/privacy-policy)
+- [Cookie Preferences](https://autoprestigecars.co.uk/cookie-policy)

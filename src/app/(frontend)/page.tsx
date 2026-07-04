@@ -8,7 +8,7 @@ import { getDealershipInfo } from '@/lib/services/dealership.service'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
-  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://template-8.mydealershipview.com'
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://autoprestigecars.co.uk'
   const title = `${dealership.name} | Purveyors of Fine Automobiles`
   const description =
     dealership.seoText || `${dealership.name} - ${dealership.tagline || 'Purveyors of Fine Automobiles. Trusted used car specialists.'}`
