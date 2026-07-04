@@ -232,6 +232,7 @@ const Home = async () => {
             <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
               SELL YOUR CAR
+              
             </h2>
           </div>
           <p className="text-base text-gray-300 font-medium mb-6">
