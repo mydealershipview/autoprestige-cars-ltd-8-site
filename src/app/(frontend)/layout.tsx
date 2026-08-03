@@ -51,7 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <CookieConsentModal />
         </Providers>
 
-      <GoogleAnalytics gaId="G-ZVEXRF5TY6" />
+      <GoogleAnalytics gaId="G-J5CW3RRHHV" />
       </body>
     </html>
   )
