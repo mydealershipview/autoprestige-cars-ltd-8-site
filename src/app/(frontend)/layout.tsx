@@ -11,6 +11,7 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { generateStructuredData } from '@/utilities/structuredData'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 import '@/styles/globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -49,6 +50,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </Layout>
           <CookieConsentModal />
         </Providers>
+
+      <GoogleAnalytics gaId="G-ZVEXRF5TY6" />
       </body>
     </html>
   )
