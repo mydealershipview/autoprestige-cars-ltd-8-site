@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
+import { trackEvent } from '@/lib/analytics'
 import { buildBaseWebhookPayload, submitWebhookForm, withInterestedVehicle } from './formSubmission'
 import { WebhookData } from '@/types/webhook'
 
@@ -33,6 +34,7 @@ export default function FinanceModal({
   stockId,
   onClose,
 }: FinanceModalProps) {
+  const financeStarted = useRef(false)
   const [title, setTitle] = useState('Mr')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -194,7 +196,7 @@ export default function FinanceModal({
             </div>
           </div>
 
-          <form className="space-y-8" onSubmit={handleSubmit}>
+          <form className="space-y-8" onSubmit={handleSubmit} onFocusCapture={() => { if (!financeStarted.current) { financeStarted.current = true; trackEvent('finance_quote_started', { item_id: stockId }) } }}>
             <div className="space-y-4">
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Contact Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

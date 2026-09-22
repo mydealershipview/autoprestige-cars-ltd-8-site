@@ -12,6 +12,7 @@ import {
   MapPin,
 } from 'lucide-react'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
+import { trackEvent } from '@/lib/analytics'
 
 import {
   ReserveModal,
@@ -122,6 +123,11 @@ export default function VehicleClient({
   const vehicleImageUrl = getVehicleImageUrl(vehicle)
 
   useEffect(() => {
+    trackEvent('view_item', { currency: 'GBP', value: price || undefined, items: [{ item_id: vehicle.metadata?.stockId || undefined, item_name: `${make} ${model}`.trim(), price: price || undefined }] })
+    trackEvent('vehicle_detail_view', { item_id: vehicle.metadata?.stockId || undefined })
+  }, [vehicle.metadata?.stockId])
+
+  useEffect(() => {
     const script = document.createElement('script')
     script.type = 'text/javascript'
     script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=U86tH2vLnYI0LyA2D5'
@@ -207,6 +213,7 @@ export default function VehicleClient({
   ]
 
   const handleWhatsapp = () => {
+    trackEvent('whatsapp_click', { link_location: 'vehicle_detail', item_id: vehicle.metadata?.stockId || undefined })
     const message = `Hello, I'm interested in the ${make} ${model} ${vehicle.vehicle.registration ? `(${vehicle.vehicle.registration})` : ''}. Could you please provide more information?`
     const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
 
@@ -437,12 +444,13 @@ export default function VehicleClient({
                 WhatsApp
               </button>
               <button onClick={() => {
+                trackEvent('finance_quote_started', { item_id: vehicle.metadata?.stockId || undefined })
                 const section = document.getElementById("cw_standalone_calculate_button");
                 section?.scrollIntoView({ behavior: "smooth" });
               }} disabled={isSold} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
                 Apply For Finance
               </button>
-              <button onClick={() => setShowReserve(true)} disabled={isSold} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
+              <button onClick={() => { trackEvent('reservation_started', { item_id: vehicle.metadata?.stockId || undefined }); setShowReserve(true) }} disabled={isSold} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
                 Reserve Vehicle
               </button>
               <button onClick={() => setShowPartExchange(true)} disabled={isSold} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:border-white/15 disabled:hover:text-zinc-400">

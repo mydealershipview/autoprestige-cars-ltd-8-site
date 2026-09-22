@@ -1,4 +1,5 @@
 import { WebhookData, VehicleReservationData } from '@/types/webhook'
+import { trackEvent, trackLead } from '@/lib/analytics'
 
 const DEFAULT_DEALER_ID = 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70'
 
@@ -90,6 +91,9 @@ export async function submitWebhookForm(payload: WebhookData): Promise<void> {
     const errorData = await response.json().catch(() => ({}))
     throw new Error(errorData?.error || 'Failed to submit form')
   }
+  trackLead(payload.enquiryType, { item_id: payload.vehicle?.stockId || undefined })
+  if (payload.enquiryType === 'request-finance') trackEvent('finance_quote_submitted', { item_id: payload.vehicle?.stockId || undefined })
+  if (payload.enquiryType === 'book-appointment') trackEvent('test_drive_requested', { item_id: payload.vehicle?.stockId || undefined })
 }
 
 export async function submitReservationForm(payload: VehicleReservationData): Promise<void> {
@@ -105,6 +109,8 @@ export async function submitReservationForm(payload: VehicleReservationData): Pr
     const errorData = await response.json().catch(() => ({}))
     throw new Error(errorData?.error || 'Failed to submit reservation')
   }
+  trackEvent('reservation_submitted', { item_id: payload.vehicleDetails.stockId || undefined })
+  trackLead('reservation', { item_id: payload.vehicleDetails.stockId || undefined })
 }
 
 export function buildReservationPayload(args: {

@@ -51,7 +51,7 @@ export default function CookiesPage() {
             <h3 className="font-semibold text-white mt-4 mb-1">Analytics Cookies</h3>
             <p>
               We use analytics cookies (such as Google Analytics) to understand how visitors use our site. This helps us
-              improve the user experience. All data collected is anonymised. These cookies are only set with your consent.
+              improve the user experience. Analytics cookies are only set with your consent.
             </p>
 
             <h3 className="font-semibold text-white mt-4 mb-1">Marketing Cookies</h3>

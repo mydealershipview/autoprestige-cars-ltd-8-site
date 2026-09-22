@@ -7,6 +7,7 @@ import { CheckCircle, XCircle, Clock, AlertCircle, Car, Phone, Mail, ArrowLeft }
 import { CustomButton } from '@/components/ui/custom-button'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
+import { trackEvent } from '@/lib/analytics'
 
 interface PaymentData {
   paymentStatus: string
@@ -89,6 +90,17 @@ export default function ReservationSuccessPage() {
 
         if (data.success) {
           setPaymentData(data)
+          if (data.paymentStatus === 'COMPLETED') {
+            const key = `mydv-reservation-paid:${paymentRequestId}`
+            try {
+              if (!sessionStorage.getItem(key)) {
+                trackEvent('reservation_completed', { currency: 'GBP', value: Number(data.paymentRecord?.amount || 0) / 100 })
+                sessionStorage.setItem(key, '1')
+              }
+            } catch {
+              trackEvent('reservation_completed', { currency: 'GBP', value: Number(data.paymentRecord?.amount || 0) / 100 })
+            }
+          }
         } else {
           setError(data.error || 'Unknown error occurred')
         }
@@ -322,7 +334,7 @@ export default function ReservationSuccessPage() {
                   <CustomButton
                     variant="outline"
                     className="w-full"
-                    onClick={() => window.open(`tel:${(contactPhone || '01234567890').replace(/\s+/g, '')}`)}
+                    onClick={() => { trackEvent('click_to_call', { link_location: 'reservation_success' }); window.open(`tel:${(contactPhone || '01234567890').replace(/\s+/g, '')}`) }}
                   >
                     <Phone className="w-4 h-4 mr-2" />
                     Call Us

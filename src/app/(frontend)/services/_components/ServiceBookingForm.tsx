@@ -1,5 +1,7 @@
 'use client'
 
+import { trackEvent, trackLead } from '@/lib/analytics'
+
 import React, { useState } from 'react'
 import { CheckCircle } from 'lucide-react'
 import type { WebhookData } from '@/types/webhook'
@@ -130,6 +132,7 @@ export default function ServiceBookingForm() {
         throw new Error(data?.error || 'Failed to submit. Please try again.')
       }
 
+      trackLead('service_booking')
       setSubmitted(true)
       setFormData(initialState)
     } catch (err: unknown) {

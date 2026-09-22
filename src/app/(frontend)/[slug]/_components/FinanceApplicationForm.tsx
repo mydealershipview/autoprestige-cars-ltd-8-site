@@ -1,6 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import { trackEvent, trackLead } from '@/lib/analytics'
+
+import React, { useRef, useState } from 'react'
 import type { WebhookData } from '@/types/webhook'
 
 type EmploymentStatus = NonNullable<WebhookData['employment']>['status']
@@ -111,6 +113,7 @@ function toNumber(value: unknown): number {
 }
 
 export default function FinanceApplicationForm() {
+  const financeStarted = useRef(false)
   const [formData, setFormData] = useState<FinanceFormState>(initialState)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -205,6 +208,8 @@ export default function FinanceApplicationForm() {
         throw new Error(errorData?.error || 'Failed to submit finance application')
       }
 
+      trackLead('finance')
+      trackEvent('finance_quote_submitted')
       setSubmitted(true)
       setFormData(initialState)
     } catch (err) {
@@ -231,7 +236,7 @@ export default function FinanceApplicationForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} onFocusCapture={() => { if (!financeStarted.current) { financeStarted.current = true; trackEvent('finance_quote_started') } }} className="space-y-8">
       <div className="space-y-2">
         <h2 className="text-2xl md:text-3xl font-black tracking-[0.1em] uppercase text-white">Finance Application</h2>
         <p className="text-zinc-300">Complete your vehicle finance application</p>

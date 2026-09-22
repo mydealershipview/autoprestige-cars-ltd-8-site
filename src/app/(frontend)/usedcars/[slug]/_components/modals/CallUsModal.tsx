@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Phone } from 'lucide-react'
 import { buildBaseWebhookPayload, submitWebhookForm, withInterestedVehicle } from './formSubmission'
+import { trackEvent } from '@/lib/analytics'
 
 interface CallUsModalProps {
   phoneNumber: string
@@ -52,6 +53,7 @@ export default function CallUsModal({
       payload.notes = 'Customer requested a phone call from vehicle detail page.'
 
       await submitWebhookForm(payload)
+      trackEvent('click_to_call', { link_location: 'vehicle_detail', item_id: stockId })
       window.location.href = `tel:${phoneNumber}`
       onClose()
     } catch (error) {

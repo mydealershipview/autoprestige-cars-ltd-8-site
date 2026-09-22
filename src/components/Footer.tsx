@@ -212,6 +212,8 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
           <span className="hidden md:inline">|</span>
           <Link href="/cookie-policy" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Cookie Policy</Link>
           <span className="hidden md:inline">|</span>
+          <button type="button" onClick={() => window.dispatchEvent(new Event('mydv:cookie-settings'))} className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Cookie Settings</button>
+          <span className="hidden md:inline">|</span>
           <Link href="/contact" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Contact Us</Link>
         </div>
 

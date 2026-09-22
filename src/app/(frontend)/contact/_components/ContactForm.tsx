@@ -1,5 +1,7 @@
 'use client'
 
+import { trackEvent, trackLead } from '@/lib/analytics'
+
 import React, { useState } from 'react'
 import { Send } from 'lucide-react'
 import type { WebhookData } from '@/types/webhook'
@@ -80,6 +82,7 @@ export default function ContactForm() {
         throw new Error(data?.error || 'Failed to send message. Please try again.')
       }
 
+      trackLead('contact')
       setSubmitted(true)
       setFormData({ fullName: '', email: '', phone: '', message: '' })
     } catch (err: unknown) {
