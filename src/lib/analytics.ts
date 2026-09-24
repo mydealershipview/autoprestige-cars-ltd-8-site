@@ -13,6 +13,10 @@ declare global {
 export function trackEvent(event: string, parameters: AnalyticsEvent = {}) {
   if (typeof window === 'undefined') return
   const data = Object.fromEntries(Object.entries(parameters).filter(([, value]) => value !== undefined))
+  if (event !== 'view_item' && data.item_id && !data.vehicle_id) {
+    data.vehicle_id = data.item_id
+    delete data.item_id
+  }
   window.dataLayer = window.dataLayer || []
   window.dataLayer.push({ event, ...data })
   if (window.__mydvDirectGa4) window.gtag?.('event', event, data)

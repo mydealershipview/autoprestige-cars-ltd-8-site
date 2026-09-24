@@ -35,3 +35,24 @@ No names, email addresses, phone numbers, vehicle registration numbers, free tex
 3. Verify the names and counts in GA4 Realtime and Google Ads after publishing. GA4 key event and Ads conversion settings live in those accounts; code changes alone cannot mark/import them.
 
 This setup applies to this repository. Reuse the bootstrap, banner, data layer contract, and account checklist in each other MYDV site repository and configure each dealer's own IDs.
+## Shared vehicle event contract (September 2026)
+
+Every site sends `vehicle_detail_view` with the same parameters from the listing:
+
+| Parameter | Meaning |
+| --- | --- |
+| `vehicle_id` | Auto Trader stock ID (string) |
+| `dealer_id` | Auto Trader advertiser ID (string) |
+| `vehicle_mileage` | Odometer reading in miles (number; omitted when unknown) |
+| `vehicle_make`, `vehicle_model` | Listing make and model (strings) |
+
+Some sites also send `vehicle_year`, `value`, or `currency`. Do not use the old `stock_id` or `item_id` parameter to define the vehicle-detail custom dimension. `view_item` is a separate ecommerce event where `item_id` retains its GA4 meaning. Vehicle registration is not included in the shared event because it can identify a person.
+
+## GA4 account handoff
+
+For this dealer's GA4 property, after deploying and confirming a consented `vehicle_detail_view` in Realtime or DebugView:
+
+1. In **Admin → Data display → Custom definitions**, create event-scoped dimensions for `vehicle_id`, `dealer_id`, `vehicle_make`, and `vehicle_model`. Create an event-scoped custom **metric** for numeric `vehicle_mileage` with miles as the unit. Add `vehicle_year` only where this site sends it.
+2. In **Admin → Data display → Events**, mark the event names in this site's measurement plan as key events. Include `enquiry_submitted` and the successful lead or reservation events; the existing site checklist lists any additional requested events. Treat `vehicle_detail_view` as a browsing signal when deciding whether it should be a key event.
+3. In **Admin → Product links → Google Ads links**, link this dealer's Ads account. Then create or import Ads conversions from the selected GA4 key events. Make completed leads/reservations primary; keep starts and clicks secondary if imported. Avoid duplicate direct Ads/GTM conversions for the same action.
+4. Verify a successful and a failed form submission, one vehicle view, and a consented visit in GA4 Realtime/DebugView. Confirm the DMS reads the same GA4 property and event names. New custom definitions and key-event settings do not backfill historic reports.

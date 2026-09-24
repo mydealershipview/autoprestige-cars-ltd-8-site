@@ -124,7 +124,13 @@ export default function VehicleClient({
 
   useEffect(() => {
     trackEvent('view_item', { currency: 'GBP', value: price || undefined, items: [{ item_id: vehicle.metadata?.stockId || undefined, item_name: `${make} ${model}`.trim(), price: price || undefined }] })
-    trackEvent('vehicle_detail_view', { item_id: vehicle.metadata?.stockId || undefined })
+    trackEvent('vehicle_detail_view', {
+      vehicle_id: vehicle.metadata?.stockId || undefined,
+      dealer_id: vehicle.advertiser?.advertiserId || undefined,
+      vehicle_mileage: vehicle.vehicle?.odometerReadingMiles ?? undefined,
+      vehicle_make: make || undefined,
+      vehicle_model: model || undefined,
+    })
   }, [vehicle.metadata?.stockId])
 
   useEffect(() => {
