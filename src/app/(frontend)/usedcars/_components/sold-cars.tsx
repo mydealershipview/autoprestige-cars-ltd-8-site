@@ -908,7 +908,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     const whatsappMsg = encodeURIComponent(
                       `Hi, I'm interested in the ${vehicleYear || ''} ${vehicleMake} ${vehicleModel}. Stock ID: ${stockId}`,
                     )
-                    const whatsappHref = `https://wa.me/447739967131?text=${whatsappMsg}`
+                    const whatsappHref = `https://wa.me/+447725124729?text=${whatsappMsg}`
 
                     return (
                       <div
