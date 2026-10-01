@@ -1,7 +1,7 @@
 import React from 'react'
 import Navigation from './Navigation'
 import Footer from './Footer'
-import SideWidget from './SideWidget'
+import FloatingWhatsApp from './FloatingWhatsApp'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
 
@@ -47,7 +47,7 @@ const Layout = async ({ children }: Props) => {
         makes={makes}
         models={models}
       />
-      <SideWidget contactData={contactData} makes={makes} models={models} />
+      <FloatingWhatsApp contactData={contactData} />
     </>
   )
 }

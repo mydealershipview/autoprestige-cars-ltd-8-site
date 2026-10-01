@@ -18,7 +18,7 @@ type FormState = {
 }
 
 const DEFAULT_TEASER =
-  "Should you require any further assistance please click the button, fill out the form and we'll be in touch as soon as possible. Alternatively Call us on 01274 488500"
+  "Should you require any further assistance please click the button, fill out the form and we'll be in touch as soon as possible. Alternatively Call us on 07725 124729"
 
 const EMPTY_FORM: FormState = {
   id: null,

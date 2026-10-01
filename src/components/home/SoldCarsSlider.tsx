@@ -182,16 +182,16 @@ export function SoldCarsSlider() {
                         )}
 
                         <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                          {year && (
+                          {year ? (
                             <span className="text-[10px] border border-zinc-600 text-zinc-400 px-2 py-0.5 font-semibold">
                               {year}
                             </span>
-                          )}
-                          {mileage && (
+                          ) : null}
+                          {mileage ? (
                             <span className="text-[10px] border border-zinc-600 text-zinc-400 px-2 py-0.5 font-semibold">
                               {new Intl.NumberFormat('en-GB').format(mileage)}mi
                             </span>
-                          )}
+                          ) : null}
                           {fuelType && (
                             <span className="text-[10px] border border-zinc-600 text-zinc-400 px-2 py-0.5 font-semibold">
                               {fuelType}
@@ -199,11 +199,11 @@ export function SoldCarsSlider() {
                           )}
                         </div>
 
-                        {price && (
+                        {price ? (
                           <p className="mt-2.5 text-sm font-bold text-zinc-500 line-through">
                             {formatPrice(price)}
                           </p>
-                        )}
+                        ) : null}
                       </div>
 
                       {/* Blue hover accent line */}

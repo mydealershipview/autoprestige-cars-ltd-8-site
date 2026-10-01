@@ -50,7 +50,7 @@ const REG_PLATE_NAMES = [
 ] as const
 
 
-export const REG_PLATES_PHONE = '01274 488500'
+export const REG_PLATES_PHONE = '07725 124729'
 export const REG_PLATES_MOBILE = '07739 967131'
 
 export const REG_PLATES_TEASER =

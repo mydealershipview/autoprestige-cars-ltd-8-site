@@ -185,7 +185,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             name: 'Where is Autoprestige Cars located?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${dealership.name} is based in ${dealership.address.city || 'Bradford'}, West Yorkshire. Our showroom is open Monday to Friday 9am–6pm, Saturday 9am–5pm, and Sunday by appointment. Call us on ${dealership.phone || '01274 488500'} or visit our contact page for directions.`,
+              text: `${dealership.name} is based in ${dealership.address.city || 'Bradford'}, West Yorkshire. Our showroom is open Monday to Friday 9am–6pm, Saturday 9am–5pm, and Sunday by appointment. Call us on ${dealership.phone || '07725 124729'} or visit our contact page for directions.`,
             },
           },
         ],

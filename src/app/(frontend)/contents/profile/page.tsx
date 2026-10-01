@@ -83,10 +83,10 @@ export default function ProfilePage() {
               <h3 className="text-lg font-black uppercase tracking-wider text-white mb-4">Contact Details</h3>
               <p className="text-sm uppercase tracking-wider text-white/60 mb-1">Telephone:</p>
               <a
-                href="tel:01274488500"
+                href="tel:07725124729"
                 className="text-lg font-semibold text-white hover:text-blue-400 !transition-colors"
               >
-                01274 488500
+                07725 124729
               </a>
               <div className="mt-4">
                 <Link href="/contact" className="text-blue-400 hover:text-blue-300 underline text-sm">

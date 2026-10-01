@@ -288,13 +288,13 @@ const Home = async () => {
 
             <h5 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Do you offer car finance?</h5>
             <h6>
-              Yes, we offer flexible finance options to suit your budget. As an FCA-authorised credit broker (FCA No. {dealership.fcaNumber || '715892'}), we work with a panel of carefully selected lenders to find the most competitive rates. Apply online in minutes, or speak to our finance team on <span className="text-white font-semibold">{dealership.phone || '01274 488500'}</span>. All finance is subject to status — UK residents aged 18+ only.
+              Yes, we offer flexible finance options to suit your budget. As an FCA-authorised credit broker (FCA No. {dealership.fcaNumber || '715892'}), we work with a panel of carefully selected lenders to find the most competitive rates. Apply online in minutes, or speak to our finance team on <span className="text-white font-semibold">{dealership.phone || '07725 124729'}</span>. All finance is subject to status — UK residents aged 18+ only.
             </h6>
 
 
             <h5 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Where are you based?</h5>
             <h6>
-              Our showroom is located in {dealership.address.city || 'Bradford'}, West Yorkshire. We serve customers across Bradford, Leeds, Huddersfield, Wakefield, Halifax, and throughout West Yorkshire. Call us on <span className="text-white font-semibold">{dealership.phone || '01274 488500'}</span> to arrange a viewing or test drive, or visit our contact page for directions.
+              Our showroom is located in {dealership.address.city || 'Bradford'}, West Yorkshire. We serve customers across Bradford, Leeds, Huddersfield, Wakefield, Halifax, and throughout West Yorkshire. Call us on <span className="text-white font-semibold">{dealership.phone || '07725 124729'}</span> to arrange a viewing or test drive, or visit our contact page for directions.
             </h6>
           </div>
         </div>
