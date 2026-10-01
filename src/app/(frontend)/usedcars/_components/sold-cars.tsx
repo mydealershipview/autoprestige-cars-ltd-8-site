@@ -906,7 +906,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     const isSold = vehicle.metadata?.lifecycleState === 'SOLD'
 
                     const whatsappMsg = encodeURIComponent(
-                      `Hi, I'm interested in the ${vehicleYear || ''} ${vehicleMake} ${vehicleModel}. Stock ID: ${stockId}`,
+                      `Hi, I'm interested in the ${[vehicleMake, vehicleModel].filter(Boolean).join(' ')}${vehicleRegistration ? ` (Reg: ${vehicleRegistration})` : ''}. Could you please provide more information?`,
                     )
                     const whatsappHref = `https://wa.me/+447725124729?text=${whatsappMsg}`
 

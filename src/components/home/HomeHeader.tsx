@@ -120,12 +120,8 @@ export default function HomeHeader({
     (link) => link.isActive !== false && link.platform.toLowerCase() !== 'whatsapp',
   )
 
-  const whatsappDigits = (contactData?.whatsappNumber || primaryPhone).replace(/\D/g, '')
-  const whatsappNumber = whatsappDigits.startsWith('00')
-    ? whatsappDigits.slice(2)
-    : whatsappDigits.startsWith('0')
-      ? `44${whatsappDigits.slice(1)}`
-      : whatsappDigits
+  // WhatsApp must always go to the dealership mobile (07725 124729)
+  const whatsappNumber = '447725124729'
   const whatsappUrl = `https://wa.me/${whatsappNumber}`
 
   return (

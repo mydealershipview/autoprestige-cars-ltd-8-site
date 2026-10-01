@@ -221,10 +221,8 @@ export default async function IndividualListingPage({ params }: { params: Promis
     contactData?.phoneNumbers?.[0]?.number ||
     ''
 
-  const whatsappNumber =
-    contactData?.whatsappNumber || contactData?.phoneNumbers?.find((entry) => entry.isPrimary)?.number ||
-    contactData?.phoneNumbers?.[0]?.number ||
-    ''
+  // WhatsApp must always go to the dealership mobile (07725 124729)
+  const whatsappNumber = '447725124729'
   const contactEmail =
     contactData?.emailAddresses?.find((entry) => entry.isPrimary)?.email ||
     contactData?.emailAddresses?.[0]?.email ||
