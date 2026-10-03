@@ -929,6 +929,13 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                       'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800'
                     const imageCount = vehicle.media?.images?.length || 0
                     const hasVideo = !!(vehicle.media?.video?.href)
+                    const reservationStatus =
+                      vehicle.adverts?.retailAdverts?.reservationStatus ??
+                      vehicle.adverts?.reservationStatus ??
+                      ''
+                    const isReserved =
+                      vehicle.metadata?.lifecycleState !== 'SOLD' &&
+                      /^reserved\b/i.test(reservationStatus.trim())
 
                     const vehicleMake = vehicle.vehicle?.make || vehicle.vehicle?.standard?.make || ''
                     const vehicleModel = vehicle.vehicle?.model || vehicle.vehicle?.standard?.model || ''
@@ -994,9 +1001,14 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             height="600"
                             loading="lazy"
                           />
+                          {isReserved && (
+                            <span className="absolute z-20 top-2 left-2 rounded-full bg-blue-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow-md pointer-events-none">
+                              Reserved
+                            </span>
+                          )}
                           {/* Photo / video count */}
                           {imageCount > 0 && (
-                            <div className="absolute z-20 top-2 left-2 flex items-center gap-1.5">
+                            <div className={`absolute z-20 left-2 flex items-center gap-1.5 ${isReserved ? 'bottom-2' : 'top-2'}`}>
                               <span className="flex items-center gap-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-medium">
                                 <Camera className="w-3 h-3" />
                                 {imageCount}
