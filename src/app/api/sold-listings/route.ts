@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { after, NextRequest, NextResponse } from 'next/server'
 import { AutoTraderVehicle } from '../../../utilities/autotrader'
 import { extractMakesAndModelsFromVehicles } from '../../../utilities/make-model'
 import { mergeVehiclesWithPayloadData } from '../../../utilities/mergePayloadData'
-import { getVisibleSoldCarVehicles, syncSoldCarsFromDMS } from '@/lib/services/soldCars.service'
+import { getVisibleSoldCarVehicles, refreshSoldCarsIfStale } from '@/lib/services/soldCars.service'
 
 // Filter function
 function filterListings(listings: AutoTraderVehicle[], filters: {
@@ -188,7 +188,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    await syncSoldCarsFromDMS()
+    // Serve the saved archive first. Feed pagination and database writes must not
+    // hold up the carousel or sold showroom, even when the upstream feed is slow.
+    after(async () => {
+      try {
+        await refreshSoldCarsIfStale()
+      } catch (error) {
+        console.error('Background sold-car refresh failed:', error)
+      }
+    })
     const allListings = await getVisibleSoldCarVehicles()
 
     // Apply filters using names directly

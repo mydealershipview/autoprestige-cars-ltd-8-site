@@ -10,6 +10,7 @@ import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { ChevronDown, Search, CreditCard, Camera, Video, SlidersHorizontal, X } from 'lucide-react'
 import ReserveModal from '../[slug]/_components/modals/ReserveModal'
+import { useSoldVehicles } from '@/hooks/useSoldVehicles'
 
 const SoldVehiclesShowcase = dynamic(() => import('./SoldVehiclesShowcase'), {
   ssr: false,
@@ -58,8 +59,12 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   const searchParams = useSearchParams()
 
   const [listings, setListings] = useState<AutoTraderVehicle[]>([])
-  const [showcaseSoldVehicles, setShowcaseSoldVehicles] = useState<AutoTraderVehicle[]>([])
-  const [showcaseLoading, setShowcaseLoading] = useState(true)
+  const {
+    vehicles: showcaseSoldVehicles,
+    loading: showcaseLoading,
+    error: showcaseError,
+    retry: retryShowcase,
+  } = useSoldVehicles('/api/sold-listings?page=1&pageSize=12&sortBy=price&sortOrder=desc')
   const [reserveVehicle, setReserveVehicle] = useState<ReserveVehicleData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -198,24 +203,6 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     filters.minMileage,
     filters.maxMileage,
   ])
-
-  useEffect(() => {
-    setShowcaseLoading(true)
-    fetch('/api/sold-listings?page=1&pageSize=12&sortBy=price&sortOrder=desc', { cache: 'no-store' })
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return response.json()
-      })
-      .then((data) => {
-        setShowcaseSoldVehicles(data.results || [])
-      })
-      .catch(() => {
-        setShowcaseSoldVehicles([])
-      })
-      .finally(() => {
-        setShowcaseLoading(false)
-      })
-  }, [])
 
   const updateURL = useCallback(
     (
@@ -830,7 +817,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             </select>
           </div>
 
-          {(showcaseLoading || showcaseSoldVehicles.length > 0) && (
+          {(showcaseLoading || showcaseError || showcaseSoldVehicles.length > 0) && (
             <section className="border-b border-white/10 bg-[#0d0d0d] px-4 py-5">
               <div className="mb-4">
                 <div>
@@ -845,6 +832,15 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                   {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className="h-56 animate-pulse rounded bg-[#181818]" />
                   ))}
+                </div>
+              )}
+
+              {showcaseError && (
+                <div role="alert" className="py-8 text-center text-sm text-gray-400">
+                  <p>{showcaseError}</p>
+                  <button type="button" onClick={retryShowcase} className="mt-3 text-blue-400 underline">
+                    Try again
+                  </button>
                 </div>
               )}
 

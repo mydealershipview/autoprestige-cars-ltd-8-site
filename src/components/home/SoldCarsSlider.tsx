@@ -1,30 +1,21 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Navigation, Pagination } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper'
 // Swiper CSS is imported globally in globals.css
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { AutoTraderVehicle } from '@/utilities/autotrader'
+import { useSoldVehicles } from '@/hooks/useSoldVehicles'
 import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
 
 export function SoldCarsSlider() {
-  const [vehicles, setVehicles] = useState<AutoTraderVehicle[]>([])
-  const [loading, setLoading] = useState(true)
+  const { vehicles, loading, error, retry } = useSoldVehicles(
+    '/api/sold-listings?pageSize=20&sortBy=dateAdded&sortOrder=desc',
+  )
   const prevRef = useRef<HTMLButtonElement>(null)
   const nextRef = useRef<HTMLButtonElement>(null)
   const swiperRef = useRef<SwiperType | null>(null)
-
-  useEffect(() => {
-    fetch('/api/sold-listings?pageSize=20&sortBy=dateAdded&sortOrder=desc')
-      .then((r) => r.json())
-      .then((data) => {
-        setVehicles(data.results || [])
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [])
 
   const handleSwiper = (swiper: SwiperType) => {
     swiperRef.current = swiper
@@ -217,7 +208,15 @@ export function SoldCarsSlider() {
         )}
 
         {/* No data state */}
-        {!loading && vehicles.length === 0 && (
+        {error && (
+          <div role="alert" className="py-12 text-center text-sm text-zinc-400">
+            <p>{error}</p>
+            <button type="button" onClick={retry} className="mt-3 text-blue-400 underline">
+              Try again
+            </button>
+          </div>
+        )}
+        {!loading && !error && vehicles.length === 0 && (
           <p className="text-center text-zinc-600 py-12 text-sm uppercase tracking-widest font-semibold">
             No sold vehicles to display
           </p>

@@ -7,6 +7,8 @@ const RECENT_SOLD_DAYS = 30
 
 let dmsSoldCache: AutoTraderVehicle[] | null = null
 let dmsSoldCacheTimestamp: number | null = null
+let soldRefreshPromise: Promise<void> | null = null
+let soldRefreshTimestamp: number | null = null
 
 type LeanSoldCar = ISoldCar & { _id: unknown }
 
@@ -313,6 +315,21 @@ export async function syncSoldCarsFromDMS(): Promise<{ synced: number; insertedO
   return {
     synced: soldVehicles.length,
     insertedOrUpdated: (result.upsertedCount || 0) + (result.modifiedCount || 0),
+  }
+}
+
+/** Coalesce background refreshes and avoid rewriting the archive on each visit. */
+export async function refreshSoldCarsIfStale(): Promise<void> {
+  if (soldRefreshPromise) return soldRefreshPromise
+  if (soldRefreshTimestamp !== null && Date.now() - soldRefreshTimestamp < DMS_CACHE_DURATION) return
+
+  // Also back off on failures so a feed outage does not start a sync per visitor.
+  soldRefreshTimestamp = Date.now()
+  soldRefreshPromise = syncSoldCarsFromDMS().then(() => undefined)
+  try {
+    await soldRefreshPromise
+  } finally {
+    soldRefreshPromise = null
   }
 }
 

@@ -47,15 +47,17 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   const [listings, setListings] = useState<AutoTraderVehicle[]>([])
   const [reserveVehicle, setReserveVehicle] = useState<ReserveVehicleData | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [totalResults, setTotalResults] = useState(0)
   const [pageSize] = useState(20)
   const { toggleWishlist, isInWishlist } = useWishlist()
 
   // Sorting state
-  const [sortBy, setSortBy] = useState('price')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [sortBy, setSortBy] = useState(() => searchParams.get('sortBy') || 'price')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(
+    () => (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc',
+  )
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -69,6 +71,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   // Get current page from URL params
   const currentPage = parseInt(searchParams.get('page') || '1', 10)
   const headerRef = useRef<HTMLHeadingElement>(null)
+  const listingsRequestRef = useRef<AbortController | null>(null)
 
   // Get sorting from URL params
   useEffect(() => {
@@ -106,6 +109,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     currentSortBy?: string,
     currentSortOrder?: 'asc' | 'desc',
   ) => {
+    listingsRequestRef.current?.abort()
+    const controller = new AbortController()
+    listingsRequestRef.current = controller
     setLoading(true)
     setError(null)
 
@@ -124,13 +130,14 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
         }
       })
 
-      const response = await fetch(`/api/sold-listings?${queryParams}`)
+      const response = await fetch(`/api/sold-listings?${queryParams}`, { signal: controller.signal })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
       const data = await response.json()
+      if (controller.signal.aborted) return
       setListings(data.results)
       setTotalResults(data.totalResults)
 
@@ -158,15 +165,18 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
         setModels(filteredModels)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch listings')
+      if (!controller.signal.aborted) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch listings')
+      }
     } finally {
-      setLoading(false)
+      if (!controller.signal.aborted) setLoading(false)
     }
   }
 
   // Load listings on component mount and when parameters change
   useEffect(() => {
     fetchListings(currentPage, filters, sortBy, sortOrder)
+    return () => listingsRequestRef.current?.abort()
   }, [
     currentPage,
     sortBy,
@@ -243,7 +253,6 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     setSortBy(newSortBy)
     setSortOrder(newSortOrder)
     updateURL(filters, 1, newSortBy, newSortOrder)
-    fetchListings(1, filters, newSortBy, newSortOrder)
   }
 
   const handleClearFilters = () => {
@@ -1172,4 +1181,3 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     </main>
   )
 }
-
