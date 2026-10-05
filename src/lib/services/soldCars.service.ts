@@ -350,6 +350,9 @@ export type SoldListingsQuery = {
   transmissionType?: string
   minYear?: number
   maxYear?: number
+  colour?: string
+  /** Free text: matches make, model, colour or derivative (contains, any case) */
+  search?: string
 }
 
 const visibleSoldMatch = () => ({
@@ -416,6 +419,17 @@ function soldFilterConditions(q: SoldListingsQuery): Record<string, unknown>[] {
   nameEquals('bodyType', q.bodyType)
   nameEquals('transmissionType', q.transmissionType)
   inRange(`${V}.yearOfManufacture`, q.minYear, q.maxYear)
+  nameEquals('colour', q.colour)
+  const text = q.search?.trim()
+  if (text) {
+    // Plain text, not a pattern: escape regex characters
+    const pattern = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    conditions.push({
+      $or: ['make', 'model', 'colour', 'derivative'].map((field) => ({
+        $regexMatch: { input: lowerOf(field), regex: pattern, options: 'i' },
+      })),
+    })
+  }
   return conditions
 }
 

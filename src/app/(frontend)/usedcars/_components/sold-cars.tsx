@@ -59,8 +59,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     () => (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc',
   )
 
-  // Search state
+  // Search state: the text box, and the text sent to the server once typing pauses
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchText, setSearchText] = useState('')
 
   // Make and Model state
   const [makes, setMakes] = useState<Make[]>([])
@@ -108,6 +109,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     currentFilters: ListingsFilters,
     currentSortBy?: string,
     currentSortOrder?: 'asc' | 'desc',
+    currentSearch: string = searchText,
   ) => {
     listingsRequestRef.current?.abort()
     const controller = new AbortController()
@@ -129,6 +131,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
           queryParams.append(key, value)
         }
       })
+      // The search covers every sold car, not just this page
+      if (currentSearch.trim()) queryParams.append('search', currentSearch.trim())
 
       const response = await fetch(`/api/sold-listings?${queryParams}`, { signal: controller.signal })
 
@@ -175,9 +179,10 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   // Load listings on component mount and when parameters change
   useEffect(() => {
-    fetchListings(currentPage, filters, sortBy, sortOrder)
+    fetchListings(currentPage, filters, sortBy, sortOrder, searchText)
     return () => listingsRequestRef.current?.abort()
   }, [
+    searchText,
     currentPage,
     sortBy,
     sortOrder,
@@ -255,7 +260,21 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     updateURL(filters, 1, newSortBy, newSortOrder)
   }
 
+  // Send the search to the server 400ms after typing stops, starting again from page 1
+  useEffect(() => {
+    const next = searchQuery.trim()
+    if (next === searchText) return
+    const timer = setTimeout(() => {
+      setSearchText(next)
+      if (currentPage > 1) updateURL(filters, 1, sortBy, sortOrder)
+    }, 400)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery])
+
   const handleClearFilters = () => {
+    setSearchQuery('')
+    setSearchText('')
     const clearedFilters: ListingsFilters = {
       make: '',
       model: '',
@@ -335,18 +354,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
-  // Client-side text search across make, model, colour
-  const filteredListings = useMemo(() => {
-    if (!searchQuery.trim()) return listings
-    const q = searchQuery.toLowerCase()
-    return listings.filter((v) => {
-      const make = (v.vehicle?.make || v.vehicle?.standard?.make || '').toLowerCase()
-      const model = (v.vehicle?.model || v.vehicle?.standard?.model || '').toLowerCase()
-      const colour = (v.vehicle?.colour || v.vehicle?.standard?.colour || '').toLowerCase()
-      const derivative = (v.vehicle?.derivative || v.vehicle?.standard?.derivative || '').toLowerCase()
-      return make.includes(q) || model.includes(q) || colour.includes(q) || derivative.includes(q)
-    })
-  }, [listings, searchQuery])
+  // The server already applied the search (make, model, colour, derivative) to every sold car
+  const filteredListings = listings
 
   // Accordion section component
   const FilterSection = ({
