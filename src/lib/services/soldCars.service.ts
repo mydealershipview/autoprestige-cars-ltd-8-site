@@ -1,3 +1,4 @@
+import type { PipelineStage } from 'mongoose'
 import connectDB from '@/lib/db/connect'
 import SoldCarModel, { type ISoldCar } from '@/lib/db/models/soldCar.model'
 import { fetchAutoTraderListings, type AutoTraderVehicle } from '@/utilities/autotrader'
@@ -333,16 +334,162 @@ export async function refreshSoldCarsIfStale(): Promise<void> {
   }
 }
 
-export async function getVisibleSoldCarVehicles(): Promise<AutoTraderVehicle[]> {
-  await connectDB()
-  const cutoff = new Date(Date.now() - RECENT_SOLD_DAYS * 86400000)
-  const records = await SoldCarModel.find({
-    $or: [{ showAfter30Days: true }, { soldDate: { $gte: cutoff } }],
-  })
-    .sort({ soldDate: -1, updatedAt: -1 })
-    .lean<LeanSoldCar[]>()
+export type SoldListingsQuery = {
+  page: number
+  pageSize: number
+  sortBy: string
+  sortOrder: 'asc' | 'desc'
+  make?: string
+  model?: string
+  minPrice?: number
+  maxPrice?: number
+  minMileage?: number
+  maxMileage?: number
+  fuelType?: string
+  bodyType?: string
+  transmissionType?: string
+  minYear?: number
+  maxYear?: number
+}
 
-  return records.map((record) => record.vehicle)
+const visibleSoldMatch = () => ({
+  $or: [
+    { showAfter30Days: true },
+    { soldDate: { $gte: new Date(Date.now() - RECENT_SOLD_DAYS * 86400000) } },
+  ],
+})
+
+// `a || b` as MongoDB sees it: b when a is missing, null, '', 0 or false
+const either = (a: unknown, b: unknown) => ({
+  $cond: [
+    {
+      $and: [
+        { $ne: [{ $ifNull: [a, null] }, null] },
+        { $ne: [a, ''] },
+        { $ne: [a, 0] },
+        { $ne: [a, false] },
+      ],
+    },
+    a,
+    b,
+  ],
+})
+const V = '$vehicle.vehicle'
+const lowerOf = (field: string) => ({
+  $toLower: { $ifNull: [either(`${V}.${field}`, `${V}.standard.${field}`), ''] },
+})
+const PRICE = either('$vehicle.adverts.forecourtPrice.amountGBP', '$vehicle.adverts.retailAdverts.totalPrice.amountGBP')
+
+/** Sort key per sortBy, as the listing page has always sorted (missing values as before). */
+const SORT_KEYS: Record<string, unknown> = {
+  price: either(PRICE, 0),
+  year: either(`${V}.yearOfManufacture`, 0),
+  mileage: either(`${V}.odometerReadingMiles`, 999999),
+  make: lowerOf('make'),
+  model: lowerOf('model'),
+  fuelType: lowerOf('fuelType'),
+  dateAdded: {
+    $convert: {
+      input: either('$vehicle.metadata.dateOnForecourt', '$vehicle.metadata.lastUpdated'),
+      to: 'date',
+      onError: null,
+      onNull: null,
+    },
+  },
+}
+
+/** The listing filters, applied by MongoDB (case-insensitive names, numeric ranges). */
+function soldFilterConditions(q: SoldListingsQuery): Record<string, unknown>[] {
+  const conditions: Record<string, unknown>[] = []
+  const nameEquals = (field: string, value?: string) => {
+    if (value) conditions.push({ $eq: [lowerOf(field), value.toLowerCase()] })
+  }
+  const inRange = (value: unknown, min?: number, max?: number) => {
+    if (typeof min === 'number') conditions.push({ $and: [{ $isNumber: value }, { $gte: [value, min] }] })
+    if (typeof max === 'number') conditions.push({ $and: [{ $isNumber: value }, { $lte: [value, max] }] })
+  }
+  nameEquals('make', q.make)
+  nameEquals('model', q.model)
+  inRange(PRICE, q.minPrice, q.maxPrice)
+  inRange(`${V}.odometerReadingMiles`, q.minMileage, q.maxMileage)
+  nameEquals('fuelType', q.fuelType)
+  nameEquals('bodyType', q.bodyType)
+  nameEquals('transmissionType', q.transmissionType)
+  inRange(`${V}.yearOfManufacture`, q.minYear, q.maxYear)
+  return conditions
+}
+
+/** AutoTrader image links stored with an unfilled `{resize}` size redirect instead of loading. */
+function withSizedImages(vehicle: AutoTraderVehicle): AutoTraderVehicle {
+  const images = vehicle.media?.images
+  if (!images?.some((image) => image?.href?.includes('{resize}'))) return vehicle
+  return {
+    ...vehicle,
+    media: {
+      ...vehicle.media,
+      images: images.map((image) =>
+        image?.href ? { ...image, href: image.href.replace('{resize}', 'w800') } : image,
+      ),
+    },
+  }
+}
+
+/**
+ * One page of the visible sold cars, filtered, sorted and paged by MongoDB, plus the total
+ * matching count and the makes / models for the filter dropdowns. Only the requested page's
+ * cars are read in full (without the features list, which the sold pages never show): reading
+ * all of them on every visit took ~22-27s (05/10/2026).
+ */
+export async function querySoldCarListings(q: SoldListingsQuery): Promise<{
+  vehicles: AutoTraderVehicle[]
+  totalResults: number
+  makeModelVehicles: AutoTraderVehicle[]
+}> {
+  await connectDB()
+  const filters = soldFilterConditions(q)
+  const sortKey = SORT_KEYS[q.sortBy]
+  const direction = q.sortOrder === 'asc' ? 1 : -1
+  const pipeline: PipelineStage[] = [
+    { $match: visibleSoldMatch() },
+    ...(filters.length ? [{ $match: { $expr: { $and: filters } } }] : []),
+    {
+      $facet: {
+        total: [{ $count: 'n' }],
+        page: [
+          ...(sortKey ? [{ $addFields: { _sortKey: sortKey } }] : []),
+          // Ties keep the archive order (most recently sold first), as before
+          {
+            $sort: sortKey
+              ? { _sortKey: direction, soldDate: -1, updatedAt: -1, _id: 1 }
+              : { soldDate: -1, updatedAt: -1, _id: 1 },
+          },
+          { $skip: (q.page - 1) * q.pageSize },
+          { $limit: q.pageSize },
+          { $project: { vehicle: 1 } },
+          { $project: { 'vehicle.features': 0 } },
+        ],
+      },
+    },
+  ]
+  const [result, makeModelRecords] = await Promise.all([
+    SoldCarModel.aggregate<{ total: { n: number }[]; page: { vehicle: AutoTraderVehicle }[] }>(pipeline)
+      .collation({ locale: 'en' }),
+    // Only the four name fields of every visible car, for the make / model dropdowns
+    SoldCarModel.find(visibleSoldMatch(), {
+      'vehicle.vehicle.make': 1,
+      'vehicle.vehicle.model': 1,
+      'vehicle.vehicle.standard.make': 1,
+      'vehicle.vehicle.standard.model': 1,
+    })
+      .sort({ soldDate: -1, updatedAt: -1, _id: 1 })
+      .lean<{ vehicle: AutoTraderVehicle }[]>(),
+  ])
+  const facet = result[0]
+  return {
+    vehicles: (facet?.page || []).map((record) => withSizedImages(record.vehicle)),
+    totalResults: facet?.total[0]?.n || 0,
+    makeModelVehicles: makeModelRecords.map((record) => record.vehicle),
+  }
 }
 
 export async function getSoldCarVehicleByStockId(stockId: string): Promise<AutoTraderVehicle | null> {
