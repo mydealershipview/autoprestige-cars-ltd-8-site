@@ -19,6 +19,8 @@ export async function GET(request: NextRequest) {
     const fuelType = searchParams.get('fuelType') || undefined
     const bodyType = searchParams.get('bodyType') || undefined
     const transmissionType = searchParams.get('transmissionType') || undefined
+    const colour = searchParams.get('colour') || undefined
+    const search = searchParams.get('search')?.trim().slice(0, 100) || undefined
     const minYear = searchParams.get('minYear') ? parseInt(searchParams.get('minYear')!) : undefined
     const maxYear = searchParams.get('maxYear') ? parseInt(searchParams.get('maxYear')!) : undefined
     const sortBy = searchParams.get('sortBy') || 'dateAdded'
@@ -58,6 +60,8 @@ export async function GET(request: NextRequest) {
       transmissionType,
       minYear,
       maxYear,
+      colour,
+      search,
     })
 
     // Merge this page's listings with Payload data
