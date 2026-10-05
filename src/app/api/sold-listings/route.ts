@@ -1,163 +1,7 @@
 import { after, NextRequest, NextResponse } from 'next/server'
-import { AutoTraderVehicle } from '../../../utilities/autotrader'
 import { extractMakesAndModelsFromVehicles } from '../../../utilities/make-model'
 import { mergeVehiclesWithPayloadData } from '../../../utilities/mergePayloadData'
-import { getVisibleSoldCarVehicles, refreshSoldCarsIfStale } from '@/lib/services/soldCars.service'
-
-// Filter function
-function filterListings(listings: AutoTraderVehicle[], filters: {
-  make?: string
-  model?: string
-  minPrice?: number
-  maxPrice?: number
-  minMileage?: number
-  maxMileage?: number
-  fuelType?: string
-  bodyType?: string
-  transmissionType?: string
-  minYear?: number
-  maxYear?: number
-}): AutoTraderVehicle[] {
-  return listings.filter(vehicle => {
-    // Make filter
-    if (filters.make) {
-      const vehicleMake = vehicle.vehicle.make || vehicle.vehicle.standard?.make
-      if (!vehicleMake || vehicleMake.toLowerCase() !== filters.make.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Model filter
-    if (filters.model) {
-      const vehicleModel = vehicle.vehicle.model || vehicle.vehicle.standard?.model
-      if (!vehicleModel || vehicleModel.toLowerCase() !== filters.model.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Price filters
-    const price = vehicle.adverts?.forecourtPrice?.amountGBP || vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP
-    if (typeof filters.minPrice === 'number') {
-      if (typeof price !== 'number' || price < filters.minPrice) {
-        return false
-      }
-    }
-    if (typeof filters.maxPrice === 'number') {
-      if (typeof price !== 'number' || price > filters.maxPrice) {
-        return false
-      }
-    }
-
-    // Mileage filters
-    const mileage = vehicle.vehicle.odometerReadingMiles
-    if (typeof filters.minMileage === 'number') {
-      if (typeof mileage !== 'number' || mileage < filters.minMileage) {
-        return false
-      }
-    }
-    if (typeof filters.maxMileage === 'number') {
-      if (typeof mileage !== 'number' || mileage > filters.maxMileage) {
-        return false
-      }
-    }
-
-    // Fuel type filter
-    if (filters.fuelType) {
-      const vehicleFuelType = vehicle.vehicle.fuelType || vehicle.vehicle.standard?.fuelType
-      if (!vehicleFuelType || vehicleFuelType.toLowerCase() !== filters.fuelType.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Body type filter
-    if (filters.bodyType) {
-      const vehicleBodyType = vehicle.vehicle.bodyType || vehicle.vehicle.standard?.bodyType
-      if (!vehicleBodyType || vehicleBodyType.toLowerCase() !== filters.bodyType.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Transmission type filter
-    if (filters.transmissionType) {
-      const vehicleTransmission = vehicle.vehicle.transmissionType || vehicle.vehicle.standard?.transmissionType
-      if (!vehicleTransmission || vehicleTransmission.toLowerCase() !== filters.transmissionType.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Year filters
-    const vehicleYear = vehicle.vehicle.yearOfManufacture
-    if (typeof filters.minYear === 'number') {
-      if (typeof vehicleYear !== 'number' || vehicleYear < filters.minYear) {
-        return false
-      }
-    }
-    if (typeof filters.maxYear === 'number') {
-      if (typeof vehicleYear !== 'number' || vehicleYear > filters.maxYear) {
-        return false
-      }
-    }
-
-    return true
-  })
-}
-
-// Sort function
-function sortListings(listings: AutoTraderVehicle[], sortBy: string, sortOrder: 'asc' | 'desc'): AutoTraderVehicle[] {
-  return [...listings].sort((a, b) => {
-    let aValue: any, bValue: any
-
-    switch (sortBy) {
-      case 'price':
-        aValue = a.adverts?.forecourtPrice?.amountGBP || a.adverts?.retailAdverts?.totalPrice?.amountGBP || 0
-        bValue = b.adverts?.forecourtPrice?.amountGBP || b.adverts?.retailAdverts?.totalPrice?.amountGBP || 0
-        break
-      
-      case 'year':
-        aValue = a.vehicle.yearOfManufacture || 0
-        bValue = b.vehicle.yearOfManufacture || 0
-        break
-      
-      case 'mileage':
-        aValue = a.vehicle.odometerReadingMiles || 999999
-        bValue = b.vehicle.odometerReadingMiles || 999999
-        break
-      
-      case 'make':
-        aValue = (a.vehicle.make || a.vehicle.standard?.make || '').toLowerCase()
-        bValue = (b.vehicle.make || b.vehicle.standard?.make || '').toLowerCase()
-        break
-      
-      case 'model':
-        aValue = (a.vehicle.model || a.vehicle.standard?.model || '').toLowerCase()
-        bValue = (b.vehicle.model || b.vehicle.standard?.model || '').toLowerCase()
-        break
-      
-      case 'fuelType':
-        aValue = (a.vehicle.fuelType || a.vehicle.standard?.fuelType || '').toLowerCase()
-        bValue = (b.vehicle.fuelType || b.vehicle.standard?.fuelType || '').toLowerCase()
-        break
-      
-      case 'dateAdded':
-        aValue = new Date(a.metadata.dateOnForecourt || a.metadata.lastUpdated).getTime()
-        bValue = new Date(b.metadata.dateOnForecourt || b.metadata.lastUpdated).getTime()
-        break
-      
-      default:
-        return 0
-    }
-
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
-    }
-
-    if (sortOrder === 'asc') {
-      return aValue - bValue
-    } else {
-      return bValue - aValue
-    }
-  })
-}
+import { querySoldCarListings, refreshSoldCarsIfStale } from '@/lib/services/soldCars.service'
 
 export async function GET(request: NextRequest) {
   try {
@@ -181,7 +25,7 @@ export async function GET(request: NextRequest) {
     const sortOrder = (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc'
 
     // Validate page and pageSize
-    if (page < 1 || pageSize < 1) {
+    if (!Number.isFinite(page) || !Number.isFinite(pageSize) || page < 1 || pageSize < 1 || pageSize > 100) {
       return NextResponse.json(
         { error: 'Invalid page or pageSize parameters' },
         { status: 400 }
@@ -197,10 +41,12 @@ export async function GET(request: NextRequest) {
         console.error('Background sold-car refresh failed:', error)
       }
     })
-    const allListings = await getVisibleSoldCarVehicles()
-
-    // Apply filters using names directly
-    const filteredListings = filterListings(allListings, {
+    // MongoDB filters, sorts and pages the sold cars; only this page's cars are read in full
+    const { vehicles: pageListings, totalResults, makeModelVehicles } = await querySoldCarListings({
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
       make,
       model,
       minPrice,
@@ -214,20 +60,11 @@ export async function GET(request: NextRequest) {
       maxYear,
     })
 
-    // Apply sorting
-    const sortedListings = sortListings(filteredListings, sortBy, sortOrder)
+    // Merge this page's listings with Payload data
+    const mergedListings = pageListings.length > 0 ? await mergeVehiclesWithPayloadData(pageListings) : []
 
-    // Apply pagination
-    const totalResults = sortedListings.length
-    const startIndex = (page - 1) * pageSize
-    const endIndex = startIndex + pageSize
-    const paginatedListings = sortedListings.slice(startIndex, endIndex)
-
-    // Merge paginated listings with Payload data efficiently
-    const mergedListings = paginatedListings.length > 0 ? await mergeVehiclesWithPayloadData(paginatedListings) : []
-
-    // Extract makes and models from all listings (not just paginated)
-    const availableMakesModels = extractMakesAndModelsFromVehicles(allListings)
+    // Makes and models from every visible sold car (not just this page), for the filters
+    const availableMakesModels = extractMakesAndModelsFromVehicles(makeModelVehicles)
 
     const response = {
       results: mergedListings,
