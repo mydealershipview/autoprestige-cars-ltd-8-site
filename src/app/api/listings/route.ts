@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { fetchAutoTraderListings, AutoTraderVehicle } from '../../../utilities/autotrader'
 import { extractMakesAndModelsFromVehicles } from '../../../utilities/make-model'
 import { mergeVehiclesWithPayloadData } from '../../../utilities/mergePayloadData'
+import { normalizeDmsVehicles, isPublishedForecourtVehicle } from '../../../utilities/dmsVehicle'
 
 // Cache for storing all listings
 let allListingsCache: AutoTraderVehicle[] | null = null
@@ -42,16 +43,14 @@ async function fetchAllListings(): Promise<AutoTraderVehicle[]> {
       }
 
       const data = await response.json()
-      const results = data.data?.vehicles || []
-      
+      const results = normalizeDmsVehicles(data.data?.vehicles)
+
       if (results.length > 0) {
-        const filteredResults = results.filter((vehicle: any) => vehicle.metadata.lifecycleState === 'FORECOURT' && ( vehicle.adverts?.retailAdverts?.advertiserAdvert?.status === 'PUBLISHED'
-           || vehicle.advertiserAdvertStatus === 'PUBLISHED'
-          ))
+        const filteredResults = results.filter(isPublishedForecourtVehicle)
         allListings.push(...filteredResults)
         
-        // Check if there are more pages
-        const total = data.data?.pagination?.totalResults || filteredResults.length
+        // Check if there are more pages (totalResults is returned as a string)
+        const total = Number(data.data?.pagination?.totalResults) || results.length
         const totalPages = Math.ceil(total / pageSize)
         hasMoreData = currentPage < totalPages
         currentPage++
@@ -239,8 +238,9 @@ function sortListings(listings: AutoTraderVehicle[], sortBy: string, sortOrder: 
         break
       
       case 'dateAdded':
-        aValue = new Date(a.metadata.dateOnForecourt || a.metadata.lastUpdated).getTime()
-        bValue = new Date(b.metadata.dateOnForecourt || b.metadata.lastUpdated).getTime()
+        // The DMS API no longer returns dates; NaN -> 0 keeps the API's order
+        aValue = new Date(a.metadata?.dateOnForecourt || a.metadata?.lastUpdated || 0).getTime() || 0
+        bValue = new Date(b.metadata?.dateOnForecourt || b.metadata?.lastUpdated || 0).getTime() || 0
         break
       
       default:

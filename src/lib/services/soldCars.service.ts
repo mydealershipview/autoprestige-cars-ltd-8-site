@@ -2,6 +2,7 @@ import type { PipelineStage } from 'mongoose'
 import connectDB from '@/lib/db/connect'
 import SoldCarModel, { type ISoldCar } from '@/lib/db/models/soldCar.model'
 import { fetchAutoTraderListings, type AutoTraderVehicle } from '@/utilities/autotrader'
+import { normalizeDmsVehicles } from '@/utilities/dmsVehicle'
 
 const DMS_CACHE_DURATION = 5 * 60 * 1000
 const RECENT_SOLD_DAYS = 30
@@ -211,14 +212,14 @@ export async function fetchSoldVehiclesFromDMS(): Promise<AutoTraderVehicle[]> {
       }
 
       const data = await response.json()
-      const results = data.data?.vehicles || []
+      const results = normalizeDmsVehicles(data.data?.vehicles)
 
       if (results.length > 0) {
         soldListings.push(
           ...results.filter((vehicle: AutoTraderVehicle) => vehicle.metadata?.lifecycleState === 'SOLD'),
         )
 
-        const total = data.data?.pagination?.totalResults || results.length
+        const total = Number(data.data?.pagination?.totalResults) || results.length
         const totalPages = Math.ceil(total / pageSize)
         hasMoreData = currentPage < totalPages
         currentPage += 1

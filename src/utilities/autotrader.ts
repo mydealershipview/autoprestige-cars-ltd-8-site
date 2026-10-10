@@ -1,3 +1,5 @@
+import { normalizeDmsVehicles } from './dmsVehicle'
+
 interface AutoTraderAuthResponse {
   access_token: string
   token_type: string
@@ -377,8 +379,8 @@ export async function fetchAutoTraderListings(params: {
     }
 
     const data = await response.json()
-    const vehicles = data.data?.vehicles || []
-    const filteredResults = vehicles.filter((vehicle: any) => vehicle.metadata.lifecycleState === 'FORECOURT')
+    const vehicles = normalizeDmsVehicles(data.data?.vehicles)
+    const filteredResults = vehicles.filter((vehicle) => vehicle.metadata?.lifecycleState === 'FORECOURT')
     console.log(`Retrieved ${filteredResults.length} vehicles from MyDealershipView API`)
     
     // Transform response to match AutoTrader format if needed

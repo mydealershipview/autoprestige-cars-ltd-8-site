@@ -2,6 +2,7 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { fetchAutoTraderListings } from '../../../../utilities/autotrader'
 import { extractMakesAndModelsFromVehicles } from '../../../../utilities/make-model'
 import { unstable_cache } from 'next/cache'
+import { normalizeDmsVehicles } from '../../../../utilities/dmsVehicle'
 
 // Helper function to properly encode URLs for XML
 const xmlEncodeUrl = (url: string) => {
@@ -39,12 +40,12 @@ const getVehiclesMakesSitemap = unstable_cache(
         }
 
         const data = await response.json()
-        const results = data.data?.vehicles || []
+        const results = normalizeDmsVehicles(data.data?.vehicles)
 
         if (results.length > 0) {
           allListings.push(...results)
 
-          const total = data.data?.pagination?.totalResults || results.length
+          const total = Number(data.data?.pagination?.totalResults) || results.length
           const totalPages = Math.ceil(total / 100)
           hasMoreData = currentPage < totalPages
           currentPage++

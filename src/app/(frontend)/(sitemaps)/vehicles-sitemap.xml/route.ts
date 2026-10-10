@@ -2,6 +2,7 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { fetchAllAutoTraderListings } from '../../../../utilities/autotrader'
 import { generateVehicleSlug } from '../../../../utilities/formatVehicleData'
 import { unstable_cache } from 'next/cache'
+import { normalizeDmsVehicles } from '../../../../utilities/dmsVehicle'
 
 const getVehiclesSitemap = unstable_cache(
   async () => {
@@ -32,12 +33,12 @@ const getVehiclesSitemap = unstable_cache(
         }
 
         const data = await response.json()
-        const results = data.data?.vehicles || []
+        const results = normalizeDmsVehicles(data.data?.vehicles)
         
         if (results.length > 0) {
           allVehicles.push(...results)
           
-          const total = data.data?.pagination?.totalResults || results.length
+          const total = Number(data.data?.pagination?.totalResults) || results.length
           const totalPages = Math.ceil(total / 100)
           hasMoreData = currentPage < totalPages
           currentPage++
