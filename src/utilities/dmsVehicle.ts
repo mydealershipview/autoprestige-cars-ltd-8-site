@@ -1,6 +1,23 @@
 import type { AutoTraderVehicle } from './autotrader'
 
 /**
+ * The DMS API no longer sends firstRegistrationDate, which the finance plugin
+ * needs. Estimate it from a current-style plate's age identifier (Mar/Sep),
+ * falling back to 1 Jan of the year of manufacture.
+ */
+function estimateFirstRegistrationDate(plate: unknown, year: number | null): string | null {
+  const m = typeof plate === 'string' ? plate.replace(/\s+/g, '').toUpperCase().match(/^[A-Z]{2}(\d{2})[A-Z]{3}$/) : null
+  if (m) {
+    const n = Number(m[1])
+    const plateYear = 2000 + (n >= 51 ? n - 50 : n)
+    if (year == null || Math.abs(plateYear - year) <= 1) {
+      return `${plateYear}-${n >= 51 ? '09' : '03'}-01`
+    }
+  }
+  return year ? `${year}-01-01` : null
+}
+
+/**
  * The MyDealershipView stock API now returns a flattened vehicle shape:
  * stockId / lifecycleState / forecourtPrice live at the top level and there is
  * no `metadata` object. The rest of the app expects the AutoTrader shape, so
@@ -23,16 +40,19 @@ export function normalizeDmsVehicle(raw: any): AutoTraderVehicle {
     ?? null
 
   const retailAdverts = raw.adverts?.retailAdverts || {}
+  const registration = raw.vehicle?.registration ?? raw.registration ?? null
+  const year = raw.vehicle?.yearOfManufacture ?? (raw.yearOfManufacture != null ? Number(raw.yearOfManufacture) : null)
 
   return {
     ...raw,
     metadata,
     vehicle: {
       ...raw.vehicle,
-      registration: raw.vehicle?.registration ?? raw.registration ?? null,
+      registration,
+      firstRegistrationDate: raw.vehicle?.firstRegistrationDate ?? estimateFirstRegistrationDate(registration, year),
       make: raw.vehicle?.make ?? raw.make,
       model: raw.vehicle?.model ?? raw.model,
-      yearOfManufacture: raw.vehicle?.yearOfManufacture ?? (raw.yearOfManufacture != null ? Number(raw.yearOfManufacture) : null),
+      yearOfManufacture: year,
       odometerReadingMiles: raw.vehicle?.odometerReadingMiles ?? raw.odometerReadingMiles ?? null,
     },
     adverts: {
