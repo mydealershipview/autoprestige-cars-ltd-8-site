@@ -30,6 +30,7 @@ async function fetchAllListings(): Promise<AutoTraderVehicle[]> {
 
     while (hasMoreData) {
       const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=${pageSize}&page=${currentPage}`
+      console.log("🚀 ~ fetchAllListings ~ myDealershipUrl:", myDealershipUrl)
       
       const response = await fetch(myDealershipUrl, {
         method: 'GET',
