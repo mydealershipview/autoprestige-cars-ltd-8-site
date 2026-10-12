@@ -1057,7 +1057,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                           {/* Attention grabber (bold) with make + model beneath; falls back to bold make + model */}
                           {vehicleAttentionGrabber ? (
                             <>
-                              <p className="text-base font-extrabold uppercase tracking-wide leading-tight truncate">
+                              <p className="text-base font-extrabold uppercase tracking-wide leading-tight line-clamp-2 min-h-[2.5em]">
                                 {vehicleAttentionGrabber}
                               </p>
                               <p className="text-[11px] font-normal uppercase tracking-wide text-gray-300 truncate mt-0.5">
