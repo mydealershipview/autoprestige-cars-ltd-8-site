@@ -1060,7 +1060,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                               <p className="text-base font-extrabold uppercase tracking-wide leading-tight line-clamp-2 min-h-[2.5em]">
                                 {vehicleAttentionGrabber}
                               </p>
-                              <p className="text-[11px] font-normal uppercase tracking-wide text-gray-300 truncate mt-0.5">
+                              <p className="text-[11px] font-medium uppercase tracking-wide truncate mt-0.5">
                                 {vehicleMake} {vehicleModel}
                               </p>
                             </>
