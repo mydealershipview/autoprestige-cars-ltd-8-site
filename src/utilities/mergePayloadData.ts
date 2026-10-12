@@ -149,7 +149,25 @@ export async function mergeVehiclesWithPayloadData(vehicles: AutoTraderVehicle[]
   // Apply local DB overrides (attentionGrabber, listingPrice) — these take final precedence
   const mergedVehicles = await applyVehicleOverrides(payloadMerged)
 
-  return mergedVehicles
+  // The DMS owns the reservation and the first-image highlight. Preserve other existing
+  // website customizations, but an old website override must not mask a new DMS edit.
+  return mergedVehicles.map((merged, index) => preferDmsAdvertCopy(vehicles[index], merged))
+}
+
+/** Keep DMS reservation and image-highlight edits authoritative over old website overrides. */
+export function preferDmsAdvertCopy(source: AutoTraderVehicle, merged: AutoTraderVehicle): AutoTraderVehicle {
+  return {
+    ...merged,
+    adverts: {
+      ...merged.adverts,
+      reservationStatus: source.adverts?.reservationStatus,
+      retailAdverts: {
+        ...merged.adverts.retailAdverts,
+        attentionGrabber: source.adverts?.retailAdverts?.attentionGrabber ?? '',
+        reservationStatus: source.adverts?.retailAdverts?.reservationStatus ?? null,
+      },
+    },
+  }
 }
 
 /**

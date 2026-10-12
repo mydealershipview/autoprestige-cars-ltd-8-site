@@ -1,5 +1,8 @@
 'use client'
 
+import type { WebsiteVehicle } from '@/lib/services/dmsWebsiteStock'
+import { isReserved } from '@/utilities/websiteVehicleStatus'
+
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
@@ -86,6 +89,8 @@ export default function VehicleClient({
   const derivative = vehicle.vehicle.derivative || vehicle.vehicle.standard?.derivative || ''
 
   const isSold = vehicle.metadata?.lifecycleState === 'SOLD'
+  const websiteOnly = (vehicle as WebsiteVehicle).websiteOnly === true
+  const unavailable = isSold || websiteOnly
 
   const price = vehicle.adverts?.forecourtPrice?.amountGBP || vehicle.adverts?.retailAdverts?.suppliedPrice?.amountGBP
   const wasPrice = vehicle.adverts?.soldPrice?.amountGBP || null
@@ -134,6 +139,7 @@ export default function VehicleClient({
   }, [vehicle.metadata?.stockId])
 
   useEffect(() => {
+    if (websiteOnly) return
     const script = document.createElement('script')
     script.type = 'text/javascript'
     script.src = 'https://plugins.codeweavers.app/scripts/v1/platform/finance?ApiKey=U86tH2vLnYI0LyA2D5'
@@ -191,7 +197,7 @@ export default function VehicleClient({
     return () => {
       document.head.removeChild(script)
     }
-  }, [price, vehicleImageUrl])
+  }, [price, vehicleImageUrl, websiteOnly])
 
   const calculateMonthlyPayment = (priceValue: number | null) => {
     if (!priceValue || priceValue <= 0) return 'N/A'
@@ -276,6 +282,16 @@ export default function VehicleClient({
               </div>
             )}
 
+            {activeImageIndex === 0 && vehicle.adverts?.retailAdverts?.attentionGrabber && (
+              <span className="absolute bottom-3 right-3 z-10 max-w-[80%] rounded bg-black/80 px-3 py-2 text-sm font-medium text-white pointer-events-none">
+                {vehicle.adverts.retailAdverts.attentionGrabber}
+              </span>
+            )}
+            {!isSold && isReserved(vehicle) && (
+              <span className="absolute top-3 left-3 z-10 rounded bg-blue-700 px-3 py-2 text-sm font-semibold text-white pointer-events-none">
+                Reserved
+              </span>
+            )}
             {isSold && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="border-4 border-red-500 px-8 py-4 -rotate-12">
@@ -356,9 +372,9 @@ export default function VehicleClient({
               </div>
             )}
             {/* Reservation Status banner */}
-            {vehicle.adverts?.retailAdverts?.reservationStatus && (
+            {!isSold && isReserved(vehicle) && (
               <div className="mb-6 border-l-2 border-blue-400 bg-blue-400/8 px-4 py-2.5 text-sm font-medium text-blue-200">
-                {vehicle.adverts.retailAdverts.reservationStatus}
+                Reserved
               </div>
             )}
 
@@ -370,14 +386,14 @@ export default function VehicleClient({
               <p className="text-sm text-zinc-400">Description coming soon.</p>
             )}
 
-            <div id='cw_standalone_calculate_button' className='mt-10'>
+            {!websiteOnly && <div id='cw_standalone_calculate_button' className='mt-10'>
               <div style={{ width: '100%' }}>
                 <div
                   id="codeweavers-plugin"
                   className="overflow-hidden bg-white/5 min-h-100"
                 ></div>
               </div>
-            </div>
+            </div>}
           </section>
 
           <aside className="border border-white/12 bg-black p-5">
@@ -406,7 +422,7 @@ export default function VehicleClient({
                 <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Est. Monthly</p>
                 <p className="text-3xl font-bold text-blue-400">{price ? `${calculateMonthlyPayment(price)}/mo` : 'N/A'}</p>
                 {wasPrice && <p className="mt-1 text-xs text-zinc-400 line-through">Was £{new Intl.NumberFormat('en-GB').format(wasPrice)}</p>}
-                {price && (
+                {price && !websiteOnly && (
                   <p className="mt-1.5 text-[12px] font-medium text-zinc-200 leading-snug">
                     For illustration only &middot;{' '}
                     <Link
@@ -437,15 +453,15 @@ export default function VehicleClient({
             </div>
 
             <div className="mt-4 grid gap-2">
-              {isSold && (
+              {unavailable && (
                 <p className="mb-1 text-xs leading-relaxed text-zinc-400 border border-white/10 bg-white/4 px-3 py-2">
-                  This vehicle has already been sold and is no longer available. Please browse our current stock or contact us for similar options.
+                  {websiteOnly ? 'This vehicle is reserved and unavailable. Please contact us for similar options.' : 'This vehicle has already been sold and is no longer available. Please browse our current stock or contact us for similar options.'}
                 </p>
               )}
-              <button onClick={() => setShowEmail(true)} disabled={isSold} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-100 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-white">
+              <button onClick={() => setShowEmail(true)} disabled={unavailable} className="w-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.12em] text-black hover:bg-zinc-100 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-white">
                 Enquire Now
               </button>
-              <button onClick={handleWhatsapp} disabled={isSold} className="flex w-full items-center justify-center gap-2 bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-emerald-600">
+              <button onClick={handleWhatsapp} disabled={unavailable} className="flex w-full items-center justify-center gap-2 bg-emerald-600 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-emerald-700 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-emerald-600">
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp
               </button>
@@ -453,13 +469,13 @@ export default function VehicleClient({
                 trackEvent('finance_quote_started', { item_id: vehicle.metadata?.stockId || undefined })
                 const section = document.getElementById("cw_standalone_calculate_button");
                 section?.scrollIntoView({ behavior: "smooth" });
-              }} disabled={isSold} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
+              }} disabled={unavailable} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
                 Apply For Finance
               </button>
-              <button onClick={() => { trackEvent('reservation_started', { item_id: vehicle.metadata?.stockId || undefined }); setShowReserve(true) }} disabled={isSold} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
+              <button onClick={() => { trackEvent('reservation_started', { item_id: vehicle.metadata?.stockId || undefined }); setShowReserve(true) }} disabled={unavailable} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
                 Reserve Vehicle
               </button>
-              <button onClick={() => setShowPartExchange(true)} disabled={isSold} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:border-white/15 disabled:hover:text-zinc-400">
+              <button onClick={() => setShowPartExchange(true)} disabled={unavailable} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:border-white/15 disabled:hover:text-zinc-400">
                 Part Exchange
               </button>
             </div>

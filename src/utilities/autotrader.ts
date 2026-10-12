@@ -349,7 +349,7 @@ export async function fetchAutoTraderListings(params: {
   // Try MyDealershipView API first
   try {
     console.log('Fetching vehicles from MyDealershipView API...')
-    const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=${pageSize}&page=${page}`
+    const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=${pageSize}&page=${page}&includeReserved=true`
     
     // Add filters to the URL if provided
     const urlParams = new URLSearchParams()
@@ -378,7 +378,7 @@ export async function fetchAutoTraderListings(params: {
 
     const data = await response.json()
     const vehicles = data.data?.vehicles || []
-    const filteredResults = vehicles.filter((vehicle: any) => vehicle.metadata.lifecycleState === 'FORECOURT')
+    const filteredResults = vehicles.filter((vehicle: any) => ['FORECOURT', 'SALE_IN_PROGRESS'].includes(vehicle.metadata.lifecycleState))
     console.log(`Retrieved ${filteredResults.length} vehicles from MyDealershipView API`)
     
     // Transform response to match AutoTrader format if needed
@@ -440,7 +440,7 @@ export async function fetchAutoTraderListings(params: {
         const data: AutoTraderListingResponse = await response.json()
         
         if (data.results && data.results.length > 0) {
-          const filteredResults = data.results.filter(vehicle => vehicle.metadata.lifecycleState === 'FORECOURT')
+          const filteredResults = data.results.filter(vehicle => ['FORECOURT', 'SALE_IN_PROGRESS'].includes(vehicle.metadata.lifecycleState))
           allResults.push(...filteredResults)
           totalResults += filteredResults?.length || 0
           console.log(`Retrieved ${filteredResults?.length} vehicles from affiliate ${advertiserId}`)

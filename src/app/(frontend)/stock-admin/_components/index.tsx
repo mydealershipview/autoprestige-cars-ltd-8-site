@@ -247,8 +247,6 @@ export default function StockAdminComponent() {
       const body: { attentionGrabber?: string | null; reservationStatus?: string | null; listingPrice?: number | null } = {}
 
       // Only include fields the admin touched (or explicitly cleared)
-      body.attentionGrabber = editModal.attentionGrabber.trim() || null
-      body.reservationStatus = editModal.reservationStatus.trim() || null
       body.listingPrice = editModal.listingPrice !== '' ? Number(editModal.listingPrice) : null
 
       const res = await fetch(`/api/vehicle-overrides/${stockId}`, {
@@ -799,35 +797,9 @@ export default function StockAdminComponent() {
                   <p className="text-[10px] text-gray-600">Leave empty to use DMS price.</p>
                 </div>
 
-                {/* Attention Grabber */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-300 uppercase tracking-wide">
-                    Attention Grabber
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder={editModal.vehicle.adverts?.retailAdverts?.attentionGrabber || 'e.g. Great condition, full service history, one owner…'}
-                    value={editModal.attentionGrabber}
-                    onChange={(e) => setEditModal((prev) => ({ ...prev, attentionGrabber: e.target.value }))}
-                    className="w-full bg-[#111] border border-white/15 rounded px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-400/50 resize-none"
-                  />
-                  <p className="text-[10px] text-gray-600">Leave empty to use DMS attention grabber.</p>
-                </div>
-
-                {/* Reservation Status */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-300 uppercase tracking-wide">
-                    Reservation Status
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="e.g. Reserved — contact us to enquire"
-                    value={editModal.reservationStatus}
-                    onChange={(e) => setEditModal((prev) => ({ ...prev, reservationStatus: e.target.value }))}
-                    className="w-full bg-[#111] border border-white/15 rounded px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-400/50 resize-none"
-                  />
-                  <p className="text-[10px] text-gray-600">Shown as a second banner below attention grabber. Leave empty to hide.</p>
-                </div>
+                <p className="text-sm text-gray-300">
+                  Manage the attention grabber and reservation status in MyDealershipView.
+                </p>
               </div>
 
               {/* Actions */}

@@ -1,105 +1,12 @@
+import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchAutoTraderListings, AutoTraderVehicle } from '../../../../utilities/autotrader'
-import { mergeVehicleWithPayloadData, fetchPayloadVehicleData, mergeVehiclesWithPayloadData } from '../../../../utilities/mergePayloadData'
+import { AutoTraderVehicle } from '../../../../utilities/autotrader'
+import { mergeVehicleWithPayloadData, fetchPayloadVehicleData, mergeVehiclesWithPayloadData, preferDmsAdvertCopy } from '../../../../utilities/mergePayloadData'
 import { fetchOverridesMap, applyOverrideToVehicle } from '../../../../utilities/vehicleOverrides'
 import { getSoldCarVehicleByStockId } from '@/lib/services/soldCars.service'
 
-// Cache for storing all listings
-let allListingsCache: AutoTraderVehicle[] | null = null
-let cacheTimestamp: number | null = null
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
-
-// Fetch all listings from AutoTrader
 async function fetchAllListings(): Promise<AutoTraderVehicle[]> {
-  // Check cache first
-  if (allListingsCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
-    return allListingsCache
-  }
-
-  const allListings: AutoTraderVehicle[] = []
-  let page = 1
-  let hasMoreData = true
-  const pageSize = 100 // Fetch larger chunks
-
-  // Try MyDealershipView API first
-  try {
-    console.log('Fetching all listings from MyDealershipView API...')
-    const allListings: AutoTraderVehicle[] = []
-    let currentPage = 1
-    let hasMoreData = true
-
-    while (hasMoreData) {
-      const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=${pageSize}&page=${currentPage}`
-      
-      const response = await fetch(myDealershipUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`MyDealershipView API error: ${response.status} ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      const results = data.data?.vehicles || []
-      
-      if (results.length > 0) {
-        allListings.push(...results)
-        
-        // Check if there are more pages
-        const total = data.data?.pagination?.totalResults || results.length
-        const totalPages = Math.ceil(total / pageSize)
-        hasMoreData = currentPage < totalPages
-        currentPage++
-      } else {
-        hasMoreData = false
-      }
-    }
-    
-    // Update cache
-    allListingsCache = allListings
-    cacheTimestamp = Date.now()
-    
-    console.log(`Retrieved ${allListings.length} vehicles from MyDealershipView API`)
-    return allListings
-  } catch (error) {
-    console.error('MyDealershipView API error:', error)
-    
-    // Fallback to AutoTrader data
-    try {
-      console.log('Falling back to AutoTrader API for all listings')
-      while (hasMoreData) {
-        const response = await fetchAutoTraderListings({
-          page,
-          pageSize
-        })
-
-        if (response.results && response.results.length > 0) {
-          allListings.push(...response.results)
-          
-          // Check if there are more pages
-          const totalPages = Math.ceil(response.totalResults / pageSize)
-          hasMoreData = page < totalPages
-          page++
-        } else {
-          hasMoreData = false
-        }
-      }
-
-      // Update cache
-      allListingsCache = allListings
-      cacheTimestamp = Date.now()
-
-      console.log(`Fallback: Retrieved ${allListings.length} vehicles from AutoTrader API`)
-      return allListings
-    } catch (error) {
-      console.error('AutoTrader fallback also failed:', error)
-      // Return cached data if available, otherwise empty array
-      return allListingsCache || []
-    }
-  }
+  return getDmsWebsiteVehicles('live')
 }
 
 // Function to get similar vehicles
@@ -172,7 +79,6 @@ export async function GET(
 ) {
   try {
     const { stockId } = await params
-    const { searchParams } = new URL(request.url)
 
     if (!stockId) {
       return NextResponse.json(
@@ -187,57 +93,20 @@ export async function GET(
     // Find the specific vehicle by stock ID
     let vehicle = allListings.find(v => v.metadata.stockId === stockId)
 
-    if (!vehicle) {
-      // Try to fetch the specific vehicle from Payload as a fallback
-      try {
-        console.log(`Vehicle ${stockId} not found in cache, trying Payload fallback`)
-        const { fetchPayloadVehicleByStockId } = await import('../../../../utilities/payloadFallback')
-        const payloadVehicle = await fetchPayloadVehicleByStockId(stockId)
-        
-        if (payloadVehicle) {
-          vehicle = payloadVehicle
-          console.log(`Found vehicle ${stockId} in Payload CMS`)
-        } else {
-          const soldVehicle = await getSoldCarVehicleByStockId(stockId)
-          if (soldVehicle) {
-            vehicle = soldVehicle
-            console.log(`Found sold vehicle ${stockId} in local sold cars DB`)
-          } else {
-            return NextResponse.json(
-              { error: 'Vehicle not found' },
-              { status: 404 }
-            )
-          }
-        }
-      } catch (payloadError) {
-        console.error('Error fetching vehicle from Payload:', payloadError)
-        const soldVehicle = await getSoldCarVehicleByStockId(stockId)
-        if (soldVehicle) {
-          vehicle = soldVehicle
-        } else {
-          return NextResponse.json(
-            { error: 'Vehicle not found' },
-            { status: 404 }
-          )
-        }
-      }
-    }
+    if (!vehicle) vehicle = (await getSoldCarVehicleByStockId(stockId)) ?? undefined
+    if (!vehicle) return NextResponse.json({ error: 'Vehicle not found' }, { status: 404 })
 
     // Get similar vehicles (full objects)
     const similarVehicles = getSimilarVehicles(allListings, vehicle, 6)
 
-    // Efficiently merge both the main vehicle and similar vehicles with Payload data
+    // The DMS owns sold adverts, including price, text and visibility.
+    const sold = vehicle.metadata.lifecycleState === 'SOLD'
     const allVehicleStockIds = [stockId, ...similarVehicles.map(v => v.metadata.stockId)]
-    const payloadDataMap = await fetchPayloadVehicleData(allVehicleStockIds)
-    const overridesMap = await fetchOverridesMap(allVehicleStockIds)
-
-    // Merge the main vehicle with its payload data, then apply DB overrides
-    const mergedVehicle = applyOverrideToVehicle(
-      mergeVehicleWithPayloadData(vehicle, payloadDataMap.get(stockId)),
-      overridesMap.get(stockId),
-    )
-
-    // Merge similar vehicles with their payload data (overrides applied inside mergeVehiclesWithPayloadData)
+    const payloadDataMap = sold ? new Map() : await fetchPayloadVehicleData(allVehicleStockIds)
+    const overridesMap = sold ? new Map() : await fetchOverridesMap(allVehicleStockIds)
+    const mergedVehicle = sold ? vehicle : preferDmsAdvertCopy(vehicle, applyOverrideToVehicle(
+      mergeVehicleWithPayloadData(vehicle, payloadDataMap.get(stockId)), overridesMap.get(stockId),
+    ))
     const mergedSimilarVehicles = await mergeVehiclesWithPayloadData(similarVehicles)
 
     const response = {
@@ -246,7 +115,7 @@ export async function GET(
       totalSimilar: mergedSimilarVehicles.length
     }
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     console.error('Individual listing API error:', error)
     return NextResponse.json(

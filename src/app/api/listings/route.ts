@@ -1,107 +1,11 @@
+import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchAutoTraderListings, AutoTraderVehicle } from '../../../utilities/autotrader'
+import { AutoTraderVehicle } from '../../../utilities/autotrader'
 import { extractMakesAndModelsFromVehicles } from '../../../utilities/make-model'
 import { mergeVehiclesWithPayloadData } from '../../../utilities/mergePayloadData'
 
-// Cache for storing all listings
-let allListingsCache: AutoTraderVehicle[] | null = null
-let cacheTimestamp: number | null = null
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
-
-// Fetch all listings from AutoTrader
 async function fetchAllListings(): Promise<AutoTraderVehicle[]> {
-  // Check cache first
-  if (allListingsCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
-    return allListingsCache
-  }
-
-  const allListings: AutoTraderVehicle[] = []
-  let page = 1
-  let hasMoreData = true
-  const pageSize = 100 // Fetch larger chunks
-
-  // Try MyDealershipView API first
-  try {
-    console.log('Fetching all listings from MyDealershipView API...')
-    const allListings: AutoTraderVehicle[] = []
-    let currentPage = 1
-    let hasMoreData = true
-
-    while (hasMoreData) {
-      const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=${pageSize}&page=${currentPage}`
-      
-      const response = await fetch(myDealershipUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`MyDealershipView API error: ${response.status} ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      const results = data.data?.vehicles || []
-      
-      if (results.length > 0) {
-        const filteredResults = results.filter((vehicle: any) => vehicle.metadata.lifecycleState === 'FORECOURT' && ( vehicle.adverts?.retailAdverts?.advertiserAdvert?.status === 'PUBLISHED'
-           || vehicle.advertiserAdvertStatus === 'PUBLISHED'
-          ))
-        allListings.push(...filteredResults)
-        
-        // Check if there are more pages
-        const total = data.data?.pagination?.totalResults || filteredResults.length
-        const totalPages = Math.ceil(total / pageSize)
-        hasMoreData = currentPage < totalPages
-        currentPage++
-      } else {
-        hasMoreData = false
-      }
-    }
-    
-    // Update cache
-    allListingsCache = allListings
-    cacheTimestamp = Date.now()
-    
-    console.log(`Retrieved ${allListings.length} vehicles from MyDealershipView API`)
-    return allListings
-  } catch (error) {
-    console.error('MyDealershipView API error:', error)
-    
-    // Fallback to AutoTrader data
-    try {
-      console.log('Falling back to AutoTrader API for all listings')
-      while (hasMoreData) {
-        const response = await fetchAutoTraderListings({
-          page,
-          pageSize
-        })
-
-        if (response.results && response.results.length > 0) {
-          allListings.push(...response.results)
-          
-          // Check if there are more pages
-          const totalPages = Math.ceil(response.totalResults / pageSize)
-          hasMoreData = page < totalPages
-          page++
-        } else {
-          hasMoreData = false
-        }
-      }
-
-      // Update cache
-      allListingsCache = allListings
-      cacheTimestamp = Date.now()
-
-      console.log(`Fallback: Retrieved ${allListings.length} vehicles from AutoTrader API`)
-      return allListings
-    } catch (error) {
-      console.error('AutoTrader fallback also failed:', error)
-      // Return cached data if available, otherwise empty array
-      return allListingsCache || []
-    }
-  }
+  return getDmsWebsiteVehicles('live')
 }
 
 // Filter function
@@ -330,7 +234,7 @@ export async function GET(request: NextRequest) {
       availableModels: availableMakesModels.models,
     }
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     console.error('Listings API error:', error)
     return NextResponse.json(

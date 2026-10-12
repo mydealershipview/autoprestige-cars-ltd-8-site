@@ -1,15 +1,14 @@
-import { after, NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { extractMakesAndModelsFromVehicles } from '../../../utilities/make-model'
-import { mergeVehiclesWithPayloadData } from '../../../utilities/mergePayloadData'
-import { querySoldCarListings, refreshSoldCarsIfStale } from '@/lib/services/soldCars.service'
+import { querySoldCarListings } from '@/lib/services/soldCars.service'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     
     // Extract query parameters
-    const page = parseInt(searchParams.get('page') || '1')
-    const pageSize = parseInt(searchParams.get('pageSize') || '20')
+    const page = Number(searchParams.get('page') ?? 1)
+    const pageSize = Number(searchParams.get('pageSize') ?? 20)
     const make = searchParams.get('make') ? decodeURIComponent(searchParams.get('make')!) : undefined
     const model = searchParams.get('model') ? decodeURIComponent(searchParams.get('model')!) : undefined
     const minPrice = searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice')!) : undefined
@@ -27,23 +26,18 @@ export async function GET(request: NextRequest) {
     const sortOrder = (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc'
 
     // Validate page and pageSize
-    if (!Number.isFinite(page) || !Number.isFinite(pageSize) || page < 1 || pageSize < 1 || pageSize > 100) {
+    if (!Number.isSafeInteger(page) || !Number.isSafeInteger(pageSize) || page < 1 || pageSize < 1 || pageSize > 100) {
       return NextResponse.json(
         { error: 'Invalid page or pageSize parameters' },
         { status: 400 }
       )
     }
 
-    // Serve the saved archive first. Feed pagination and database writes must not
-    // hold up the carousel or sold showroom, even when the upstream feed is slow.
-    after(async () => {
-      try {
-        await refreshSoldCarsIfStale()
-      } catch (error) {
-        console.error('Background sold-car refresh failed:', error)
-      }
-    })
-    // MongoDB filters, sorts and pages the sold cars; only this page's cars are read in full
+    if (!['asc', 'desc'].includes(sortOrder) || !['price', 'year', 'mileage', 'make', 'model', 'fuelType', 'dateAdded'].includes(sortBy)) {
+      return NextResponse.json({ error: 'Invalid sort' }, { status: 400 })
+    }
+
+    // DMS owns sold-page visibility and data. Cache only for 60 seconds in the shared reader.
     const { vehicles: pageListings, totalResults, makeModelVehicles } = await querySoldCarListings({
       page,
       pageSize,
@@ -64,8 +58,8 @@ export async function GET(request: NextRequest) {
       search,
     })
 
-    // Merge this page's listings with Payload data
-    const mergedListings = pageListings.length > 0 ? await mergeVehiclesWithPayloadData(pageListings) : []
+    // Never let old website overrides replace DMS sold-ad text or price
+    const mergedListings = pageListings
 
     // Makes and models from every visible sold car (not just this page), for the filters
     const availableMakesModels = extractMakesAndModelsFromVehicles(makeModelVehicles)
@@ -79,7 +73,7 @@ export async function GET(request: NextRequest) {
       availableModels: availableMakesModels.models,
     }
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     console.error('Listings API error:', error)
     return NextResponse.json(

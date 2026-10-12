@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       make: slugData.make
     })
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`)
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`, { cache: 'no-store' })
 
     if (!response.ok) {
       return fallbackMetadata
@@ -174,7 +174,7 @@ export default async function IndividualListingPage({ params }: { params: Promis
         make: slugData.make
       })
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`, { cache: 'no-store' })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

@@ -18,7 +18,7 @@ const getVehiclesSitemap = unstable_cache(
       let hasMoreData = true
 
       while (hasMoreData) {
-        const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=100&page=${currentPage}`
+        const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=100&page=${currentPage}&includeReserved=true`
         
         const response = await fetch(myDealershipUrl, {
           method: 'GET',

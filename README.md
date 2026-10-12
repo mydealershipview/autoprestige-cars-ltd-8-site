@@ -319,3 +319,37 @@ You can also deploy your app manually, check out the [deployment documentation](
 ## Questions
 
 If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+
+## DMS reserved and sold adverts
+
+Stock listings, details and the homepage use the DMS public feed with
+`includeReserved=true`; sold pages use `status=sold`. Set `DMS_URL` to the DMS
+`/api/website/stock` endpoint and keep `DEALER_EMAIL` configured. On staging, point
+this URL at the staging DMS after migration 0114 and admin feature enablement.
+
+Sold-page visibility is managed solely by the DMS per-car toggle. Ticked sold cars
+remain until turned off; the old website sold-admin navigation and mutations are
+retired. The old Mongo archive remains stored for rollback but is never the public
+fallback. No website archive sync or seed is required. Do not run old sold-car seed
+scripts to enable this feature.
+
+The shared reader caches for 60 seconds, coalesces concurrent requests and fetches
+at most four pages concurrently. Website stock APIs use `Cache-Control: no-store`
+and the detail page fetch is uncached, so DMS changes appear within a few minutes.
+An upstream failure is an error rather than a successful empty showroom. The DMS
+attention grabber is shown over the first image and takes precedence over legacy
+website attention-grabber overrides. Other existing live-car customizations stay.
+
+Isolated regression tests (no live database):
+
+```sh
+npx tsc --noEmit --incremental false
+npx vitest run --config vitest.config.mts tests/int/sold-refresh.int.spec.ts tests/int/sold-listings.int.spec.ts tests/int/sold-showcase.int.spec.ts tests/int/website-live-stock.int.spec.ts tests/int/vehicle-enquiry.int.spec.ts tests/int/dms-advert-copy.int.spec.ts
+```
+
+The DMS PR includes the complete migration/configuration and manual staging
+acceptance checklist. Verify reserved/live/sold/toggle-off transitions, existing
+price/layout behaviour, real copied photos, cache expiry and iPhone Safari before
+production deployment.
+
+The independent DMS Reserved advert extension also reads `/api/website/reserved-ads` beside `DMS_URL` (`/api/website/stock`). Deploy DMS migration 0115 and its API first. Saved snapshots override source-ID duplicates, remain after AutoTrader removal until staff switch them off, and have display-only detail actions. Existing sold feed is independent. No new environment variables.

@@ -1,74 +1,94 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mocks = vi.hoisted(() => ({
-  connect: vi.fn(),
-  bulkWrite: vi.fn(),
-  autoTrader: vi.fn(),
-}))
-vi.mock('@/lib/db/connect', () => ({ default: mocks.connect }))
-vi.mock('@/lib/db/models/soldCar.model', () => ({ default: { bulkWrite: mocks.bulkWrite } }))
-vi.mock('@/utilities/autotrader', () => ({ fetchAutoTraderListings: mocks.autoTrader }))
-
-function feedResponse() {
-  return new Response(JSON.stringify({ data: {
-    vehicles: [{
-      vehicle: { make: 'BMW', model: '320d' },
-      metadata: { stockId: 'sold-1', lifecycleState: 'SOLD' },
-    }],
-    pagination: { totalResults: 1 },
-  } }))
+function car(id: string, state = 'SOLD') {
+  return { vehicle: { make: 'BMW', model: '320d' }, metadata: { stockId: id, lifecycleState: state },
+    lifecycleState: state, adverts: { forecourtPrice: { amountGBP: 12000 }, retailAdverts: { advertiserAdvert: { status: 'PUBLISHED' } } },
+    media: { images: [{ href: 'https://m.atcdn.co.uk/{resize}/photo.jpg' }] }, soldAt: '2026-10-01T12:00:00Z' }
 }
+const response = (vehicles = [car('sold-1')], totalPages = 1) => Response.json({ success: true, data: {
+  vehicles, pagination: { totalPages, totalResults: vehicles.length },
+} })
 
-describe('background sold-car refresh', () => {
-  beforeEach(() => {
-    vi.resetModules()
-    vi.clearAllMocks()
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-10-04T12:00:00Z'))
-    mocks.connect.mockResolvedValue(undefined)
-    mocks.bulkWrite.mockResolvedValue({ modifiedCount: 1 })
-    vi.stubGlobal('fetch', vi.fn(async () => feedResponse()))
-    vi.stubEnv('DMS_URL', 'https://feed.example/stock')
-    vi.stubEnv('DEALER_EMAIL', 'dealer@example.com')
+beforeEach(() => {
+  vi.resetModules()
+  vi.stubEnv('DMS_URL', 'https://feed.example/api/website/stock')
+  vi.stubEnv('DEALER_EMAIL', 'dealer+test@example.com')
+  vi.stubGlobal('fetch', vi.fn(async () => response()))
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date('2026-10-12T12:00:00Z'))
+})
+afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); vi.unstubAllEnvs() })
+
+describe('DMS website feed reader', () => {
+  it('uses status=sold, an encoded dealer and our own photos, with no archive write', async () => {
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    const vehicles = await getDmsWebsiteVehicles('sold')
+    const url = new URL(String(vi.mocked(fetch).mock.calls[0][0]))
+    expect(url.searchParams.get('status')).toBe('sold')
+    expect(url.searchParams.get('includeReserved')).toBeNull()
+    expect(url.searchParams.get('dealerEmail')).toBe('dealer+test@example.com')
+    expect(vehicles[0].media.images[0].href).not.toContain('{resize}')
+    expect(vi.mocked(fetch).mock.calls[0][1]?.cache).toBe('no-store')
   })
-
-  afterEach(() => {
-    vi.useRealTimers()
-    vi.unstubAllGlobals()
-    vi.unstubAllEnvs()
-  })
-
-  it('shares one sync across concurrent requests and skips repeated archive writes', async () => {
-    let resolveFeed!: (response: Response) => void
-    const fetchMock = vi.fn(() => new Promise<Response>((resolve) => { resolveFeed = resolve }))
-    vi.stubGlobal('fetch', fetchMock)
-    const { refreshSoldCarsIfStale } = await import('@/lib/services/soldCars.service')
-    const requests = [refreshSoldCarsIfStale(), refreshSoldCarsIfStale(), refreshSoldCarsIfStale()]
-    expect(fetchMock).toHaveBeenCalledOnce()
-    resolveFeed(feedResponse())
-    await Promise.all(requests)
-    expect(mocks.bulkWrite).toHaveBeenCalledOnce()
-    await refreshSoldCarsIfStale()
-    expect(mocks.bulkWrite).toHaveBeenCalledOnce()
-  })
-
-  it('refreshes the feed again after five minutes', async () => {
-    const { refreshSoldCarsIfStale } = await import('@/lib/services/soldCars.service')
-    await refreshSoldCarsIfStale()
-    vi.advanceTimersByTime(5 * 60 * 1000)
-    await refreshSoldCarsIfStale()
+  it('coalesces concurrent reads and expires after one minute, including removals', async () => {
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    await Promise.all([getDmsWebsiteVehicles('sold'), getDmsWebsiteVehicles('sold'), getDmsWebsiteVehicles('sold')])
+    expect(fetch).toHaveBeenCalledTimes(1)
+    vi.mocked(fetch).mockResolvedValue(response([] ,0))
+    expect(await getDmsWebsiteVehicles('sold')).toHaveLength(1)
+    vi.setSystemTime(new Date('2026-10-12T12:01:01Z'))
+    expect(await getDmsWebsiteVehicles('sold')).toEqual([])
     expect(fetch).toHaveBeenCalledTimes(2)
-    expect(mocks.bulkWrite).toHaveBeenCalledTimes(2)
+  })
+  it('requests all pages in bounded batches, deduplicating stock IDs', async () => {
+    vi.mocked(fetch).mockImplementation(async url => {
+      const page = new URL(String(url)).searchParams.get('page')
+      return response([car(page === '1' ? 'first' : 'second')], 3)
+    })
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    expect((await getDmsWebsiteVehicles('sold')).map(v => v.metadata.stockId)).toEqual(['first', 'second'])
+    expect(fetch).toHaveBeenCalledTimes(3)
+  })
+  it('includes reserved listings but excludes sold and unpublished ordinary cars', async () => {
+    const hidden = car('hidden', 'FORECOURT'); hidden.adverts.retailAdverts.advertiserAdvert.status = 'NOT_PUBLISHED'
+    const removedReserved = car('removed-reserved', 'SALE_IN_PROGRESS'); removedReserved.adverts.retailAdverts.advertiserAdvert.status = 'NOT_PUBLISHED'
+    vi.mocked(fetch).mockImplementation(async () => response([car('live', 'FORECOURT'), car('reserved', 'SALE_IN_PROGRESS'), removedReserved, car('sold'), hidden]))
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    expect((await getDmsWebsiteVehicles('live')).map(v => v.metadata.stockId)).toEqual(['live', 'reserved'])
+    expect(new URL(String(vi.mocked(fetch).mock.calls[0][0])).searchParams.get('includeReserved')).toBe('true')
+  })
+  it('never serves an expired archive or empty success on upstream failure and retries', async () => {
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    await getDmsWebsiteVehicles('sold')
+    vi.setSystemTime(new Date('2026-10-12T12:01:01Z'))
+    vi.mocked(fetch).mockResolvedValueOnce(new Response('secret provider details', { status: 500 }))
+    await expect(getDmsWebsiteVehicles('sold')).rejects.toThrow('unavailable')
+    vi.mocked(fetch).mockResolvedValue(response([], 0))
+    expect(await getDmsWebsiteVehicles('sold')).toEqual([])
+  })
+  it('does not cache incomplete pagination or accept malformed envelopes', async () => {
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    vi.mocked(fetch).mockResolvedValueOnce(response([car('partial')], 2)).mockResolvedValueOnce(new Response('', {status:500}))
+    await expect(getDmsWebsiteVehicles('sold')).rejects.toThrow()
+    vi.mocked(fetch).mockResolvedValue(Response.json({ data: { vehicles: [] } }))
+    await expect(getDmsWebsiteVehicles('sold')).rejects.toThrow('Invalid')
+  })
+  it('retains detached Reserved adverts after AutoTrader removes the car and prefers snapshots over live duplicates', async () => {
+    const kept = { ...car('websitead123', 'SALE_IN_PROGRESS'), websiteOnly: true, reserved: true, sourceStockId: 'live' }
+    vi.mocked(fetch).mockImplementation(async url => new URL(String(url)).pathname.endsWith('/reserved-ads') ? response([kept]) : response([car('live', 'FORECOURT'), car('other', 'FORECOURT')]))
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    expect((await getDmsWebsiteVehicles('live')).map(v => v.metadata.stockId)).toEqual(['other', 'websitead123'])
+    vi.setSystemTime(new Date('2026-10-12T12:01:01Z'))
+    vi.mocked(fetch).mockImplementation(async url => new URL(String(url)).pathname.endsWith('/reserved-ads') ? response([kept]) : response([], 0))
+    expect((await getDmsWebsiteVehicles('live'))[0]).toMatchObject({ websiteOnly: true, reserved: true })
+    vi.setSystemTime(new Date('2026-10-12T12:02:02Z'))
+    vi.mocked(fetch).mockImplementation(async () => response([], 0))
+    expect(await getDmsWebsiteVehicles('live')).toEqual([])
+  })
+  it('does not silently lose retained adverts when their feed is unavailable', async () => {
+    vi.mocked(fetch).mockImplementation(async url => new URL(String(url)).pathname.endsWith('/reserved-ads') ? new Response('', { status: 500 }) : response([car('live', 'FORECOURT')]))
+    const { getDmsWebsiteVehicles } = await import('@/lib/services/dmsWebsiteStock')
+    await expect(getDmsWebsiteVehicles('live')).rejects.toThrow('unavailable')
   })
 
-  it('backs off after a database write failure and allows a later retry', async () => {
-    mocks.bulkWrite.mockRejectedValueOnce(new Error('Database temporarily unavailable'))
-    const { refreshSoldCarsIfStale } = await import('@/lib/services/soldCars.service')
-    await expect(refreshSoldCarsIfStale()).rejects.toThrow('Database temporarily unavailable')
-    await refreshSoldCarsIfStale()
-    expect(mocks.bulkWrite).toHaveBeenCalledOnce()
-    vi.advanceTimersByTime(5 * 60 * 1000)
-    await refreshSoldCarsIfStale()
-    expect(mocks.bulkWrite).toHaveBeenCalledTimes(2)
-  })
 })
