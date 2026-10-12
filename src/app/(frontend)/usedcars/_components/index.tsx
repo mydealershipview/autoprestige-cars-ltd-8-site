@@ -937,6 +937,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                     const vehicleModel = vehicle.vehicle?.model || vehicle.vehicle?.standard?.model || ''
                     const vehicleDerivative =
                       vehicle.vehicle?.derivative || vehicle.vehicle?.standard?.derivative || ''
+                    const vehicleAttentionGrabber =
+                      vehicle.adverts?.retailAdverts?.attentionGrabber?.trim() || ''
                     const vehicleYear = vehicle.vehicle?.yearOfManufacture
                     const vehicleMileage = vehicle.vehicle?.odometerReadingMiles
                     const vehicleFuelType =
@@ -1052,10 +1054,21 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             </p>
                           )}
 
-                          {/* Make + Model */}
-                          <p className="text-base font-extrabold uppercase tracking-wide leading-tight truncate">
-                            {vehicleMake} {vehicleModel}
-                          </p>
+                          {/* Attention grabber (bold) with make + model beneath; falls back to bold make + model */}
+                          {vehicleAttentionGrabber ? (
+                            <>
+                              <p className="text-base font-extrabold uppercase tracking-wide leading-tight truncate">
+                                {vehicleAttentionGrabber}
+                              </p>
+                              <p className="text-[11px] font-normal uppercase tracking-wide text-gray-300 truncate mt-0.5">
+                                {vehicleMake} {vehicleModel}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-base font-extrabold uppercase tracking-wide leading-tight truncate">
+                              {vehicleMake} {vehicleModel}
+                            </p>
+                          )}
 
                           {/* Derivative */}
                           {vehicleDerivative && (
