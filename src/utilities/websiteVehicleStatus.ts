@@ -1,10 +1,12 @@
 import type { WebsiteVehicle } from '@/lib/services/dmsWebsiteStock'
 
-/** Real stock follows the DMS lifecycle. The raw advert reservation flag may be stale.
- * Only explicit website-only snapshots can override that lifecycle for display. */
 export function isReserved(vehicle: WebsiteVehicle): boolean {
-  if (vehicle.websiteOnly === true && vehicle.reserved === true) return true
-  return (vehicle.lifecycleState ?? vehicle.metadata?.lifecycleState) === 'SALE_IN_PROGRESS'
+  if (vehicle.reserved) {
+    console.log("🚀 ~ isReserved ~ vehicle:", vehicle.reserved, vehicle.lifecycleState, vehicle.metadata?.lifecycleState, vehicle)
+  }
+  return vehicle.reserved === true ||
+    (vehicle.lifecycleState ?? vehicle.metadata?.lifecycleState) === 'SALE_IN_PROGRESS' ||
+    /^reserved$/i.test((vehicle.adverts?.reservationStatus ?? vehicle.adverts?.retailAdverts?.reservationStatus ?? '').trim())
 }
 
 export function isLiveListing(vehicle: WebsiteVehicle): boolean {

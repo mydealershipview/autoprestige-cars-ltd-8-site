@@ -927,8 +927,13 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                       'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800'
                     const imageCount = vehicle.media?.images?.length || 0
                     const hasVideo = !!(vehicle.media?.video?.href)
+                    const reservationStatus =
+                      vehicle.adverts?.retailAdverts?.reservationStatus ??
+                      vehicle.adverts?.reservationStatus ??
+                      ''
                     const reserved =
-                      vehicle.metadata?.lifecycleState !== 'SOLD' && isReserved(vehicle)
+                      vehicle.metadata?.lifecycleState !== 'SOLD' &&
+                      (isReserved(vehicle) || /^reserved\b/i.test(reservationStatus.trim()))
 
                     const vehicleMake = vehicle.vehicle?.make || vehicle.vehicle?.standard?.make || ''
                     const vehicleModel = vehicle.vehicle?.model || vehicle.vehicle?.standard?.model || ''
