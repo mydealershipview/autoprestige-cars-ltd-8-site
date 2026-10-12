@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchAutoTraderListings } from '../../../utilities/autotrader'
 import { mergeVehiclesWithPayloadData } from '../../../utilities/mergePayloadData'
-import { normalizeDmsVehicles } from '../../../utilities/dmsVehicle'
 
 export async function GET(request: NextRequest) {
   // Try MyDealershipView API first
@@ -23,7 +22,10 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
     
     // Ensure results is always an array - handle nested structure
-    const results = normalizeDmsVehicles(data.data?.vehicles || data.results || data.vehicles)
+    let results = data.data?.vehicles || data.results || data.vehicles || []
+    if (!Array.isArray(results)) {
+      results = []
+    }
     
     console.log(`Retrieved ${results.length} featured vehicles from MyDealershipView API`)
     

@@ -3,7 +3,6 @@ import { fetchAutoTraderListings, AutoTraderVehicle } from '../../../../utilitie
 import { mergeVehicleWithPayloadData, fetchPayloadVehicleData, mergeVehiclesWithPayloadData } from '../../../../utilities/mergePayloadData'
 import { fetchOverridesMap, applyOverrideToVehicle } from '../../../../utilities/vehicleOverrides'
 import { getSoldCarVehicleByStockId } from '@/lib/services/soldCars.service'
-import { normalizeDmsVehicles } from '../../../../utilities/dmsVehicle'
 
 // Cache for storing all listings
 let allListingsCache: AutoTraderVehicle[] | null = null
@@ -44,13 +43,13 @@ async function fetchAllListings(): Promise<AutoTraderVehicle[]> {
       }
 
       const data = await response.json()
-      const results = normalizeDmsVehicles(data.data?.vehicles)
+      const results = data.data?.vehicles || []
       
       if (results.length > 0) {
         allListings.push(...results)
         
         // Check if there are more pages
-        const total = Number(data.data?.pagination?.totalResults) || results.length
+        const total = data.data?.pagination?.totalResults || results.length
         const totalPages = Math.ceil(total / pageSize)
         hasMoreData = currentPage < totalPages
         currentPage++
