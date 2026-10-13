@@ -10,20 +10,20 @@ const car = (state: string, reservationStatus?: string, extra = {}) => ({
   ...extra,
 }) as unknown as WebsiteVehicle
 
-describe('Reserved badge requires agreement for real stock', () => {
+describe('Reserved badge accepts either reservation signal', () => {
   it.each([
     ['FORECOURT', 'Available', false],
-    ['FORECOURT', 'Reserved', false],
-    ['SALE_IN_PROGRESS', 'Available', false],
+    ['FORECOURT', 'Reserved', true],
+    ['SALE_IN_PROGRESS', 'Available', true],
     ['SALE_IN_PROGRESS', 'Reserved', true],
-    ['SALE_IN_PROGRESS', undefined, false],
-    ['SOLD', 'Reserved', false],
+    ['SALE_IN_PROGRESS', undefined, true],
+    ['SOLD', 'Reserved', true],
   ])('%s with advert status %s => Reserved %s', (state, status, expected) => {
     expect(isReserved(car(state as string, status as string | undefined))).toBe(expected)
   })
-  it('does not let a derived reserved boolean bypass the two-status rule', () => {
-    expect(isReserved(car('FORECOURT', 'Reserved', { reserved: true }))).toBe(false)
-    expect(isReserved(car('SALE_IN_PROGRESS', 'Available', { reserved: true }))).toBe(false)
+  it('accepts the DMS-derived reserved flag as well', () => {
+    expect(isReserved(car('FORECOURT', 'Available', { reserved: true }))).toBe(true)
+    expect(isReserved(car('SALE_IN_PROGRESS', 'Available', { reserved: true }))).toBe(true)
   })
   it('supports metadata lifecycle and nested reservation status when top-level values are absent', () => {
     expect(isReserved(car('SALE_IN_PROGRESS', undefined, {
