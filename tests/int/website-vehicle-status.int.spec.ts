@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isReserved } from '@/utilities/websiteVehicleStatus'
+import { canReserve, isReserved } from '@/utilities/websiteVehicleStatus'
 import type { WebsiteVehicle } from '@/lib/services/dmsWebsiteStock'
 
 const car = (state: string, reservationStatus?: string, extra = {}) => ({
@@ -33,5 +33,19 @@ describe('Reserved badge accepts either reservation signal', () => {
   })
   it('preserves an explicitly selected website-only Reserved snapshot', () => {
     expect(isReserved(car('SOLD', 'Available', { websiteOnly: true, reserved: true }))).toBe(true)
+  })
+})
+
+describe('reservation actions', () => {
+  it.each([
+    ['FORECOURT', 'Available', true], ['FORECOURT', 'Reserved', false],
+    ['SALE_IN_PROGRESS', 'Listed', false], ['SOLD', 'Listed', false],
+  ])('%s / %s permits reservation: %s', (state, reservation, expected) => {
+    expect(canReserve(car(state, reservation))).toBe(expected)
+  })
+  it('blocks derived, nested and retained reservation signals', () => {
+    expect(canReserve(car('FORECOURT', 'Listed', { reserved: true }))).toBe(false)
+    expect(canReserve(car('FORECOURT', 'Listed', { websiteOnly: true }))).toBe(false)
+    expect(canReserve(car('FORECOURT', 'Listed', { adverts: { retailAdverts: { reservationStatus: 'Reserved' } } }))).toBe(false)
   })
 })

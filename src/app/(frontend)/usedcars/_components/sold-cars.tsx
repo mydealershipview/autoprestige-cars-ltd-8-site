@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 import { Make, Model } from '@/utilities/types'
@@ -43,6 +43,7 @@ interface ReserveVehicleData {
 
 export default function UsedCarsComponent({ listingsData: _listingsData }: UsedCarsComponentProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const [listings, setListings] = useState<AutoTraderVehicle[]>([])
@@ -60,8 +61,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   )
 
   // Search state: the text box, and the text sent to the server once typing pauses
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchText, setSearchText] = useState('')
+  const searchText = searchParams.get('search') || ''
+  const [searchQuery, setSearchQuery] = useState(searchText)
+  useEffect(() => { setSearchQuery(searchText) }, [searchText])
 
   // Make and Model state
   const [makes, setMakes] = useState<Make[]>([])
@@ -70,7 +72,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   const [makesModelsLoaded, setMakesModelsLoaded] = useState(false)
 
   // Get current page from URL params
-  const currentPage = parseInt(searchParams.get('page') || '1', 10)
+  const pageParam = Number(searchParams.get('page') || 1)
+  const currentPage = Number.isSafeInteger(pageParam) && pageParam > 0 ? pageParam : 1
   const headerRef = useRef<HTMLHeadingElement>(null)
   const listingsRequestRef = useRef<AbortController | null>(null)
 
@@ -85,8 +88,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   // Get filters from URL params
   const getFiltersFromParams = useCallback((): ListingsFilters => {
     return {
-      make: decodeURIComponent(searchParams.get('make') || ''),
-      model: decodeURIComponent(searchParams.get('model') || ''),
+      make: searchParams.get('make') || '',
+      model: searchParams.get('model') || '',
       minPrice: searchParams.get('minPrice') || '',
       maxPrice: searchParams.get('maxPrice') || '',
       fuelType: searchParams.get('fuelType') || '',
@@ -144,6 +147,12 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
       if (controller.signal.aborted) return
       setListings(data.results)
       setTotalResults(data.totalResults)
+      if (data.page !== page) {
+        const params = new URLSearchParams(searchParams.toString())
+        if (data.page > 1) params.set('page', String(data.page))
+        else params.delete('page')
+        router.replace(`${pathname}${params.size ? `?${params}` : ''}`, { scroll: false })
+      }
 
       // Update makes and models from the response
       if (data.availableMakes) {
@@ -206,6 +215,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
       page: number = 1,
       newSortBy?: string,
       newSortOrder?: 'asc' | 'desc',
+      newSearch: string = searchText,
     ) => {
       const params = new URLSearchParams()
 
@@ -226,10 +236,11 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
         }
       })
 
-      const newURL = params.toString() ? `?${params.toString()}` : '/usedcars'
+      if (newSearch.trim()) params.set('search', newSearch.trim())
+      const newURL = `${pathname}${params.size ? `?${params}` : ''}`
       router.push(newURL, { scroll: false })
     },
-    [router, sortBy, sortOrder],
+    [router, pathname, sortBy, sortOrder, searchText],
   )
 
   const handleFilterChange = (key: keyof ListingsFilters, value: string) => {
@@ -265,8 +276,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     const next = searchQuery.trim()
     if (next === searchText) return
     const timer = setTimeout(() => {
-      setSearchText(next)
-      if (currentPage > 1) updateURL(filters, 1, sortBy, sortOrder)
+      updateURL(filters, 1, sortBy, sortOrder, next)
     }, 400)
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -274,7 +284,6 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   const handleClearFilters = () => {
     setSearchQuery('')
-    setSearchText('')
     const clearedFilters: ListingsFilters = {
       make: '',
       model: '',
@@ -289,7 +298,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
       minMileage: '',
       maxMileage: '',
     }
-    updateURL(clearedFilters, 1, sortBy, sortOrder)
+    updateURL(clearedFilters, 1, sortBy, sortOrder, '')
     setModels([])
   }
 

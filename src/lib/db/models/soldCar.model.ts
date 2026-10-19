@@ -27,7 +27,7 @@ const SoldCarSchema = new Schema<ISoldCar>(
     showAfter30Days: { type: Boolean, default: false, index: true },
     vehicle: { type: Schema.Types.Mixed, required: true },
   },
-  { timestamps: true, collection: 'sold_cars' },
+  { timestamps: true, collection: 'sold_cars', autoCreate: false, autoIndex: false },
 )
 
 const SoldCarModel: Model<ISoldCar> =

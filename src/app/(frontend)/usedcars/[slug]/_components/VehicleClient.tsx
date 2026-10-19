@@ -1,7 +1,7 @@
 'use client'
 
 import type { WebsiteVehicle } from '@/lib/services/dmsWebsiteStock'
-import { isReserved } from '@/utilities/websiteVehicleStatus'
+import { canReserve, isReserved } from '@/utilities/websiteVehicleStatus'
 
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
@@ -472,7 +472,7 @@ export default function VehicleClient({
               }} disabled={unavailable} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
                 Apply For Finance
               </button>
-              <button onClick={() => { trackEvent('reservation_started', { item_id: vehicle.metadata?.stockId || undefined }); setShowReserve(true) }} disabled={unavailable} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
+              <button onClick={() => { trackEvent('reservation_started', { item_id: vehicle.metadata?.stockId || undefined }); if (canReserve(vehicle)) setShowReserve(true) }} disabled={!canReserve(vehicle)} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">
                 Reserve Vehicle
               </button>
               <button onClick={() => setShowPartExchange(true)} disabled={unavailable} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:border-white/15 disabled:hover:text-zinc-400">
@@ -558,7 +558,7 @@ export default function VehicleClient({
       )}
 
       {/* Modals */}
-      {showReserve && (
+      {showReserve && canReserve(vehicle) && (
         <ReserveModal
           vehicleMake={make}
           vehicleModel={model}

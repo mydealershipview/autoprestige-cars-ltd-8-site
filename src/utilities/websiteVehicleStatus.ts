@@ -23,3 +23,8 @@ export function isLiveListing(vehicle: WebsiteVehicle): boolean {
     status(vehicle.adverts?.retailAdverts?.advertiserAdvert?.status) === 'PUBLISHED' ||
     status((vehicle as WebsiteVehicle & { advertiserAdvertStatus?: string }).advertiserAdvertStatus) === 'PUBLISHED'
 }
+
+/** Shared presentation guard: retained, sold and Reserved adverts cannot be reserved again. */
+export function canReserve(vehicle: WebsiteVehicle): boolean {
+  return vehicle.websiteOnly !== true && !isReserved(vehicle) && lifecycle(vehicle) !== 'SOLD'
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { isReserved } from '@/utilities/websiteVehicleStatus'
+import { canReserve, isReserved } from '@/utilities/websiteVehicleStatus'
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -1152,8 +1152,10 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             </a>
                             <button
                               type="button"
+                              disabled={!canReserve(vehicle)}
                               onClick={(e) => {
                                 e.stopPropagation()
+                                if (!canReserve(vehicle)) return
                                 setReserveVehicle({
                                   vehicleMake,
                                   vehicleModel,
@@ -1162,7 +1164,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                                   stockId: stockId || undefined,
                                 })
                               }}
-                              className="flex items-center justify-center py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors"
+                              className="flex items-center justify-center py-2 border-r border-b border-white/10 text-[10px] font-bold tracking-wide text-white hover:bg-white/5 !transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                             >
                               Reserve
                             </button>
