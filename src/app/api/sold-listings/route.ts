@@ -9,19 +9,19 @@ export async function GET(request: NextRequest) {
     // Extract query parameters
     const page = Number(searchParams.get('page') ?? 1)
     const pageSize = Number(searchParams.get('pageSize') ?? 20)
-    const make = searchParams.get('make') ? decodeURIComponent(searchParams.get('make')!) : undefined
-    const model = searchParams.get('model') ? decodeURIComponent(searchParams.get('model')!) : undefined
-    const minPrice = searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice')!) : undefined
-    const maxPrice = searchParams.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!) : undefined
-    const minMileage = searchParams.get('minMileage') ? parseInt(searchParams.get('minMileage')!) : undefined
-    const maxMileage = searchParams.get('maxMileage') ? parseInt(searchParams.get('maxMileage')!) : undefined
+    const make = searchParams.get('make') ? searchParams.get('make')!.trim() : undefined
+    const model = searchParams.get('model') ? searchParams.get('model')!.trim() : undefined
+    const minPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')!) : undefined
+    const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')!) : undefined
+    const minMileage = searchParams.get('minMileage') ? Number(searchParams.get('minMileage')!) : undefined
+    const maxMileage = searchParams.get('maxMileage') ? Number(searchParams.get('maxMileage')!) : undefined
     const fuelType = searchParams.get('fuelType') || undefined
     const bodyType = searchParams.get('bodyType') || undefined
     const transmissionType = searchParams.get('transmissionType') || undefined
     const colour = searchParams.get('colour') || undefined
     const search = searchParams.get('search')?.trim().slice(0, 100) || undefined
-    const minYear = searchParams.get('minYear') ? parseInt(searchParams.get('minYear')!) : undefined
-    const maxYear = searchParams.get('maxYear') ? parseInt(searchParams.get('maxYear')!) : undefined
+    const minYear = searchParams.get('minYear') ? Number(searchParams.get('minYear')!) : undefined
+    const maxYear = searchParams.get('maxYear') ? Number(searchParams.get('maxYear')!) : undefined
     const sortBy = searchParams.get('sortBy') || 'dateAdded'
     const sortOrder = (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc'
 
@@ -37,8 +37,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid sort' }, { status: 400 })
     }
 
-    // DMS owns sold-page visibility and data. Cache only for 60 seconds in the shared reader.
-    const { vehicles: pageListings, totalResults, makeModelVehicles } = await querySoldCarListings({
+    for (const [min, max] of [[minPrice, maxPrice], [minMileage, maxMileage], [minYear, maxYear]]) {
+      if ([min, max].some(value => value !== undefined && (!Number.isFinite(value) || value < 0)) ||
+          (min !== undefined && max !== undefined && min > max)) {
+        return NextResponse.json({ error: 'Invalid numeric range' }, { status: 400 })
+      }
+    }
+
+    // Filter and paginate the deduplicated union, never each source independently.
+    const { vehicles: pageListings, totalResults, makeModelVehicles, page: actualPage } = await querySoldCarListings({
       page,
       pageSize,
       sortBy,
@@ -68,7 +75,7 @@ export async function GET(request: NextRequest) {
       results: mergedListings,
       totalResults,
       pageSize,
-      page,
+      page: actualPage,
       availableMakes: availableMakesModels.makes,
       availableModels: availableMakesModels.models,
     }

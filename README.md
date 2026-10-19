@@ -327,11 +327,11 @@ Stock listings, details and the homepage use the DMS public feed with
 `/api/website/stock` endpoint and keep `DEALER_EMAIL` configured. On staging, point
 this URL at the staging DMS after migration 0114 and admin feature enablement.
 
-Sold-page visibility is managed solely by the DMS per-car toggle. Ticked sold cars
-remain until turned off; the old website sold-admin navigation and mutations are
-retired. The old Mongo archive remains stored for rollback but is never the public
-fallback. No website archive sync or seed is required. Do not run old sold-car seed
-scripts to enable this feature.
+DMS sold-page visibility follows the per-car toggle: ticked sold cars remain until
+turned off. Historical MongoDB sold cars are also shown, without an age limit; DMS
+records take precedence over matching archive entries. The old website sold-admin
+navigation and mutations remain retired. No archive sync or seed is required. Do
+not run old sold-car seed scripts to enable this feature.
 
 The shared reader reconciles live, retained Reserved and sold feeds together,
 coalesces concurrent requests and fetches at most four pages concurrently. The three
@@ -377,3 +377,26 @@ re-advertising, actual sale, destination switches and toggle-off:
 ```sh
 npx vitest run --config vitest.config.mts tests/int/website-reservation-publication.int.spec.ts tests/int/website-vehicle-status.int.spec.ts tests/int/sold-refresh.int.spec.ts
 ```
+
+### Combined sold archive and reservation actions
+
+The sold page combines every existing MongoDB `sold_cars` record with DMS-selected
+sold ads. There is no age or `showAfter30Days` restriction on the Mongo archive.
+The archive is read only: retired website admin writes and automatic archive sync
+remain disabled. Current DMS inventory and retained showroom ads take precedence
+by stock/source ID or normalized registration, so duplicate snapshots do not undo
+DMS choices or appear alongside a current showroom car.
+
+`/api/sold-listings` filters and sorts the complete merged set on the server before
+returning a page (maximum 100 cars). Counts and make/model options cover the merged
+set; invalid numeric ranges return 400, and out-of-range pages resolve to the last
+page. Search, filters, sorting and pagination stay in the sold-page URL and survive
+refresh/back navigation. DMS and Mongo must both be available; failures return an
+error rather than a misleading partial total. Existing DATABASE_URI, DMS_URL and
+DEALER_EMAIL settings are reused. No migration or new environment variable.
+
+Reserved, sale-in-progress, website-only and sold cars cannot open the reservation
+modal from showroom cards or vehicle detail. Enquiries remain available under the
+existing rules. Verify a Reserved car in `/usedcars` and its detail page, then an
+available car; verify sold archive filters/search, two consecutive pages and clear
+filters at `/usedcars/searchgroup/sold`. No reservation or payment needs submitting.

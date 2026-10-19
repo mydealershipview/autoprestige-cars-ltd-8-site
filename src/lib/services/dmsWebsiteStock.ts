@@ -10,6 +10,7 @@ export type WebsiteVehicle = AutoTraderVehicle & {
 }
 
 type Kind = 'live' | 'sold' | 'reserved'
+type FeedKind = Kind | 'inventory'
 const MAX_PAGES = 100
 type Bundle = Record<Kind, WebsiteVehicle[]>
 // One cache for all three lists, so a car can never be served from two lists of different ages.
@@ -19,19 +20,19 @@ const pending = new Map<string, Promise<Bundle>>()
 
 /** All website stock comes from the public DMS allow-list. No provider/archive fallback: an
  * outage must never resurrect an unticked sold advert or turn into a believable empty showroom. */
-export function websiteStockUrl(kind: Kind, page = 1, pageSize = 100): URL {
+export function websiteStockUrl(kind: FeedKind, page = 1, pageSize = 100): URL {
   if (!process.env.DMS_URL || !process.env.DEALER_EMAIL) throw new Error('Website stock configuration is missing')
   const url = new URL(process.env.DMS_URL)
   url.searchParams.set('dealerEmail', process.env.DEALER_EMAIL)
   for (const key of ['status', 'includeReserved', 'lifecycleState']) url.searchParams.delete(key)
   if (kind === 'reserved') url.pathname = url.pathname.replace(/\/stock\/?$/, '/reserved-ads')
-  url.searchParams.set(kind === 'sold' ? 'status' : 'includeReserved', kind === 'sold' ? 'sold' : 'true')
+  if (kind !== 'inventory') url.searchParams.set(kind === 'sold' ? 'status' : 'includeReserved', kind === 'sold' ? 'sold' : 'true')
   url.searchParams.set('page', String(page))
   url.searchParams.set('pageSize', String(pageSize))
   return url
 }
 
-async function readPage(kind: Kind, page: number) {
+async function readPage(kind: FeedKind, page: number) {
   const response = await fetch(websiteStockUrl(kind, page), { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
   if (!response.ok) throw new Error('Website stock feed unavailable')
   const body = await response.json()
@@ -54,7 +55,7 @@ async function readPage(kind: Kind, page: number) {
   return { vehicles, totalPages: data.pagination.totalPages as number }
 }
 
-async function readAll(kind: Kind): Promise<WebsiteVehicle[]> {
+async function readAll(kind: FeedKind): Promise<WebsiteVehicle[]> {
   const first = await readPage(kind, 1)
   const vehicles = [...first.vehicles]
   for (let page = 2; page <= first.totalPages; page += 4) {
@@ -94,4 +95,22 @@ export async function getDmsWebsiteVehicles(kind: Kind): Promise<WebsiteVehicle[
     void current.then(clear, clear)
   }
   return (await request)[kind]
+}
+
+// The unfiltered website feed also contains unselected SOLD stock. Its identities prevent
+// an old Mongo snapshot from undoing a DMS toggle-off or duplicating re-advertised stock.
+const inventoryCaches = new Map<string, { expires: number; rows: WebsiteVehicle[] }>()
+const inventoryPending = new Map<string, Promise<WebsiteVehicle[]>>()
+export async function getDmsWebsiteInventoryVehicles(): Promise<WebsiteVehicle[]> {
+  const key = websiteStockUrl('inventory').toString()
+  const cached = inventoryCaches.get(key)
+  if (cached && cached.expires > Date.now()) return cached.rows
+  const pendingRead = inventoryPending.get(key)
+  if (pendingRead) return pendingRead
+  const request = readAll('inventory').then(rows => {
+    inventoryCaches.set(key, { rows, expires: Date.now() + CACHE_MS })
+    return rows
+  })
+  inventoryPending.set(key, request)
+  try { return await request } finally { inventoryPending.delete(key) }
 }
