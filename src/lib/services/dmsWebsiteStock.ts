@@ -10,10 +10,12 @@ export type WebsiteVehicle = AutoTraderVehicle & {
 }
 
 type Kind = 'live' | 'sold' | 'reserved'
-const CACHE_MS = 60_000
 const MAX_PAGES = 100
-const caches = new Map<string, { expires: number; vehicles: WebsiteVehicle[] }>()
-const pending = new Map<string, Promise<WebsiteVehicle[]>>()
+type Bundle = Record<Kind, WebsiteVehicle[]>
+// One cache for all three lists, so a car can never be served from two lists of different ages.
+const CACHE_MS = 30_000
+const caches = new Map<string, { expires: number; bundle: Bundle }>()
+const pending = new Map<string, Promise<Bundle>>()
 
 /** All website stock comes from the public DMS allow-list. No provider/archive fallback: an
  * outage must never resurrect an unticked sold advert or turn into a believable empty showroom. */
@@ -52,33 +54,44 @@ async function readPage(kind: Kind, page: number) {
   return { vehicles, totalPages: data.pagination.totalPages as number }
 }
 
+async function readAll(kind: Kind): Promise<WebsiteVehicle[]> {
+  const first = await readPage(kind, 1)
+  const vehicles = [...first.vehicles]
+  for (let page = 2; page <= first.totalPages; page += 4) {
+    const pages = await Promise.all(Array.from({ length: Math.min(4, first.totalPages - page + 1) },
+      (_, offset) => readPage(kind, page + offset)))
+    for (const result of pages) vehicles.push(...result.vehicles)
+  }
+  return [...new Map(vehicles.map(vehicle => [vehicle.metadata.stockId, vehicle])).values()]
+}
+
+/** Live, Reserved and sold lists are read and reconciled together and cached as one bundle for
+ * 30 seconds. Separate per-list caches could show an old sold choice beside a new Reserved advert. */
 export async function getDmsWebsiteVehicles(kind: Kind): Promise<WebsiteVehicle[]> {
-  const key = websiteStockUrl(kind).toString()
+  const key = websiteStockUrl('live').toString()
   const cached = caches.get(key)
-  if (cached && cached.expires > Date.now()) return cached.vehicles
-  const inflight = pending.get(key)
-  if (inflight) return inflight
-  const request = (async () => {
-    const first = await readPage(kind, 1)
-    const vehicles = [...first.vehicles]
-    // Four pages at a time: avoids serial latency and unbounded upstream concurrency.
-    for (let page = 2; page <= first.totalPages; page += 4) {
-      const pages = await Promise.all(Array.from({ length: Math.min(4, first.totalPages - page + 1) },
-        (_, offset) => readPage(kind, page + offset)))
-      for (const result of pages) vehicles.push(...result.vehicles)
-    }
-    if (kind === 'live') {
-      const reserved = await getDmsWebsiteVehicles('reserved')
-      const retainedSources = new Set(reserved.map(vehicle => vehicle.sourceStockId))
-      vehicles.splice(0, vehicles.length, ...vehicles.filter(vehicle => !retainedSources.has(vehicle.metadata.stockId)), ...reserved)
-    }
-    const unique = [...new Map(vehicles.map(vehicle => [vehicle.metadata.stockId, vehicle])).values()]
-    const eligible = unique.filter(vehicle => kind === 'reserved' ? vehicle.websiteOnly === true && vehicle.reserved === true : kind === 'sold'
-      ? (vehicle.lifecycleState ?? vehicle.metadata.lifecycleState) === 'SOLD'
-      : isLiveListing(vehicle))
-    caches.set(key, { vehicles: eligible, expires: Date.now() + CACHE_MS })
-    return eligible
-  })()
-  pending.set(key, request)
-  try { return await request } finally { pending.delete(key) }
+  if (cached && cached.expires > Date.now()) return cached.bundle[kind]
+  let request = pending.get(key)
+  if (!request) {
+    request = (async () => {
+      const [liveRows, reservedRows, soldRows] = await Promise.all([readAll('live'), readAll('reserved'), readAll('sold')])
+      const sold = soldRows.filter(vehicle => (vehicle.lifecycleState ?? vehicle.metadata.lifecycleState) === 'SOLD')
+      const soldIds = new Set(sold.map(vehicle => vehicle.sourceStockId ?? vehicle.metadata.stockId))
+      // Sold wins if upstream responses straddle a toggle change or an old edge cache.
+      const reserved = reservedRows.filter(vehicle => vehicle.websiteOnly === true && vehicle.reserved === true &&
+        !soldIds.has(vehicle.sourceStockId ?? vehicle.metadata.stockId))
+      const retainedSources = new Set(reserved.map(vehicle => vehicle.sourceStockId ?? vehicle.metadata.stockId))
+      const live = [...liveRows.filter(vehicle => isLiveListing(vehicle) &&
+        !soldIds.has(vehicle.metadata.stockId) && !retainedSources.has(vehicle.metadata.stockId)), ...reserved]
+      const bundle = { live, sold, reserved }
+      // Only complete, valid reads are cached; failures throw above and are retried next request.
+      caches.set(key, { bundle, expires: Date.now() + CACHE_MS })
+      return bundle
+    })()
+    pending.set(key, request)
+    const current = request
+    const clear = () => { if (pending.get(key) === current) pending.delete(key) }
+    void current.then(clear, clear)
+  }
+  return (await request)[kind]
 }

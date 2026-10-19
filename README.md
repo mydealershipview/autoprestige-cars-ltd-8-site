@@ -333,9 +333,12 @@ retired. The old Mongo archive remains stored for rollback but is never the publ
 fallback. No website archive sync or seed is required. Do not run old sold-car seed
 scripts to enable this feature.
 
-The shared reader caches for 60 seconds, coalesces concurrent requests and fetches
-at most four pages concurrently. Website stock APIs use `Cache-Control: no-store`
-and the detail page fetch is uncached, so DMS changes appear within a few minutes.
+The shared reader reconciles live, retained Reserved and sold feeds together,
+coalesces concurrent requests and fetches at most four pages concurrently. The three
+lists are cached together for 30 seconds, so a DMS change shows within 30 seconds and
+the lists never come from different moments. Sold entries take precedence across feeds, preventing
+duplicate showroom/sold destinations when a DMS selection changes. Website stock
+APIs use `Cache-Control: no-store` and the detail page fetch is uncached.
 An upstream failure is an error rather than a successful empty showroom. The DMS
 attention grabber is shown over the first image and takes precedence over legacy
 website attention-grabber overrides. Other existing live-car customizations stay.
@@ -349,7 +352,27 @@ npx vitest run --config vitest.config.mts tests/int/sold-refresh.int.spec.ts tes
 
 The DMS PR includes the complete migration/configuration and manual staging
 acceptance checklist. Verify reserved/live/sold/toggle-off transitions, existing
-price/layout behaviour, real copied photos, cache expiry and iPhone Safari before
+price/layout behaviour, real copied photos, immediate selection updates and iPhone Safari before
 production deployment.
 
 The independent DMS Reserved advert extension also reads `/api/website/reserved-ads` beside `DMS_URL` (`/api/website/stock`). Deploy DMS migration 0115 and its API first. Saved snapshots override source-ID duplicates, remain after AutoTrader removal until staff switch them off, and have display-only detail actions. Existing sold feed is independent. No new environment variables.
+
+Reserved retention selections now stay pending while the source is active. They activate after sale or AutoTrader stock removal; Sold Page selections activate only after sale. The DMS stock settings cog holds the exclusive choices. Deploy the DMS after-sale update and this reader update together. No new environment variables or website database migration.
+
+### Sale-in-progress publication rule (19 October 2026)
+
+The showroom must retain active (`FORECOURT` / `SALE_IN_PROGRESS`) DMS cars with
+any real reservation signal even when AutoTrader changes `advertiserAdvert` to
+`NOT_PUBLISHED`. An ordinary, unreserved unpublished car stays hidden. A pending
+DMS post-sale choice does not set that reservation signal. SOLD and removed stock
+require the explicit retained snapshot or sold-page feed; changing display modes
+must never revive a normal SOLD listing. The shared reader and the reservation
+predicate must be deployed together on the AutoPrestige website.
+
+Regression coverage exercises the real reader through listing, detail and homepage
+routes (not a mocked reader), including OE67FSX and YO18ZDS, cancellation,
+re-advertising, actual sale, destination switches and toggle-off:
+
+```sh
+npx vitest run --config vitest.config.mts tests/int/website-reservation-publication.int.spec.ts tests/int/website-vehicle-status.int.spec.ts tests/int/sold-refresh.int.spec.ts
+```
