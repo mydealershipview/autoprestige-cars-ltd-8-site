@@ -5,7 +5,7 @@ import type { WebsiteVehicle } from './dmsWebsiteStock'
 /** Read the frozen legacy archive only. Never resync or write DMS stock into MongoDB. */
 export async function readLegacySoldCars(): Promise<WebsiteVehicle[]> {
   await connectDB()
-  const rows = await SoldCarModel.find({}).select({ stockId: 1, vehicle: 1, soldDate: 1 }).lean().exec()
+  const rows = await SoldCarModel.find({ showOnSoldPage: true }).select({ stockId: 1, vehicle: 1, soldDate: 1 }).lean().exec()
   return rows.map(row => {
     const car = row.vehicle
     if (!car?.vehicle || !car.adverts || !row.stockId) throw new Error('Invalid legacy sold vehicle')

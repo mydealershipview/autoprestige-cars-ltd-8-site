@@ -9,11 +9,11 @@ beforeEach(() => {
   mocks.find.mockReturnValue({ select: () => ({ lean: () => ({ exec: mocks.exec }) }) })
 })
 describe('read-only legacy sold archive', () => {
-  it('restores old cars regardless of their former thirty-day flag', async () => {
-    mocks.exec.mockResolvedValue([{ stockId: 'old', soldDate: new Date('2020-01-01'), showAfter30Days: false,
+  it('reads only explicitly selected cars regardless of their former thirty-day flag', async () => {
+    mocks.exec.mockResolvedValue([{ stockId: 'old', soldDate: new Date('2020-01-01'), showAfter30Days: false, showOnSoldPage: true,
       vehicle: { vehicle: { make: 'BMW' }, metadata: { stockId: 'wrong', lifecycleState: 'FORECOURT' }, adverts: {}, media: { images: [{ href: 'https://m.atcdn.co.uk/{resize}/old.jpg' }] } } }])
     const [car] = await readLegacySoldCars()
-    expect(mocks.find).toHaveBeenCalledWith({})
+    expect(mocks.find).toHaveBeenCalledWith({ showOnSoldPage: true })
     expect(car.metadata).toMatchObject({ stockId: 'old', lifecycleState: 'SOLD' })
     expect(car.soldAt).toBe('2020-01-01T00:00:00.000Z')
     expect(car.media.images[0].href).toContain('/w800/')

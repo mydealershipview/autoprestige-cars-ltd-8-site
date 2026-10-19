@@ -328,7 +328,7 @@ Stock listings, details and the homepage use the DMS public feed with
 this URL at the staging DMS after migration 0114 and admin feature enablement.
 
 DMS sold-page visibility follows the per-car toggle: ticked sold cars remain until
-turned off. Historical MongoDB sold cars are also shown, without an age limit; DMS
+turned off. Selected historical MongoDB sold cars are also shown, without an age limit; DMS
 records take precedence over matching archive entries. The old website sold-admin
 navigation and mutations remain retired. No archive sync or seed is required. Do
 not run old sold-car seed scripts to enable this feature.
@@ -380,9 +380,10 @@ npx vitest run --config vitest.config.mts tests/int/website-reservation-publicat
 
 ### Combined sold archive and reservation actions
 
-The sold page combines every existing MongoDB `sold_cars` record with DMS-selected
-sold ads. There is no age or `showAfter30Days` restriction on the Mongo archive.
-The archive is read only: retired website admin writes and automatic archive sync
+The sold page combines MongoDB `sold_cars` records with `showOnSoldPage=true` with
+DMS-selected sold ads. There is no age or `showAfter30Days` restriction on selected
+Mongo cars. Missing or false `showOnSoldPage` flags keep archive cars hidden.
+Normal website requests read the archive only: retired website admin writes and automatic archive sync
 remain disabled. Current DMS inventory and retained showroom ads take precedence
 by stock/source ID or normalized registration, so duplicate snapshots do not undo
 DMS choices or appear alongside a current showroom car.
@@ -400,3 +401,22 @@ modal from showroom cards or vehicle detail. Enquiries remain available under th
 existing rules. Verify a Reserved car in `/usedcars` and its detail page, then an
 available car; verify sold archive filters/search, two consecutive pages and clear
 filters at `/usedcars/searchgroup/sold`. No reservation or payment needs submitting.
+
+
+### Curated legacy sold selection
+
+`data/legacy-sold-selection.json` records the 100 stock IDs and registration matches
+from “Sold Cars to Keep Indefinetely (1).xlsx” (99 unique registrations). The source
+spreadsheet is not committed. The selection affects Mongo archive cars only; DMS
+sold toggles continue to work independently. Current DMS stock still takes priority
+by stock ID/registration to avoid showing a showroom vehicle as historically sold.
+
+Run `node scripts/select-legacy-sold-cars.mjs` to validate exact stock ID and plate
+matches without changing the database. An explicitly authorized operator can run
+`node scripts/select-legacy-sold-cars.mjs --apply` to set the selected flags true and
+all other existing archive flags false. This is a narrow MongoDB data update, not
+a schema migration or a DMS update. Apply before deploying the filtered reader.
+The script saves a private flags-only backup in the system temporary directory and
+verifies the final enabled IDs/count. Existing vehicle data and old visibility
+flags are preserved. Keep the backup if rollback is needed: restore each saved
+`showOnSoldPage` value, or unset the field where `hadFlag` was false.

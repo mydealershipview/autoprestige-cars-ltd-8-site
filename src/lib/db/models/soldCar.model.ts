@@ -10,6 +10,7 @@ export interface ISoldCar {
   soldDate: Date
   firstSeenAt: Date
   showAfter30Days: boolean
+  showOnSoldPage: boolean
   vehicle: AutoTraderVehicle
   createdAt: Date
   updatedAt: Date
@@ -24,6 +25,7 @@ const SoldCarSchema = new Schema<ISoldCar>(
     derivative: { type: String, default: null, trim: true },
     soldDate: { type: Date, required: true, index: true },
     firstSeenAt: { type: Date, required: true, default: Date.now },
+    showOnSoldPage: { type: Boolean, default: false },
     showAfter30Days: { type: Boolean, default: false, index: true },
     vehicle: { type: Schema.Types.Mixed, required: true },
   },
