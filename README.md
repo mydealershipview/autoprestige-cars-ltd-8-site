@@ -369,7 +369,8 @@ require the explicit retained snapshot or sold-page feed; changing display modes
 must never revive a normal SOLD listing. The shared reader and the reservation
 predicate must be deployed together on the AutoPrestige website.
 
-Regression coverage exercises the real reader through listing, detail and homepage
+A 64-combination matrix checks active lifecycle, website publication and each independent
+reservation signal. Regression coverage exercises the real reader through listing, detail and homepage
 routes (not a mocked reader), including OE67FSX and YO18ZDS, cancellation,
 re-advertising, actual sale, destination switches and toggle-off:
 

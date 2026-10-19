@@ -21,6 +21,21 @@ beforeEach(() => { vi.resetModules(); vi.stubEnv('DMS_URL', 'https://feed.exampl
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs() })
 
 describe('reservation and publication decision matrix', () => {
+  it('checks all active lifecycle, publication and independent reservation combinations', () => {
+    for (const state of ['FORECOURT', 'SALE_IN_PROGRESS']) {
+      for (const published of ['PUBLISHED', 'NOT_PUBLISHED', '', 'UNKNOWN']) {
+        for (const signal of ['none', 'derived', 'top', 'nested']) {
+          const v = car('matrix', state, published)
+          v.reserved = signal === 'derived'
+          v.adverts.reservationStatus = signal === 'top' ? 'Reserved' : 'Listed'
+          v.adverts.retailAdverts.reservationStatus = signal === 'nested' ? 'Reserved' : 'Listed'
+          const reserved = state === 'SALE_IN_PROGRESS' || signal !== 'none'
+          expect(isReserved(v), `${state}/${published}/${signal}`).toBe(reserved)
+          expect(isLiveListing(v), `${state}/${published}/${signal}`).toBe(reserved || published === 'PUBLISHED')
+        }
+      }
+    }
+  })
   it.each(affected)('retains actual incident %s / %s independently of unpublication', (id, registration, model) => {
     const v = car(id, 'SALE_IN_PROGRESS', 'NOT_PUBLISHED'); v.vehicle.registration = registration; v.vehicle.model = model
     expect(isLiveListing(v)).toBe(true); expect(isReserved(v)).toBe(true)
