@@ -420,3 +420,50 @@ The script saves a private flags-only backup in the system temporary directory a
 verifies the final enabled IDs/count. Existing vehicle data and old visibility
 flags are preserved. Keep the backup if rollback is needed: restore each saved
 `showOnSoldPage` value, or unset the field where `hadFlag` was false.
+
+### Preserve legacy sold photographs in Cloudflare R2
+
+`node scripts/archive-sold-images.mjs` audits AutoTrader/AutoWeb photo URLs in the
+Mongo sold archive without changing data. Add `--apply` to copy photos and update
+only verified image URLs. `--limit=2` is a small pilot; `--concurrency=12` controls
+parallel work (maximum 32). The website `.env` supplies MongoDB configuration;
+`DMS_STORAGE_ENV` points to the DMS storage credential file (default
+`../MYDV-DMS/.env`). Secrets are never copied into this repository or printed.
+
+The tool uses the DMS `article-images` public image bucket, under the dedicated
+`autoprestige/legacy-sold-images/` prefix. This bucket's public delivery was verified;
+the locally configured QR-stock public URL returned 404 and is not used. Both
+selected and hidden historical cars are covered. Photos are fetched over HTTPS
+from allowlisted hosts (including at most three redirects checked against the same
+allowlist), validated as images, uploaded with their content type,
+and downloaded through the public Cloudflare URL for SHA-256 verification.
+Deterministic keys let repeat runs reuse verified copies. Missing sources and
+failed verification keep their original Mongo URLs and appear in the report;
+they are never silently removed or replaced with a broken URL.
+
+Each apply run writes a private original-image-array backup and a JSONL result
+journal in the system temporary directory. Mongo changes only after copying,
+using exact original-image-array comparisons to protect concurrent edits. A
+partial/incomplete run exits with code 2, reports remaining external URLs, and can
+be rerun. For expired AutoTrader URLs, `--resize=w1024h768` also tries
+the older cached rendition; known AutoTrader unavailable-photo placeholders are
+rejected. Retain the backups for rollback. No DMS database or vehicle display
+settings are changed. These Mongo URL updates take effect on the public website
+without a code deployment.
+
+Sold-page default order is price descending. The showroom's sold carousel uses the
+first 12 in that order; the separate homepage Recently Sold slider uses 20 by
+recorded sale date descending. Equal values sort by recorded sale date descending,
+then stock ID ascending. The Excel selection does not set presentation order.
+
+Archive preservation audit (19 October 2026): all 100 Excel-selected records have
+Cloudflare image URLs (5,057 photo references); the 94 currently visible records
+serve 4,732 references. Across all 191 archive records, 7,692 distinct source URLs
+were preserved, supplying 7,812 image references. The remaining 1,435 distinct
+AutoTrader URLs (1,456 references, all on unselected records) returned unavailable
+photos, including attempts at alternate cached sizes. They require original image
+files to recover; no placeholder copies were substituted. All 9,268 image entries
+and the 100 selection flags were retained. This is archive preservation, not an
+ongoing mirror of incoming DMS/AutoTrader stock. Private rollback snapshots,
+transfer journals and the remaining-source list are retained locally under
+`.local-backups/sold-images/` and excluded from Git.
