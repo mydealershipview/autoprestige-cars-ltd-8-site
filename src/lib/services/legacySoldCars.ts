@@ -1,3 +1,4 @@
+import { soldImageURL } from '@/utilities/soldImageURL'
 import connectDB from '@/lib/db/connect'
 import SoldCarModel from '@/lib/db/models/soldCar.model'
 import type { WebsiteVehicle } from './dmsWebsiteStock'
@@ -15,7 +16,7 @@ export async function readLegacySoldCars(): Promise<WebsiteVehicle[]> {
       metadata: { ...car.metadata, stockId: row.stockId, lifecycleState: 'SOLD' },
       soldAt: new Date(row.soldDate).toISOString(),
       media: { ...car.media, images: (car.media?.images ?? []).map(image => ({
-        ...image, href: image.href.replace('{resize}', 'w800'),
+        ...image, href: soldImageURL(image.href),
       })) },
     }
   })
