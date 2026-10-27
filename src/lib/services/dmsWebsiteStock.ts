@@ -1,3 +1,4 @@
+import { reportOperationalError } from '@/utilities/reportOperationalError'
 import { isLiveListing } from '@/utilities/websiteVehicleStatus'
 import type { AutoTraderVehicle } from '@/utilities/autotrader'
 
@@ -36,6 +37,7 @@ export function websiteStockUrl(kind: FeedKind, page = 1, pageSize = 100): URL {
 }
 
 async function readPage(kind: FeedKind, page: number) {
+  try {
   const response = await fetch(websiteStockUrl(kind, page), { headers: { Authorization: `Bearer ${process.env.DMS_WEBSITE_KEY}` }, cache: 'no-store', signal: AbortSignal.timeout(15_000) })
   if (!response.ok) throw new Error('Website stock feed unavailable')
   const body = await response.json()
@@ -56,6 +58,10 @@ async function readPage(kind: FeedKind, page: number) {
     }
   })
   return { vehicles, totalPages: data.pagination.totalPages as number }
+  } catch (error) {
+    await reportOperationalError('dms_stock_unavailable')
+    throw error
+  }
 }
 
 async function readAll(kind: FeedKind): Promise<WebsiteVehicle[]> {

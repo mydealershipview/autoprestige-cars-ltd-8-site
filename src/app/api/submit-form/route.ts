@@ -1,3 +1,4 @@
+import { reportOperationalError } from '@/utilities/reportOperationalError'
 import { guardLead } from '@/utilities/leadSpamGuard'
 import { getLeadConfig } from '@/utilities/dmsLead'
 import { NextRequest, NextResponse } from 'next/server'
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
       console.error('Email error:', error)
     }
 
-    if (!webhookSuccess) console.error("DMS enquiry delivery failed", { reason: webhookError })
+    if (!webhookSuccess) await reportOperationalError('dms_enquiry_delivery_failed')
 
     // Return response based on results
     if (webhookSuccess) {
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error('Error in form submission API:', error)
+    await reportOperationalError('enquiry_submission_failed')
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

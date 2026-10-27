@@ -1,3 +1,4 @@
+import { reportOperationalError } from '@/utilities/reportOperationalError'
 import { guardLead } from '@/utilities/leadSpamGuard'
 import { getLeadConfig } from '@/utilities/dmsLead'
 import { NextRequest, NextResponse } from 'next/server'
@@ -188,7 +189,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!webhookSuccess) {
-      console.error('DMS reservation delivery failed', { reason: webhookError })
+      await reportOperationalError('dms_reservation_delivery_failed')
       return NextResponse.json({ error: 'Unable to deliver your reservation. Please contact the dealership.' }, { status: 502 })
     }
     return NextResponse.json({
@@ -206,7 +207,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error processing vehicle reservation request:', error)
+    await reportOperationalError('reservation_submission_failed')
     return NextResponse.json(
       { 
         error: 'Internal server error',
