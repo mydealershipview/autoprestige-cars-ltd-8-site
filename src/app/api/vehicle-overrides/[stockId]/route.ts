@@ -1,3 +1,4 @@
+import { STOCK_ADMIN_COOKIE, verifyStockAdminSession } from '@/utilities/stockAdminSession'
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '../../../../lib/db/connect'
 import VehicleOverrideModel from '../../../../lib/db/models/vehicleOverride.model'
@@ -21,6 +22,12 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ stockId: string }> },
 ) {
+  if (!await verifyStockAdminSession(req.cookies.get(STOCK_ADMIN_COOKIE)?.value)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (req.headers.get('origin') && req.headers.get('origin') !== new URL(req.url).origin) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
   try {
     const { stockId } = await params
     const body = await req.json()
@@ -55,9 +62,15 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ stockId: string }> },
 ) {
+  if (!await verifyStockAdminSession(req.cookies.get(STOCK_ADMIN_COOKIE)?.value)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (req.headers.get('origin') && req.headers.get('origin') !== new URL(req.url).origin) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
   try {
     const { stockId } = await params
     await connectDB()
