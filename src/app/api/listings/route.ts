@@ -1,3 +1,4 @@
+import { stockCacheHeaders, noStoreHeaders } from '@/utilities/stockCacheHeaders'
 import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
 import { NextRequest, NextResponse } from 'next/server'
 import { AutoTraderVehicle } from '../../../utilities/autotrader'
@@ -188,7 +189,7 @@ export async function GET(request: NextRequest) {
     if (page < 1 || pageSize < 1) {
       return NextResponse.json(
         { error: 'Invalid page or pageSize parameters' },
-        { status: 400 }
+        { status: 400, headers: noStoreHeaders }
       )
     }
 
@@ -234,12 +235,12 @@ export async function GET(request: NextRequest) {
       availableModels: availableMakesModels.models,
     }
 
-    return NextResponse.json(response, { headers: { 'Cache-Control': 'no-store' } })
+    return NextResponse.json(response, { headers: stockCacheHeaders })
   } catch (error) {
     console.error('Listings API error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch listings' },
-      { status: 500 }
+      { status: 500, headers: noStoreHeaders }
     )
   }
 }

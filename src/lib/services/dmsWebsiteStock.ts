@@ -16,8 +16,12 @@ const MAX_PAGES = 100
 let legacyAccessWarned = false
 type Bundle = Record<Kind, WebsiteVehicle[]>
 // One cache for all three lists, so a car can never be served from two lists of different ages.
-const CACHE_MS = 30_000
-const caches = new Map<string, { expires: number; bundle: Bundle }>()
+// Stock is cached in memory: fresh for 5 minutes (STOCK_CACHE_SECONDS), then served while it refreshes behind the
+// request, and never older than 15 minutes even if the DMS is down. One refresh at a time per process.
+const seconds = (name: string, fallback: number) => (Number(process.env[name]) > 0 ? Number(process.env[name]) : fallback) * 1000
+const freshMs = () => seconds('STOCK_CACHE_SECONDS', 300)
+const maxStaleMs = () => Math.max(freshMs(), seconds('STOCK_MAX_STALE_SECONDS', 900))
+const caches = new Map<string, { fetchedAt: number; bundle: Bundle }>()
 const pending = new Map<string, Promise<Bundle>>()
 
 /** All website stock comes from the public DMS allow-list. No provider/archive fallback: an
@@ -82,12 +86,9 @@ async function readAll(kind: FeedKind): Promise<WebsiteVehicle[]> {
   return [...new Map(vehicles.map(vehicle => [vehicle.metadata.stockId, vehicle])).values()]
 }
 
-/** Live, Reserved and sold lists are read and reconciled together and cached as one bundle for
- * 30 seconds. Separate per-list caches could show an old sold choice beside a new Reserved advert. */
-export async function getDmsWebsiteVehicles(kind: Kind): Promise<WebsiteVehicle[]> {
-  const key = websiteStockUrl('live').toString()
-  const cached = caches.get(key)
-  if (cached && cached.expires > Date.now()) return cached.bundle[kind]
+/** Live, Reserved and sold lists are read and reconciled together and cached as one bundle (see freshMs).
+ * Separate per-list caches could show an old sold choice beside a new Reserved advert. */
+function refreshBundle(key: string): Promise<Bundle> {
   let request = pending.get(key)
   if (!request) {
     request = (async () => {
@@ -102,7 +103,7 @@ export async function getDmsWebsiteVehicles(kind: Kind): Promise<WebsiteVehicle[
         !soldIds.has(vehicle.metadata.stockId) && !retainedSources.has(vehicle.metadata.stockId)), ...reserved]
       const bundle = { live, sold, reserved }
       // Only complete, valid reads are cached; failures throw above and are retried next request.
-      caches.set(key, { bundle, expires: Date.now() + CACHE_MS })
+      caches.set(key, { bundle, fetchedAt: Date.now() })
       return bundle
     })()
     pending.set(key, request)
@@ -110,23 +111,47 @@ export async function getDmsWebsiteVehicles(kind: Kind): Promise<WebsiteVehicle[
     const clear = () => { if (pending.get(key) === current) pending.delete(key) }
     void current.then(clear, clear)
   }
-  return (await request)[kind]
+  return request
+}
+
+export async function getDmsWebsiteVehicles(kind: Kind): Promise<WebsiteVehicle[]> {
+  const key = websiteStockUrl('live').toString()
+  const cached = caches.get(key)
+  const age = cached ? Date.now() - cached.fetchedAt : Infinity
+  if (cached && age < freshMs()) return cached.bundle[kind]
+  if (cached && age < maxStaleMs()) {
+    refreshBundle(key).catch(() => {}) // failure is already reported; keep serving the last good stock until it is too old
+    return cached.bundle[kind]
+  }
+  return (await refreshBundle(key))[kind]
 }
 
 // The unfiltered website feed also contains unselected SOLD stock. Its identities prevent
 // an old Mongo snapshot from undoing a DMS toggle-off or duplicating re-advertised stock.
-const inventoryCaches = new Map<string, { expires: number; rows: WebsiteVehicle[] }>()
+const inventoryCaches = new Map<string, { fetchedAt: number; rows: WebsiteVehicle[] }>()
 const inventoryPending = new Map<string, Promise<WebsiteVehicle[]>>()
+function refreshInventory(key: string): Promise<WebsiteVehicle[]> {
+  let request = inventoryPending.get(key)
+  if (!request) {
+    request = readAll('inventory').then(rows => {
+      inventoryCaches.set(key, { rows, fetchedAt: Date.now() })
+      return rows
+    })
+    inventoryPending.set(key, request)
+    const current = request
+    const clear = () => { if (inventoryPending.get(key) === current) inventoryPending.delete(key) }
+    void current.then(clear, clear)
+  }
+  return request
+}
 export async function getDmsWebsiteInventoryVehicles(): Promise<WebsiteVehicle[]> {
   const key = websiteStockUrl('inventory').toString()
   const cached = inventoryCaches.get(key)
-  if (cached && cached.expires > Date.now()) return cached.rows
-  const pendingRead = inventoryPending.get(key)
-  if (pendingRead) return pendingRead
-  const request = readAll('inventory').then(rows => {
-    inventoryCaches.set(key, { rows, expires: Date.now() + CACHE_MS })
-    return rows
-  })
-  inventoryPending.set(key, request)
-  try { return await request } finally { inventoryPending.delete(key) }
+  const age = cached ? Date.now() - cached.fetchedAt : Infinity
+  if (cached && age < freshMs()) return cached.rows
+  if (cached && age < maxStaleMs()) {
+    refreshInventory(key).catch(() => {})
+    return cached.rows
+  }
+  return refreshInventory(key)
 }

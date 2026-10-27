@@ -17,6 +17,14 @@ This branch changes only Auto Prestige. Existing DMS sold/reserved publication r
 - Use real dealership contacts on complaints and safe dealer-specific defaults. Correct finance return URLs. Preserve saved wishlists while migrating the storage key, remove debug logs/build artifacts, and compress large showroom JPEGs.
 - Support `SOLD_IMAGES_PUBLIC_BASE_URL` to map legacy R2 image paths to a verified custom domain without editing archived records.
 
+## Stock caching
+
+- The live, reserved and sold lists are read and reconciled together and cached as one bundle, so a car can never appear in two lists of different ages. The DMS stock is cached in the site's memory: fresh for 5 minutes (`STOCK_CACHE_SECONDS`, default 300). After that the last stock is returned immediately while a single refresh runs behind the request, and stock is never served older than 15 minutes, even if the DMS is down (then the site errors and alerts, as before). Pages, API routes and sitemaps share this one cache, so a visit no longer triggers a full DMS read; at most one read per instance every 5 minutes. A failed refresh is never cached as an empty showroom.
+- Stock API responses (`/api/listings`, `/api/listing/:id`, `/api/featured-vehicles`, `/api/available-makes-models`, `/api/sold-listings`) are sent with `Cache-Control: public, max-age=60, s-maxage=300, stale-while-revalidate=60`, so repeat browser fetches and any CDN reuse them. Errors and missing vehicles are `no-store`.
+- Worst-case staleness is therefore a few minutes on top of the DMS's own short cache; a reservation or sale shows on the site within about 5-6 minutes. A restart of the app clears the cache.
+
+`STOCK_MAX_STALE_SECONDS` (default 900) bounds the stale window. The stock-admin list always bypasses the browser cache, and price/advert overrides are applied from the database on every request, so admin edits are not delayed by the stock cache.
+
 ## Deployment requirements and external findings
 
 These are deployment requirements, not claims that production has already changed. Review and merge this PR before deploying it.

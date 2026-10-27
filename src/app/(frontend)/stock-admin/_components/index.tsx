@@ -117,7 +117,7 @@ export default function StockAdminComponent() {
         if (value) queryParams.append(key, value)
       })
 
-      const res = await fetch(`/api/listings?${queryParams}`)
+      const res = await fetch(`/api/listings?${queryParams}`, { cache: 'no-store' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
       const data = await res.json()
