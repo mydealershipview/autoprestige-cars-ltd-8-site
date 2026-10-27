@@ -106,7 +106,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const keywords = [
       `${make} ${model} for sale`,
       `used ${make} ${model}`,
-      `${make} ${model} Nottingham`,
+      `${make} ${model} ${dealershipCity}`,
       year ? `${year} ${make} ${model}` : '',
       fuelType ? `${fuelType} ${make}` : '',
       transmission ? `${transmission} ${make}` : '',
