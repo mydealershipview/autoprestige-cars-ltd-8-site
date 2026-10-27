@@ -49,7 +49,7 @@ function buildValuationPayload(formData: ValuationFormState): WebhookData {
   const interestedVehicleProvided = Boolean(formData.interestedMake || formData.interestedModel)
 
   return {
-    advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+    advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || '',
     enquiryType: 'part-exchange',
     personal: {
       title: null,

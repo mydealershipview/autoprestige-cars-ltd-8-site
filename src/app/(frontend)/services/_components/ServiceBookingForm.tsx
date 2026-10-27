@@ -69,7 +69,7 @@ export default function ServiceBookingForm() {
       const { firstName, lastName } = splitFullName(formData.fullName)
 
       const payload: WebhookData = {
-        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || '',
         enquiryType: 'book-appointment',
         personal: {
           title: null,

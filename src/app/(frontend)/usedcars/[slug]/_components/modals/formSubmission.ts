@@ -1,7 +1,7 @@
 import { WebhookData, VehicleReservationData } from '@/types/webhook'
 import { trackEvent, trackLead } from '@/lib/analytics'
 
-const DEFAULT_DEALER_ID = 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70'
+const DEFAULT_DEALER_ID = ''
 
 function getDealerId(): string {
   return process.env.NEXT_PUBLIC_DEALER_ID || DEFAULT_DEALER_ID

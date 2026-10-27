@@ -155,7 +155,7 @@ export default function FinanceApplicationForm() {
         .join('\n') || null
 
       const payload: WebhookData = {
-        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || '',
         enquiryType: 'request-finance',
         personal: {
           title: null,

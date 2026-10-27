@@ -42,6 +42,7 @@ describe('Vehicle enquiry', () => {
   it('forwards customer, message and stock details through the API using the existing DMS contract', async () => {
     vi.stubEnv('NEXT_PUBLIC_DEALER_ID', 'advertiser-123')
     vi.stubEnv('DEALER_ID', 'affiliate-123')
+    vi.stubEnv('EXTERNAL_NOTIFICATIONS_WEBHOOK_SECRET', 'lead-secret')
     vi.stubEnv('FORM_SUBMIT_WEBHOOK_URL', 'https://dms.example.com/enquiries')
 
     const fetchMock = vi.fn(async (url: string, options: RequestInit) => {
@@ -65,9 +66,9 @@ describe('Vehicle enquiry', () => {
     const [url, options] = fetchMock.mock.calls[1]
     expect(url).toBe('https://dms.example.com/enquiries')
     expect(options.method).toBe('POST')
-    expect(options.headers).toEqual({ 'Content-Type': 'application/json' })
+    expect(options.headers).toEqual({ 'Content-Type': 'application/json', 'x-webhook-secret': 'lead-secret' })
     expect(JSON.parse(options.body as string)).toEqual({
-      advertiserId: 'advertiser-123',
+      advertiserId: 'affiliate-123',
       affiliateId: 'affiliate-123',
       enquiryType: 'general-contact',
       personal: {
