@@ -11,7 +11,7 @@ const response = (vehicles = [car('sold-1')], totalPages = 1) => Response.json({
 
 beforeEach(() => {
   vi.resetModules()
-  vi.stubEnv('DMS_URL', 'https://feed.example/api/website/stock')
+  vi.stubEnv('DMS_WEBSITE_KEY', 'test-website-key'); vi.stubEnv('DMS_URL', 'https://feed.example/api/website/stock')
   vi.stubEnv('DEALER_EMAIL', 'dealer+test@example.com')
   vi.stubGlobal('fetch', vi.fn(async () => response()))
   vi.useFakeTimers({ toFake: ['Date'] })
@@ -26,7 +26,8 @@ describe('DMS website feed reader', () => {
     const url = new URL(String(vi.mocked(fetch).mock.calls.find(call => new URL(String(call[0])).searchParams.get('status') === 'sold')![0]))
     expect(url.searchParams.get('status')).toBe('sold')
     expect(url.searchParams.get('includeReserved')).toBeNull()
-    expect(url.searchParams.get('dealerEmail')).toBe('dealer+test@example.com')
+    expect(url.searchParams.get('dealerEmail')).toBeNull()
+    expect(vi.mocked(fetch).mock.calls[0][1]?.headers).toEqual({ Authorization: 'Bearer test-website-key' })
     expect(vehicles[0].media.images[0].href).not.toContain('{resize}')
     expect(vi.mocked(fetch).mock.calls[0][1]?.cache).toBe('no-store')
   })
