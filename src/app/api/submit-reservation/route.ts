@@ -1,3 +1,4 @@
+import { guardLead } from '@/utilities/leadSpamGuard'
 import { getLeadConfig } from '@/utilities/dmsLead'
 import { NextRequest, NextResponse } from 'next/server'
 import { VehicleReservationData } from '@/types/webhook'
@@ -98,6 +99,8 @@ function buildCompatibilityWebhookPayload(data: VehicleReservationData, dealerId
 export async function POST(request: NextRequest) {
   try {
     const data: VehicleReservationData = await request.json()
+    const rejection = await guardLead(request, data)
+    if (rejection) return rejection
 
     // Validate required fields
     if (!data.customerDetails || !data.vehicleDetails) {

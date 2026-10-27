@@ -1,5 +1,8 @@
 'use client'
 
+import { FormHoneypot, honeypotValue } from '@/components/FormHoneypot'
+
+
 import React, { useState } from 'react'
 import { buildBaseWebhookPayload, submitWebhookForm, withInterestedVehicle } from './formSubmission'
 
@@ -32,6 +35,7 @@ export default function EmailModal({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    const website = honeypotValue(event.currentTarget as HTMLFormElement)
     if (isSubmitting) return
     setSubmitError(null)
 
@@ -61,7 +65,7 @@ export default function EmailModal({
       )
       payload.notes = message.trim()
 
-      await submitWebhookForm(payload)
+      await submitWebhookForm({ ...payload, website })
       setSubmitted(true)
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Failed to send enquiry. Please try again.')
@@ -101,6 +105,7 @@ export default function EmailModal({
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6" aria-busy={isSubmitting}>
+              <FormHoneypot />
               <p className="text-sm text-zinc-400">Send your question to our team. All fields are required.</p>
               <fieldset disabled={isSubmitting} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

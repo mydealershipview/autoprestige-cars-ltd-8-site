@@ -1,3 +1,4 @@
+import { FormHoneypot, honeypotValue } from '@/components/FormHoneypot'
 import React, { useMemo, useRef, useState } from 'react'
 import { trackEvent } from '@/lib/analytics'
 import { buildBaseWebhookPayload, submitWebhookForm, withInterestedVehicle } from './formSubmission'
@@ -88,6 +89,7 @@ export default function FinanceModal({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const website = honeypotValue(e.currentTarget as HTMLFormElement)
     setSubmitError(null)
     setIsSubmitting(true)
 
@@ -162,7 +164,7 @@ export default function FinanceModal({
         .filter(Boolean)
         .join('\n') || null
 
-      await submitWebhookForm(payload)
+      await submitWebhookForm({ ...payload, website })
       onClose()
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Failed to submit finance request')
@@ -197,6 +199,7 @@ export default function FinanceModal({
           </div>
 
           <form className="space-y-8" onSubmit={handleSubmit} onFocusCapture={() => { if (!financeStarted.current) { financeStarted.current = true; trackEvent('finance_quote_started', { item_id: stockId }) } }}>
+              <FormHoneypot />
             <div className="space-y-4">
               <h3 className="text-sm uppercase tracking-widest text-white border-b border-white/10 pb-2">Contact Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,3 +1,4 @@
+vi.mock('@/utilities/leadSpamGuard', () => ({ guardLead: vi.fn().mockResolvedValue(null) }))
 import React from 'react'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -68,6 +69,7 @@ describe('Vehicle enquiry', () => {
     expect(options.method).toBe('POST')
     expect(options.headers).toEqual({ 'Content-Type': 'application/json', 'x-webhook-secret': 'lead-secret' })
     expect(JSON.parse(options.body as string)).toEqual({
+      website: '',
       advertiserId: 'affiliate-123',
       affiliateId: 'affiliate-123',
       enquiryType: 'general-contact',

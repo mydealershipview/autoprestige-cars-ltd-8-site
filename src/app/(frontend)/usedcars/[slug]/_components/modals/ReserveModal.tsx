@@ -1,3 +1,4 @@
+import { FormHoneypot, honeypotValue } from '@/components/FormHoneypot'
 import React, { useState } from 'react'
 import { buildReservationPayload, submitReservationForm } from './formSubmission'
 
@@ -31,6 +32,7 @@ export default function ReserveModal({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const website = honeypotValue(e.currentTarget as HTMLFormElement)
     setSubmitError(null)
     setIsSubmitting(true)
 
@@ -49,7 +51,7 @@ export default function ReserveModal({
         stockId,
       })
 
-      await submitReservationForm(payload)
+      await submitReservationForm({ ...payload, website })
       onClose()
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Failed to submit reservation')
@@ -75,6 +77,7 @@ export default function ReserveModal({
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+              <FormHoneypot />
           <div>
             <label className="block text-xs uppercase tracking-widest text-zinc-400 mb-2">Title</label>
             <select value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-zinc-900 border border-white/10 p-3 text-sm text-white focus:outline-none focus:border-white/30">

@@ -1,5 +1,8 @@
 'use client'
 
+import { FormHoneypot, honeypotValue } from '@/components/FormHoneypot'
+
+
 import { trackEvent, trackLead } from '@/lib/analytics'
 
 import React, { useState } from 'react'
@@ -129,6 +132,7 @@ export default function ValuationForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const website = honeypotValue(e.currentTarget as HTMLFormElement)
     setIsSubmitting(true)
     setError(null)
 
@@ -138,7 +142,7 @@ export default function ValuationForm() {
       const response = await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, website }),
       })
 
       if (!response.ok) {
@@ -180,6 +184,7 @@ export default function ValuationForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+              <FormHoneypot />
       <div>
         <h3 className="text-sm font-black tracking-widest uppercase text-white mb-1">Personal Details</h3>
         <div className="h-[2px] w-full bg-blue-500 mb-6" />
