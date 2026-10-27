@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { STOCK_ADMIN_COOKIE, verifyStockAdminSession } from '@/utilities/stockAdminSession'
 
+/** The host the visitor asked for. nextUrl.hostname is the server's bind address when self-hosted, so read the headers. */
+const requestHost = (request: NextRequest) =>
+  (request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.hostname)
+    .split(',')[0].trim().toLowerCase().replace(/:\d+$/, '')
+
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
-  if (url.hostname === 'www.autoprestigecars.co.uk') {
+  if (requestHost(request) === 'www.autoprestigecars.co.uk') {
     url.hostname = 'autoprestigecars.co.uk'
+    url.protocol = 'https:'
+    url.port = ''
     return NextResponse.redirect(url, 301)
   }
   const headers = new Headers(request.headers)
