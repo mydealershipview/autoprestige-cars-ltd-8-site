@@ -39,7 +39,7 @@ const SideWidget = ({ contactData, makes, models }: SideWidgetProps) => {
 
     // Apply the calculated max price as a filter
     router.push(`/usedcars?maxPrice=${price.toString()}&sortBy=price`)
-    console.log(pathname)
+    
     // if (pathname.includes('/usedcars')) {
     //   window.location.reload()
     // }

@@ -9,24 +9,18 @@ import type { DealershipInfo } from "../../types/dealership";
  * fallback when the database is unreachable.
  */
 function buildDefaults(): DealershipInfo {
-  const rawId = process.env.DEALER_ID ?? "";
-  const name = rawId
-    ? rawId
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase())
-    : "My Dealership";
 
   return {
-    name,
+    name: "Autoprestige Cars",
     tagline: "Your trusted local car dealership",
-    email: process.env.DEALER_EMAIL ?? "info@dealership.co.uk",
-    phone: "",
-    whatsapp: "",
+    email: process.env.DEALER_EMAIL ?? "sales@autoprestigecars.co.uk",
+    phone: "07725124729",
+    whatsapp: "447725124729",
     address: {
-      line1: "123 Motor Way",
+      line1: "Rosse Street",
       line2: "",
-      city: "London",
-      postcode: "W1A 1AA",
+      city: "Bradford",
+      postcode: "BD8 9AS",
       country: "UK",
       lat: "",
       lng: "",

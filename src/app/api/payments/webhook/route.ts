@@ -95,18 +95,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    console.log(`Payment ${paymentRequestId} updated to status: ${status}`)
-
-    // You can add additional logic here based on payment status
-    // For example, send email notifications, update inventory, etc.
-    if (status === 'COMPLETED') {
-      // Send confirmation email
-      console.log(`Reservation confirmed for payment ${paymentRequestId}`)
-      // TODO: Add email notification logic here
-    } else if (status === 'FAILED') {
-      console.log(`Payment failed for ${paymentRequestId}`)
-      // TODO: Add failure handling logic here
-    }
+    
 
     return NextResponse.json({ success: true, message: 'Webhook processed successfully' })
 

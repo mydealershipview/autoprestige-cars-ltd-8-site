@@ -1,12 +1,10 @@
+import { getServerSideURL } from '@/utilities/getURL'
 import { getServerSideSitemap } from 'next-sitemap'
 import { unstable_cache } from 'next/cache'
 
 const getPagesSitemap = unstable_cache(
   async () => {
-    const SITE_URL =
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-      'https://example.com'
+    const SITE_URL = getServerSideURL()
 
     const dateFallback = new Date().toISOString()
 
@@ -122,7 +120,7 @@ const getPagesSitemap = unstable_cache(
       },
     ]
 
-    console.log(`Generated ${staticPages.length} static page URLs for sitemap`)
+    
     return staticPages
   },
   ['pages-sitemap'],
