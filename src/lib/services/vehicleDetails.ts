@@ -15,15 +15,15 @@ function getSimilarVehicles(allListings: AutoTraderVehicle[], currentVehicle: Au
   const currentBodyType = currentVehicle.vehicle.bodyType || currentVehicle.vehicle.standard?.bodyType
   const currentPrice = currentVehicle.adverts?.forecourtPrice?.amountGBP || currentVehicle.adverts?.retailAdverts?.totalPrice?.amountGBP || 0
   const currentStockId = currentVehicle.metadata.stockId
-  
+
   if (!currentMake) return []
 
   // Filter vehicles by same make and exclude current vehicle
   const similarVehicles = allListings.filter(vehicle => {
     const vehicleMake = vehicle.vehicle.make || vehicle.vehicle.standard?.make
     const vehicleStockId = vehicle.metadata.stockId
-    
-    return vehicleMake?.toLowerCase() === currentMake.toLowerCase() && 
+
+    return vehicleMake?.toLowerCase() === currentMake.toLowerCase() &&
            vehicleStockId !== currentStockId
   })
 
@@ -35,36 +35,36 @@ function getSimilarVehicles(allListings: AutoTraderVehicle[], currentVehicle: Au
     const bBodyType = (b.vehicle.bodyType || b.vehicle.standard?.bodyType || '').toLowerCase()
     const aPrice = a.adverts?.forecourtPrice?.amountGBP || a.adverts?.retailAdverts?.totalPrice?.amountGBP || 0
     const bPrice = b.adverts?.forecourtPrice?.amountGBP || b.adverts?.retailAdverts?.totalPrice?.amountGBP || 0
-    
+
     const currentModelLower = (currentModel || '').toLowerCase()
     const currentBodyTypeLower = (currentBodyType || '').toLowerCase()
-    
+
     // Priority 1: Same model gets highest priority
     const aIsCurrentModel = aModel === currentModelLower
     const bIsCurrentModel = bModel === currentModelLower
-    
+
     if (aIsCurrentModel && !bIsCurrentModel) return -1
     if (!aIsCurrentModel && bIsCurrentModel) return 1
-    
+
     // Priority 2: Same body type (if models are the same priority)
     const aIsCurrentBodyType = aBodyType === currentBodyTypeLower
     const bIsCurrentBodyType = bBodyType === currentBodyTypeLower
-    
+
     if (aIsCurrentBodyType && !bIsCurrentBodyType) return -1
     if (!aIsCurrentBodyType && bIsCurrentBodyType) return 1
-    
+
     // Priority 3: Price proximity (closest price to current vehicle)
     const aPriceDiff = Math.abs(aPrice - currentPrice)
     const bPriceDiff = Math.abs(bPrice - currentPrice)
-    
+
     if (aPriceDiff !== bPriceDiff) {
       return aPriceDiff - bPriceDiff
     }
-    
+
     // Final tie-breaker: newer year first
     const aYear = a.vehicle.yearOfManufacture || 0
     const bYear = b.vehicle.yearOfManufacture || 0
-    
+
     return bYear - aYear
   })
 

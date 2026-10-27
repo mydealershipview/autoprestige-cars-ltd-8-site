@@ -198,11 +198,11 @@ export async function POST(request: NextRequest) {
       email: {
         sent: emailResult.success,
         emailId: emailResult.emailId,
-        
+
       },
       webhook: {
         sent: webhookSuccess,
-        
+
       },
     })
 

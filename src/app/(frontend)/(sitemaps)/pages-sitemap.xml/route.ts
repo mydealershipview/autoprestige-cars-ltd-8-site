@@ -120,7 +120,7 @@ const getPagesSitemap = unstable_cache(
       },
     ]
 
-    
+
     return staticPages
   },
   ['pages-sitemap'],
