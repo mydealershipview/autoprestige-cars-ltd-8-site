@@ -1,14 +1,13 @@
 import type { CollectionConfig } from 'payload'
-import { anyone } from '@/access/anyone'
-import { authenticated } from '@/access/authenticated'
+import { isAdmin } from '@/access/isAdmin'
 
 export const Payments: CollectionConfig = {
   slug: 'payments',
   access: {
-    create: anyone,
-    delete: authenticated,
-    read: anyone,
-    update: anyone,
+    create: isAdmin,
+    delete: isAdmin,
+    read: isAdmin,
+    update: isAdmin,
   },
   admin: {
     defaultColumns: ['customerName', 'vehicleDetails.make', 'vehicleDetails.model', 'amount', 'paymentStatus', 'createdAt'],
