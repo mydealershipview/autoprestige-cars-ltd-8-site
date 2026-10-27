@@ -21,9 +21,12 @@ const pending = new Map<string, Promise<Bundle>>()
 /** All website stock comes from the public DMS allow-list. No provider/archive fallback: an
  * outage must never resurrect an unticked sold advert or turn into a believable empty showroom. */
 export function websiteStockUrl(kind: FeedKind, page = 1, pageSize = 100): URL {
-  if (!process.env.DMS_URL || !process.env.DEALER_EMAIL) throw new Error('Website stock configuration is missing')
+  if (!process.env.DMS_URL || !process.env.DMS_WEBSITE_KEY || (kind === 'reserved' && !process.env.DEALER_EMAIL)) throw new Error('Website stock configuration is missing')
   const url = new URL(process.env.DMS_URL)
-  url.searchParams.set('dealerEmail', process.env.DEALER_EMAIL)
+  url.searchParams.delete('dealerEmail')
+  url.searchParams.delete('dealerId')
+  // The reserved-ad archive still requires email in the current DMS API.
+  if (kind === 'reserved') url.searchParams.set('dealerEmail', process.env.DEALER_EMAIL!)
   for (const key of ['status', 'includeReserved', 'lifecycleState']) url.searchParams.delete(key)
   if (kind === 'reserved') url.pathname = url.pathname.replace(/\/stock\/?$/, '/reserved-ads')
   if (kind !== 'inventory') url.searchParams.set(kind === 'sold' ? 'status' : 'includeReserved', kind === 'sold' ? 'sold' : 'true')
@@ -33,7 +36,7 @@ export function websiteStockUrl(kind: FeedKind, page = 1, pageSize = 100): URL {
 }
 
 async function readPage(kind: FeedKind, page: number) {
-  const response = await fetch(websiteStockUrl(kind, page), { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
+  const response = await fetch(websiteStockUrl(kind, page), { headers: { Authorization: `Bearer ${process.env.DMS_WEBSITE_KEY}` }, cache: 'no-store', signal: AbortSignal.timeout(15_000) })
   if (!response.ok) throw new Error('Website stock feed unavailable')
   const body = await response.json()
   const data = body?.data

@@ -17,7 +17,7 @@ const car = (id = 'car', state = 'FORECOURT', published = 'PUBLISHED') => ({
   } }, media: { images: [{ href: 'https://m.atcdn.co.uk/{resize}/photo.jpg' }] },
 }) as unknown as WebsiteVehicle
 
-beforeEach(() => { vi.resetModules(); vi.stubEnv('DMS_URL', 'https://feed.example/api/website/stock'); vi.stubEnv('DEALER_EMAIL', 'dealer@example.com') })
+beforeEach(() => { vi.resetModules(); vi.stubEnv('DMS_WEBSITE_KEY', 'test-website-key'); vi.stubEnv('DMS_URL', 'https://feed.example/api/website/stock'); vi.stubEnv('DEALER_EMAIL', 'dealer@example.com') })
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs() })
 
 describe('reservation and publication decision matrix', () => {
