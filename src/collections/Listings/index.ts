@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { anyone } from '@/access/anyone'
-import { authenticated } from '@/access/authenticated'
+
 import { isAdmin, isAdminFieldLevel } from '@/access/isAdmin'
 
 export const Listings: CollectionConfig = {
@@ -10,8 +9,8 @@ export const Listings: CollectionConfig = {
   access: {
     create: isAdmin,
     delete: isAdmin,
-    read: anyone,
-    update: anyone,
+    read: isAdmin,
+    update: isAdmin,
   },
   admin: {
     defaultColumns: ['vehicle.make', 'vehicle.model', 'vehicle.yearOfManufacture', 'adverts.forecourtPrice.amountGBP', 'updatedAt'],

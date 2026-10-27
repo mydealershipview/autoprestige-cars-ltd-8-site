@@ -170,7 +170,7 @@ export default function VehicleClient({
             identifierType: '',
             identifier: " ",
             imageUrl: vehicleImageUrl, // UPDATED: Use actual vehicle image instead of default
-            linkBackUrl: "https://www.autoprestigecars.co.uk/",
+            linkBackUrl: "https://autoprestigecars.co.uk/",
             registration: {
               number: vehicle.vehicle?.registration || vehicle?.registration || "NOVEHICLE",
               date: vehicle?.vehicle?.firstRegistrationDate || "2000-01-01",

@@ -39,7 +39,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
   // Load wishlist from localStorage on component mount
   useEffect(() => {
     try {
-      const savedWishlist = localStorage.getItem('mwa-autos-wishlist')
+      const savedWishlist = localStorage.getItem('autoprestige-cars-wishlist') || localStorage.getItem('mwa-autos-wishlist')
       if (savedWishlist) {
         const parsedWishlist = JSON.parse(savedWishlist)
         setWishlistItems(parsedWishlist)
@@ -55,7 +55,8 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
   useEffect(() => {
     if (isLoaded) {
       try {
-        localStorage.setItem('mwa-autos-wishlist', JSON.stringify(wishlistItems))
+        localStorage.setItem('autoprestige-cars-wishlist', JSON.stringify(wishlistItems))
+        localStorage.removeItem('mwa-autos-wishlist')
       } catch (error) {
         console.error('Error saving wishlist to localStorage:', error)
       }

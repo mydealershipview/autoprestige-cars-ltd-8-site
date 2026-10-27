@@ -1,8 +1,10 @@
+import { reportOperationalError } from '@/utilities/reportOperationalError'
+import { guardLead } from '@/utilities/leadSpamGuard'
+import { getLeadConfig } from '@/utilities/dmsLead'
 import { NextRequest, NextResponse } from 'next/server'
 import { VehicleReservationData } from '@/types/webhook'
 import { sendVehicleReservationEmail } from '@/utilities/sendEmail'
 
-const DEFAULT_DEALER_ID = 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70'
 
 type WebhookAttemptResult = {
   ok: boolean
@@ -15,7 +17,9 @@ async function postToWebhook(url: string, payload: unknown): Promise<WebhookAtte
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-webhook-secret': getLeadConfig(true).secret,
     },
+    signal: AbortSignal.timeout(15_000),
     body: JSON.stringify(payload),
   })
 
@@ -96,6 +100,8 @@ function buildCompatibilityWebhookPayload(data: VehicleReservationData, dealerId
 export async function POST(request: NextRequest) {
   try {
     const data: VehicleReservationData = await request.json()
+    const rejection = await guardLead(request, data)
+    if (rejection) return rejection
 
     // Validate required fields
     if (!data.customerDetails || !data.vehicleDetails) {
@@ -131,6 +137,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const lead = getLeadConfig(true)
+
     // Send email notification
     const emailResult = await sendVehicleReservationEmail(data)
     
@@ -140,8 +148,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Submit to webhook if URL is configured
-    const webhookUrl = process.env.VEHICLE_RESERVATION_WEBHOOK_URL || process.env.FORM_SUBMIT_WEBHOOK_URL
-    const dealerId = process.env.DEALER_ID || DEFAULT_DEALER_ID
+    const webhookUrl = lead.url
+    const dealerId = lead.dealerId
     
     let webhookSuccess = false
     let webhookError: string | null = null
@@ -180,22 +188,26 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (!webhookSuccess) {
+      await reportOperationalError('dms_reservation_delivery_failed')
+      return NextResponse.json({ error: 'Unable to deliver your reservation. Please contact the dealership.' }, { status: 502 })
+    }
     return NextResponse.json({
       success: true,
       message: 'Vehicle reservation request submitted successfully',
       email: {
         sent: emailResult.success,
         emailId: emailResult.emailId,
-        error: emailResult.error,
+
       },
       webhook: {
         sent: webhookSuccess,
-        error: webhookError,
+
       },
     })
 
   } catch (error) {
-    console.error('Error processing vehicle reservation request:', error)
+    await reportOperationalError('reservation_submission_failed')
     return NextResponse.json(
       { 
         error: 'Internal server error',

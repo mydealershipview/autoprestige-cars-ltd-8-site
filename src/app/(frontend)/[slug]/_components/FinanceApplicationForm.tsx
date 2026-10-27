@@ -1,5 +1,8 @@
 'use client'
 
+import { FormHoneypot, honeypotValue } from '@/components/FormHoneypot'
+
+
 import { trackEvent, trackLead } from '@/lib/analytics'
 
 import React, { useRef, useState } from 'react'
@@ -136,6 +139,7 @@ export default function FinanceApplicationForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const website = honeypotValue(e.currentTarget as HTMLFormElement)
     setIsSubmitting(true)
     setError(null)
 
@@ -155,7 +159,7 @@ export default function FinanceApplicationForm() {
         .join('\n') || null
 
       const payload: WebhookData = {
-        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || '',
         enquiryType: 'request-finance',
         personal: {
           title: null,
@@ -200,7 +204,7 @@ export default function FinanceApplicationForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, website }),
       })
 
       if (!response.ok) {
@@ -237,6 +241,7 @@ export default function FinanceApplicationForm() {
 
   return (
     <form onSubmit={handleSubmit} onFocusCapture={() => { if (!financeStarted.current) { financeStarted.current = true; trackEvent('finance_quote_started') } }} className="space-y-8">
+              <FormHoneypot />
       <div className="space-y-2">
         <h2 className="text-2xl md:text-3xl font-black tracking-[0.1em] uppercase text-white">Finance Application</h2>
         <p className="text-zinc-300">Complete your vehicle finance application</p>

@@ -1,3 +1,6 @@
+import { reportOperationalError } from '@/utilities/reportOperationalError'
+import { guardLead } from '@/utilities/leadSpamGuard'
+import { getLeadConfig } from '@/utilities/dmsLead'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendEnquiryEmail } from '@/utilities/sendEmail'
 import { WebhookData } from '@/types/webhook'
@@ -5,6 +8,8 @@ import { WebhookData } from '@/types/webhook'
 export async function POST(request: NextRequest) {
   try {
     const webhookData: WebhookData = await request.json()
+    const rejection = await guardLead(request, webhookData)
+    if (rejection) return rejection
     
     // Validate the webhook data
     if (!webhookData.personal?.email || !webhookData.personal?.firstName) {
@@ -14,6 +19,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const lead = getLeadConfig()
     let webhookSuccess = false
     let emailSuccess = false
     let webhookError = null
@@ -21,16 +27,19 @@ export async function POST(request: NextRequest) {
 
     // First, send data to the external webhook
     try {
-      const webhookUrl = process.env.FORM_SUBMIT_WEBHOOK_URL
+      const webhookUrl = lead.url
       if (webhookUrl) {
         const webhookResponse = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'x-webhook-secret': lead.secret,
           },
+          signal: AbortSignal.timeout(15_000),
           body: JSON.stringify({
             ...webhookData,
-            affiliateId: process.env.DEALER_ID || "b1cc0a28-8ea3-4964-a6bf-07e2a2677a70",
+            affiliateId: lead.dealerId,
+            advertiserId: lead.dealerId,
           }),
         })
 
@@ -59,32 +68,32 @@ export async function POST(request: NextRequest) {
       console.error('Email error:', error)
     }
 
+    if (!webhookSuccess) await reportOperationalError('dms_enquiry_delivery_failed')
+
     // Return response based on results
-    if (webhookSuccess || emailSuccess) {
+    if (webhookSuccess) {
       return NextResponse.json({
         success: true,
         message: 'Form submitted successfully',
         details: {
           webhook: webhookSuccess ? 'success' : 'failed',
           email: emailSuccess ? 'success' : 'failed',
-          webhookError,
-          emailError
+
         }
       })
     } else {
       return NextResponse.json(
         {
-          error: 'Both webhook and email failed',
+          error: 'Unable to deliver your enquiry. Please contact the dealership.',
           details: {
-            webhookError,
-            emailError
+
           }
         },
         { status: 500 }
       )
     }
   } catch (error) {
-    console.error('Error in form submission API:', error)
+    await reportOperationalError('enquiry_submission_failed')
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

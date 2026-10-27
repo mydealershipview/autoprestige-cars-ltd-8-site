@@ -1,3 +1,5 @@
+import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
+import { extractMakesAndModelsFromVehicles } from '@/utilities/make-model'
 import React from 'react'
 import Navigation from './Navigation'
 import Footer from './Footer'
@@ -11,12 +13,7 @@ type Props = {
 const Layout = async ({ children }: Props) => {
   const fetchAvailableMakesAndModels = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/available-makes-models`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const data = await response.json()
-      return data
+      return extractMakesAndModelsFromVehicles(await getDmsWebsiteVehicles('live'))
     } catch (err) {
       console.error('Failed to fetch available makes and models:', err)
       return { makes: [], models: [] }

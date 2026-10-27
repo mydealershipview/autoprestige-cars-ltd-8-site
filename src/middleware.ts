@@ -1,42 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { STOCK_ADMIN_COOKIE, verifyStockAdminSession } from '@/utilities/stockAdminSession'
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  const auth = request.cookies.get('stock_admin_auth')?.value
+/** The host the visitor asked for. nextUrl.hostname is the server's bind address when self-hosted, so read the headers. */
+const requestHost = (request: NextRequest) =>
+  (request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.hostname)
+    .split(',')[0].trim().toLowerCase().replace(/:\d+$/, '')
 
-  if (pathname.startsWith('/stock-admin/login')) {
-    if (auth === 'authenticated') {
-      const response = NextResponse.redirect(new URL('/stock-admin', request.url))
-      response.cookies.set('stock_admin_auth', 'authenticated', {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 30,
-      })
-      return response
-    }
-
-    return NextResponse.next()
+export async function middleware(request: NextRequest) {
+  const url = request.nextUrl.clone()
+  if (requestHost(request) === 'www.autoprestigecars.co.uk') {
+    url.hostname = 'autoprestigecars.co.uk'
+    url.protocol = 'https:'
+    url.port = ''
+    return NextResponse.redirect(url, 301)
   }
-
-  if (pathname.startsWith('/stock-admin')) {
-    if (auth !== 'authenticated') {
-      return NextResponse.redirect(new URL('/stock-admin/login', request.url))
-    }
-
-    const response = NextResponse.next()
-    response.cookies.set('stock_admin_auth', 'authenticated', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30,
-    })
-    return response
-  }
-
-  return NextResponse.next()
+  const headers = new Headers(request.headers)
+  headers.set('x-site-pathname', url.pathname)
+  if (!url.pathname.startsWith('/stock-admin')) return NextResponse.next({ request: { headers } })
+  const loggedIn = await verifyStockAdminSession(request.cookies.get(STOCK_ADMIN_COOKIE)?.value)
+  const login = request.nextUrl.pathname === '/stock-admin/login'
+  if (login && loggedIn) return NextResponse.redirect(new URL('/stock-admin', request.url))
+  if (!login && !loggedIn) return NextResponse.redirect(new URL('/stock-admin/login', request.url))
+  return NextResponse.next({ request: { headers } })
 }
 
-export const config = {
-  matcher: ['/stock-admin/:path*'],
-}
+export const config = { matcher: ['/((?!api|_next|.*\\..*).*)'] }

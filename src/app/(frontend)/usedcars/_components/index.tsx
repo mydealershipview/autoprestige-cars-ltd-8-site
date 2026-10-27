@@ -145,7 +145,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
         }
       })
 
-      const response = await fetch(`/api/listings?${queryParams}`, { cache: 'no-store' })
+      const response = await fetch(`/api/listings?${queryParams}`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

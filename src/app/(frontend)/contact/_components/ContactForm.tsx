@@ -1,5 +1,8 @@
 'use client'
 
+import { FormHoneypot, honeypotValue } from '@/components/FormHoneypot'
+
+
 import { trackEvent, trackLead } from '@/lib/analytics'
 
 import React, { useState } from 'react'
@@ -36,6 +39,7 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const website = honeypotValue(e.currentTarget as HTMLFormElement)
     setIsSubmitting(true)
     setError(null)
 
@@ -43,7 +47,7 @@ export default function ContactForm() {
       const { firstName, lastName } = splitFullName(formData.fullName)
 
       const payload: WebhookData = {
-        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || 'b1cc0a28-8ea3-4964-a6bf-07e2a2677a70',
+        advertiserId: process.env.NEXT_PUBLIC_DEALER_ID || '',
         enquiryType: 'general-contact',
         personal: {
           title: null,
@@ -74,7 +78,7 @@ export default function ContactForm() {
       const res = await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, website }),
       })
 
       if (!res.ok) {
@@ -113,6 +117,7 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+              <FormHoneypot />
       {/* Full Name */}
       <div>
         <label htmlFor="fullName" className="block text-sm font-semibold tracking-wider text-white/80 uppercase mb-2">

@@ -1,3 +1,4 @@
+import { FormHoneypot, honeypotValue } from '@/components/FormHoneypot'
 import React, { useState } from 'react'
 import { buildBaseWebhookPayload, submitWebhookForm, withInterestedVehicle } from './formSubmission'
 
@@ -32,6 +33,7 @@ export default function PartExchangeModal({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const website = honeypotValue(e.currentTarget as HTMLFormElement)
     setSubmitError(null)
     setIsSubmitting(true)
 
@@ -63,7 +65,7 @@ export default function PartExchangeModal({
 
       payload.notes = 'Part exchange enquiry submitted from vehicle detail page.'
 
-      await submitWebhookForm(payload)
+      await submitWebhookForm({ ...payload, website })
       onClose()
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Failed to submit part exchange request')
@@ -90,6 +92,7 @@ export default function PartExchangeModal({
           </div>
 
           <form className="space-y-8" onSubmit={handleSubmit}>
+              <FormHoneypot />
             
             {/* Personal Details */}
             <div className="space-y-4">

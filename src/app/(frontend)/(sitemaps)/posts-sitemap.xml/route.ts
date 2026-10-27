@@ -1,13 +1,11 @@
+import { getServerSideURL } from '@/utilities/getURL'
 import { getServerSideSitemap } from 'next-sitemap'
 import { unstable_cache } from 'next/cache'
 import { getStaticPosts } from '@/data/staticPosts'
 
 const getPostsSitemap = unstable_cache(
   async () => {
-    const SITE_URL =
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-      'https://example.com'
+    const SITE_URL = getServerSideURL()
 
     const posts = getStaticPosts()
 

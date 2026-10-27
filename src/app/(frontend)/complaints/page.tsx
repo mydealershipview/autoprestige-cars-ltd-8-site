@@ -31,8 +31,8 @@ export default async function ComplaintsPage() {
             If you have a complaint, please do not hesitate to reach out to us. You can contact us in the following ways:
           </p>
           <ul className="list-disc list-inside space-y-2 mt-4 ml-2">
-            <li>By telephone: 01157844104</li>
-            <li>In writing: 3 Elson St, New Basford, Nottingham, NG7 7HQ</li>
+            <li>By telephone: {dealership.phone}</li>
+            <li>In writing: {[dealership.address.line1, dealership.address.line2, dealership.address.city, dealership.address.postcode].filter(Boolean).join(', ')}</li>
           </ul>
 
           <h2 className="text-xl tracking-widest uppercase font-semibold text-white mt-12 mb-6">What happens next?</h2>
