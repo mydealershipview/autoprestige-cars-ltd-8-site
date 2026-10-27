@@ -1,7 +1,14 @@
 import { Resend } from 'resend'
 import { WebhookData, VehicleReservationData } from '@/types/webhook'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function emailClient() { return new Resend(process.env.RESEND_API_KEY) }
+/** Escape only interpolated data; preserve the email template's own markup. */
+export function escapeEmailData<T>(value: T): T {
+  if (typeof value === 'string') return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!) as T
+  if (Array.isArray(value)) return value.map(escapeEmailData) as T
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, escapeEmailData(v)])) as T
+  return value
+}
 
 interface EmailResult {
   success: boolean
@@ -12,18 +19,20 @@ interface EmailResult {
 export async function sendEnquiryEmail(data: WebhookData): Promise<EmailResult> {
   try {
     const fromEmail = process.env.EMAIL_FROM || 'admin@forms.mydealershipview.com'
-    const toEmail = process.env.EMAIL_TO || 'support@mydealershipview.com'
+    const toEmail = process.env.EMAIL_TO
+    if (!toEmail) throw new Error('Dealer email recipient is not configured')
 
     const subject = getEmailSubject(data.enquiryType)
-    const htmlContent = generateEmailTemplate(data)
+    const htmlContent = generateEmailTemplate(escapeEmailData(data))
 
-    const result = await resend.emails.send({
+    const result = await emailClient().emails.send({
       from: fromEmail,
-      to: [toEmail, 'muhammadhassanchannel786@gmail.com'],
+      to: [toEmail],
       subject: subject,
       html: htmlContent,
     })
 
+    if (result.error) throw new Error('Email provider rejected the notification')
     return {
       success: true,
       emailId: result.data?.id,
@@ -40,18 +49,20 @@ export async function sendEnquiryEmail(data: WebhookData): Promise<EmailResult> 
 export async function sendVehicleReservationEmail(data: VehicleReservationData): Promise<EmailResult> {
   try {
     const fromEmail = process.env.EMAIL_FROM || 'admin@forms.mydealershipview.com'
-    const toEmail = process.env.EMAIL_TO || 'support@mydealershipview.com'
+    const toEmail = process.env.EMAIL_TO
+    if (!toEmail) throw new Error('Dealer email recipient is not configured')
 
     const subject = 'New Vehicle Reservation Request'
-    const htmlContent = generateVehicleReservationEmailTemplate(data)
+    const htmlContent = generateVehicleReservationEmailTemplate(escapeEmailData(data))
 
-    const result = await resend.emails.send({
+    const result = await emailClient().emails.send({
       from: fromEmail,
-      to: [toEmail, 'muhammadhassanchannel786@gmail.com'],
+      to: [toEmail],
       subject: subject,
       html: htmlContent,
     })
 
+    if (result.error) throw new Error('Email provider rejected the notification')
     return {
       success: true,
       emailId: result.data?.id,
