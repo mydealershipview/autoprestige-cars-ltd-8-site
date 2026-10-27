@@ -2,7 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 const promotions = [

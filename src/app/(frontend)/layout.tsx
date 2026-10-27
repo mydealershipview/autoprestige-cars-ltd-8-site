@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
@@ -112,7 +114,7 @@ export async function generateMetadata(): Promise<Metadata> {
       address: true,
     },
     alternates: {
-      canonical: serverUrl,
+      canonical: new URL((await headers()).get('x-site-pathname') || '/', serverUrl).toString(),
     },
     openGraph: mergeOpenGraph({
       title,

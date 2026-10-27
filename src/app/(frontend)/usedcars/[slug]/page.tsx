@@ -1,3 +1,7 @@
+import { notFound } from 'next/navigation'
+import { getVehicleDetails } from '@/lib/services/vehicleDetails'
+import { cache } from 'react'
+const readVehicleDetails = cache(getVehicleDetails)
 import {
   ArrowLeft,
   Car,
@@ -72,21 +76,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   if (!slugData) {
-    return fallbackMetadata
+    notFound()
   }
 
   try {
-    const queryParams = new URLSearchParams({
-      make: slugData.make
-    })
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`, { cache: 'no-store' })
-
-    if (!response.ok) {
-      return fallbackMetadata
-    }
-
-    const data: VehicleResponse = await response.json()
+    const data = await readVehicleDetails(slugData.stockId)
+    if (!data) notFound()
     const vehicle = data.vehicle
 
     if (!vehicle) {
@@ -141,6 +136,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       },
     }
   } catch (error) {
+    if (error && typeof error === 'object' && 'digest' in error) throw error
     console.error('Error generating metadata for vehicle:', error)
     return fallbackMetadata
   }
@@ -169,49 +165,13 @@ export default async function IndividualListingPage({ params }: { params: Promis
       return null
     }
 
-    try {
-      const queryParams = new URLSearchParams({
-        make: slugData.make
-      })
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/listing/${slugData.stockId}?${queryParams}`, { cache: 'no-store' })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data: VehicleResponse = await response.json()
-      return {
-        ...data,
-        // updatedDescription: payloadResponse?.description || data.vehicle?.adverts?.retailAdverts?.description
-      }
-    } catch (_err) {
-      return null
-    }
+    return readVehicleDetails(slugData.stockId)
   }
 
   const vehicleDetails = await fetchVehicleDetails()
 
   if (!vehicleDetails) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center max-w-lg mx-auto px-4">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-8 h-7 bg-blue-500 -skew-x-[24deg]" />
-            <Car className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-black tracking-widest uppercase text-white mb-4">Vehicle Not Found</h1>
-          <p className="text-white/60 text-sm mb-8">{'The vehicle you\'re looking for could not be found.'}</p>
-          <Link
-            href="/usedcars"
-            className="inline-flex items-center justify-center px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold tracking-widest uppercase !transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Listings
-          </Link>
-        </div>
-      </div>
-    )
+    notFound()
   }
 
   const { vehicle } = vehicleDetails
