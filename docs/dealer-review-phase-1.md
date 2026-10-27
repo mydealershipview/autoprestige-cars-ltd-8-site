@@ -27,6 +27,8 @@ These are deployment requirements, not claims that production has already change
 4. Coolify application `k8sg08w0ggwg40owgwoksw40` has both HTTPS domains but generates `traefik.http.middlewares.1-k8sg08w0ggwg40owgwoksw40-to-non-www.redirectregex.permanent=false`. That proxy sends the live 302 before application middleware runs. Change this to a permanent redirect as part of deployment, or let the application handle the www redirect. The application returns 301 and preserves the path/query. No production proxy/deployment changes were made in this PR.
 5. Attach and verify a custom domain on the existing archive bucket, then set `SOLD_IMAGES_PUBLIC_BASE_URL`. Until that domain is verified/configured, existing photo URLs are deliberately preserved to avoid breaking the archive. No Cloudflare credentials or bucket configuration were modified.
 
+6. **Transition:** until `DMS_WEBSITE_KEY` is set, stock falls back to the dealer-email access the DMS still accepts (`DEALER_EMAIL`), with a log warning, so a deploy without the key does not empty the showroom. Remove the fallback before the DMS enables `WEBSITE_FEED_REQUIRE_KEY`.
+
 ## Validation
 
 - 113 integration tests pass against an isolated local MongoDB. Includes real CMS admin/non-admin login, private collection access, concurrent rate-limit enforcement, signed-session expiry/tampering, payment signatures, and existing live/reserved/sold/archive/enquiry regressions.

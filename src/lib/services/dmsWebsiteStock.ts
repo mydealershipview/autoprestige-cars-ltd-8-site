@@ -13,6 +13,7 @@ export type WebsiteVehicle = AutoTraderVehicle & {
 type Kind = 'live' | 'sold' | 'reserved'
 type FeedKind = Kind | 'inventory'
 const MAX_PAGES = 100
+let legacyAccessWarned = false
 type Bundle = Record<Kind, WebsiteVehicle[]>
 // One cache for all three lists, so a car can never be served from two lists of different ages.
 const CACHE_MS = 30_000
@@ -22,12 +23,18 @@ const pending = new Map<string, Promise<Bundle>>()
 /** All website stock comes from the public DMS allow-list. No provider/archive fallback: an
  * outage must never resurrect an unticked sold advert or turn into a believable empty showroom. */
 export function websiteStockUrl(kind: FeedKind, page = 1, pageSize = 100): URL {
-  if (!process.env.DMS_URL || !process.env.DMS_WEBSITE_KEY || (kind === 'reserved' && !process.env.DEALER_EMAIL)) throw new Error('Website stock configuration is missing')
+  // The private website key is preferred. Until it is configured the dealer-email access the DMS still accepts keeps the site working.
+  const keyed = Boolean(process.env.DMS_WEBSITE_KEY)
+  if (!process.env.DMS_URL || (!keyed && !process.env.DEALER_EMAIL) || (kind === 'reserved' && !process.env.DEALER_EMAIL)) throw new Error('Website stock configuration is missing')
+  if (!keyed && !legacyAccessWarned) {
+    legacyAccessWarned = true
+    console.warn('[dealer-site] DMS_WEBSITE_KEY is not set: using dealer-email stock access. Set the key before the DMS requires it.')
+  }
   const url = new URL(process.env.DMS_URL)
   url.searchParams.delete('dealerEmail')
   url.searchParams.delete('dealerId')
   // The reserved-ad archive still requires email in the current DMS API.
-  if (kind === 'reserved') url.searchParams.set('dealerEmail', process.env.DEALER_EMAIL!)
+  if (kind === 'reserved' || !keyed) url.searchParams.set('dealerEmail', process.env.DEALER_EMAIL!)
   for (const key of ['status', 'includeReserved', 'lifecycleState']) url.searchParams.delete(key)
   if (kind === 'reserved') url.pathname = url.pathname.replace(/\/stock\/?$/, '/reserved-ads')
   if (kind !== 'inventory') url.searchParams.set(kind === 'sold' ? 'status' : 'includeReserved', kind === 'sold' ? 'sold' : 'true')
@@ -38,7 +45,7 @@ export function websiteStockUrl(kind: FeedKind, page = 1, pageSize = 100): URL {
 
 async function readPage(kind: FeedKind, page: number) {
   try {
-  const response = await fetch(websiteStockUrl(kind, page), { headers: { Authorization: `Bearer ${process.env.DMS_WEBSITE_KEY}` }, cache: 'no-store', signal: AbortSignal.timeout(15_000) })
+  const response = await fetch(websiteStockUrl(kind, page), { headers: process.env.DMS_WEBSITE_KEY ? { Authorization: `Bearer ${process.env.DMS_WEBSITE_KEY}` } : {}, cache: 'no-store', signal: AbortSignal.timeout(15_000) })
   if (!response.ok) throw new Error('Website stock feed unavailable')
   const body = await response.json()
   const data = body?.data
