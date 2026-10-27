@@ -9,7 +9,8 @@ function verifySignature(data: string, signature: string, secret: string): boole
     const hmac = crypto.createHmac('sha256', secret)
     hmac.update(data)
     const calculatedSignature = hmac.digest('hex')
-    return calculatedSignature === signature
+    if (!/^[a-f0-9]{64}$/i.test(signature)) return false
+    return crypto.timingSafeEqual(Buffer.from(calculatedSignature, 'hex'), Buffer.from(signature, 'hex'))
   } catch (error) {
     console.error('Error verifying signature:', error)
     return false
@@ -18,15 +19,15 @@ function verifySignature(data: string, signature: string, secret: string): boole
 
 export async function POST(req: NextRequest) {
   try {
-    const payload = await getPayloadHMR({ config })
     const body = await req.text()
-    const webhookData = JSON.parse(body)
 
     // Get signature from headers
     const signature = req.headers.get('atoa-signature') || req.headers.get('x-atoa-signature')
     
     // Verify signature if we have an Atoa webhook secret
-    if (process.env.ATOA_WEBHOOK_SECRET && signature) {
+    if (!process.env.ATOA_WEBHOOK_SECRET) return NextResponse.json({ error: 'Payment webhook unavailable' }, { status: 503 })
+    if (!signature) return NextResponse.json({ error: 'Signature required' }, { status: 401 })
+    {
       const isValidSignature = verifySignature(body, signature, process.env.ATOA_WEBHOOK_SECRET)
       if (!isValidSignature) {
         console.error('Invalid webhook signature')
@@ -36,6 +37,12 @@ export async function POST(req: NextRequest) {
         )
       }
     }
+
+    let webhookData
+    try { webhookData = JSON.parse(body) } catch {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+    }
+    const payload = await getPayloadHMR({ config })
 
     const { paymentRequestId, status, statusDetails, paidAmount, tipAmount, orderId, paymentIdempotencyId, signatureHash, errorDescription } = webhookData
 
