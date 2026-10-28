@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isStockAdminRequest } from '@/utilities/stockAdminSession'
 import connectDB from '../../../../lib/db/connect'
 import VehicleOverrideModel from '../../../../lib/db/models/vehicleOverride.model'
 
@@ -21,6 +22,8 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ stockId: string }> },
 ) {
+  // Changing what the website shows (price, label, reserved) is for signed-in stock admins only
+  if (!(await isStockAdminRequest(req))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const { stockId } = await params
     const body = await req.json()
@@ -55,9 +58,10 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ stockId: string }> },
 ) {
+  if (!(await isStockAdminRequest(req))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const { stockId } = await params
     await connectDB()
