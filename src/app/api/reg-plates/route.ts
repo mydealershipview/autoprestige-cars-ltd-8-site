@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isStockAdminRequest } from '@/utilities/stockAdminSession'
 import connectDB from '@/lib/db/connect'
 import RegPlateModel from '@/lib/db/models/regPlate.model'
 import {
@@ -7,14 +8,13 @@ import {
   type RegPlateInput,
 } from '@/lib/services/regPlates.service'
 
-function isStockAdmin(req: NextRequest) {
-  return req.cookies.get('stock_admin_auth')?.value === 'authenticated'
-}
+// Signed stock-admin session (utilities/stockAdminSession.ts)
+const isStockAdmin = (req: NextRequest) => isStockAdminRequest(req)
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const includeInactive = searchParams.get('includeInactive') === 'true' && isStockAdmin(req)
+    const includeInactive = searchParams.get('includeInactive') === 'true' && (await isStockAdmin(req))
     const plates = await getRegPlates({ includeInactive })
 
     return NextResponse.json({ plates })
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!isStockAdmin(req)) {
+  if (!(await isStockAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  if (!isStockAdmin(req)) {
+  if (!(await isStockAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

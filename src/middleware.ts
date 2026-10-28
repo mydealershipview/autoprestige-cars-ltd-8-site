@@ -1,37 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { STOCK_ADMIN_COOKIE, verifyStockAdminSession } from '@/utilities/stockAdminSession'
 
-export function middleware(request: NextRequest) {
+// Stock admin pages need a valid signed session (see utilities/stockAdminSession.ts)
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const auth = request.cookies.get('stock_admin_auth')?.value
+  const signedIn = await verifyStockAdminSession(request.cookies.get(STOCK_ADMIN_COOKIE)?.value)
 
   if (pathname.startsWith('/stock-admin/login')) {
-    if (auth === 'authenticated') {
-      const response = NextResponse.redirect(new URL('/stock-admin', request.url))
-      response.cookies.set('stock_admin_auth', 'authenticated', {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 30,
-      })
-      return response
-    }
-
-    return NextResponse.next()
+    return signedIn ? NextResponse.redirect(new URL('/stock-admin', request.url)) : NextResponse.next()
   }
 
-  if (pathname.startsWith('/stock-admin')) {
-    if (auth !== 'authenticated') {
-      return NextResponse.redirect(new URL('/stock-admin/login', request.url))
-    }
-
-    const response = NextResponse.next()
-    response.cookies.set('stock_admin_auth', 'authenticated', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30,
-    })
-    return response
+  if (pathname.startsWith('/stock-admin') && !signedIn) {
+    return NextResponse.redirect(new URL('/stock-admin/login', request.url))
   }
 
   return NextResponse.next()

@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  STOCK_ADMIN_COOKIE,
+  createStockAdminSession,
+  stockAdminCookieOptions,
+} from '@/utilities/stockAdminSession'
 
 const ADMIN_CREDENTIALS = [
   {
@@ -28,12 +33,8 @@ export async function POST(req: NextRequest) {
     if (isValidAdmin) {
       const response = NextResponse.json({ success: true })
 
-      response.cookies.set('stock_admin_auth', 'authenticated', {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-      })
+      // A signed session (username + expiry), not a fixed value anyone could set
+      response.cookies.set(STOCK_ADMIN_COOKIE, await createStockAdminSession(username!), stockAdminCookieOptions)
       return response
     }
 
