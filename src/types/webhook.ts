@@ -1,4 +1,5 @@
 export type WebhookData = {
+  website?: unknown
   advertiserId: string
   enquiryType: 'part-exchange' | 'find-your-next-car' | 'book-appointment' | 'request-finance' | 'general-contact'
   personal: {
@@ -79,6 +80,7 @@ export type WebhookData = {
 }
 
 export type VehicleReservationData = {
+  website?: unknown
   customerDetails: {
     title: string
     firstName: string
