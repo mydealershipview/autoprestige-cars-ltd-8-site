@@ -1,3 +1,4 @@
+import { guardLead } from '@/utilities/leadSpamGuard'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendEnquiryEmail } from '@/utilities/sendEmail'
 import { WebhookData } from '@/types/webhook'
@@ -5,6 +6,8 @@ import { WebhookData } from '@/types/webhook'
 export async function POST(request: NextRequest) {
   try {
     const webhookData: WebhookData = await request.json()
+    const rejection = await guardLead(request, webhookData)
+    if (rejection) return rejection
     
     // Validate the webhook data
     if (!webhookData.personal?.email || !webhookData.personal?.firstName) {
