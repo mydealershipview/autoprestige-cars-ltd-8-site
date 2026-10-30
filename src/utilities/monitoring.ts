@@ -60,6 +60,9 @@ const KNOWN_NOTICES = [
   { match: /NEXT_REDIRECT/, id: 'page-redirect', title: 'Page redirect (not a problem)' },
   // Google's notice for every page with a map (30/10/2026): the map works; the pin type needs updating later
   { match: /google\.maps\.Marker is deprecated/, id: 'google-maps-old-marker', title: 'Google Maps uses the old map pin type (works; update later)' },
+  // A visitor (or a search crawler) with a page from before a deploy asks for a script file the new
+  // version replaced. Refreshing fixes it (31/10/2026: seen right after deploys).
+  { match: /ChunkLoadError|Loading chunk [\w-]+ failed|Failed to load chunk/, id: 'chunk-load-after-deploy', title: 'Visitor had the previous version open (refresh fixes it)' },
 ]
 
 function renameKnownNotice(event: ErrorEvent) {
@@ -75,7 +78,34 @@ function renameKnownNotice(event: ErrorEvent) {
   for (const value of event.exception?.values || []) value.value = notice.title
 }
 
+const CRAWLER = /bot|crawler|spider|crawling|Googlebot|bingbot|AhrefsBot|SemrushBot|facebookexternalhit/i
+
+/** Errors seen only by a search-engine crawler (e.g. Googlebot cutting a request short): kept, marked info. */
+function markCrawler(event: ErrorEvent) {
+  const agent = event.request?.headers?.['User-Agent'] || event.request?.headers?.['user-agent'] || ''
+  if (!CRAWLER.test(agent)) return
+  event.level = 'info'
+  event.tags = { ...event.tags, crawler: 'yes' }
+  const label = '(search-engine crawler, not a customer) '
+  if (typeof event.message === 'string') event.message = label + event.message
+  for (const value of event.exception?.values || []) value.value = label + (value.value || value.type || 'Error')
+}
+
+/**
+ * Errors thrown inside a script the visitor's app injects (Instagram / Facebook in-app browser:
+ * stack frames at app:///, e.g. checkButtonSignals), not our code (seen 30/10/2026). Kept, marked info.
+ */
+function markInAppScript(event: ErrorEvent) {
+  const frames = (event.exception?.values || []).flatMap((v) => v.stacktrace?.frames || [])
+  if (!frames.some((f) => (f.filename || f.abs_path || '').startsWith('app:///'))) return
+  event.level = 'info'
+  event.tags = { ...event.tags, in_app_browser_script: 'yes' }
+  for (const value of event.exception?.values || []) value.value = `(in-app browser script, not our code) ${value.value || value.type || 'Error'}`
+}
+
 export function prepareEvent(event: ErrorEvent): ErrorEvent {
+  markCrawler(event)
+  markInAppScript(event)
   if (isCancelledPreload(event)) {
     event.level = 'info'
     event.fingerprint = ['preload-cancelled']
