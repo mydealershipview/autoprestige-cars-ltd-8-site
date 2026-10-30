@@ -78,5 +78,25 @@ describe('GlitchTip events', () => {
     const login = event({ request: { url: 'https://autoprestigecars.co.uk/api/stock-admin-auth', data: { username: 'u', password: 'p' } } })
     expect(login.request?.data).toBeUndefined()
   })
+  it('name a ChunkLoadError after a deploy and mark it info', () => {
+    const chunk = event({ exception: { values: [{ type: 'ChunkLoadError', value: 'Loading chunk 2619 failed.' }] } })
+    expect(chunk.exception?.values?.[0].value).toBe('[Auto Prestige] Visitor had the previous version open (refresh fixes it)')
+    expect(chunk.level).toBe('info')
+    expect(chunk.fingerprint).toEqual(['chunk-load-after-deploy'])
+  })
+  it('mark errors from search-engine crawlers as info, labelled; customer errors unchanged', () => {
+    const bot = event({ request: { url: 'https://autoprestigecars.co.uk/used-cars/x', headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0.1) Chrome/141 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' } }, exception: { values: [{ type: 'SyntaxError', value: "Failed to execute 'json' on 'Response'" }] } })
+    expect(bot.level).toBe('info')
+    expect(bot.exception?.values?.[0].value).toBe("[Auto Prestige] (search-engine crawler, not a customer) Failed to execute 'json' on 'Response'")
+    const person = event({ request: { url: 'https://autoprestigecars.co.uk/used-cars/x', headers: { 'User-Agent': 'Mozilla/5.0 (iPhone) Safari/605.1.15' } }, exception: { values: [{ type: 'TypeError', value: 'x is undefined' }] } })
+    expect(person.level).toBeUndefined()
+    expect(person.exception?.values?.[0].value).toBe('[Auto Prestige] x is undefined')
+  })
+  it('mark errors from an in-app browser script (Instagram) as info, labelled', () => {
+    const insta = event({ exception: { values: [{ type: 'SyntaxError', value: "'.border-white/25' is not a valid selector.", stacktrace: { frames: [{ filename: '[native code]', function: 'querySelector' }, { filename: 'app:///', function: 'checkButtonSignals' }] } }] } })
+    expect(insta.level).toBe('info')
+    expect(insta.exception?.values?.[0].value).toBe("[Auto Prestige] (in-app browser script, not our code) '.border-white/25' is not a valid selector.")
+    const ours = event({ exception: { values: [{ type: 'TypeError', value: 'x is undefined', stacktrace: { frames: [{ filename: 'https://autoprestigecars.co.uk/_next/static/chunks/app.js' }] } }] } })
+    expect(ours.level).toBeUndefined()
+  })
 })
-

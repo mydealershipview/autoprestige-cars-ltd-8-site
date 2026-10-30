@@ -9,7 +9,19 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  // Next 16 builds with Turbopack by default; this site keeps webpack (its webpack() config
+  // below), built with `next build --webpack` like MWA, Empire, Ideal Car, Motor Time and Buy Brand
+  turbopack: {},
   images: {
+    // Next 16 only allows quality 75 by default; CMS images (ImageMedia) use 100
+    qualities: [75, 100],
+    // Next 16 refuses local image paths with a query string unless listed here. Payload's storage
+    // plugin adds ?prefix=media to every upload URL, so those are allowed exactly; every other local
+    // image must have no query string (the Next default). Next adds /_next/static/media itself.
+    localPatterns: [
+      { pathname: '/api/media/file/**', search: '?prefix=media' },
+      { pathname: '/**', search: '' },
+    ],
     remotePatterns: [
       {
         hostname: 'm.atcdn.co.uk',
