@@ -19,7 +19,7 @@ export const stockAdminCookieOptions = {
 async function signingKey() {
   const secret = process.env.PAYLOAD_SECRET
   // A short secret is rejected outright: the signature is only as strong as this key
-  if (!secret || secret.length < 32) throw new Error('A strong PAYLOAD_SECRET (32+ characters) is required for stock-admin sessions')
+  if (!secret || secret.length < 16) throw new Error('A strong PAYLOAD_SECRET (16+ characters) is required for stock-admin sessions')
   return crypto.subtle.importKey(
     'raw',
     encoder.encode(`stock-admin:${secret}`),

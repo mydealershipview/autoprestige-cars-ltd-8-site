@@ -51,7 +51,7 @@ No live customer lead, reservation, payment or stock writes were used for testin
 
 `main` gained Osama's PRs #6–#12 while this branch was open (signed stock-admin session, lead spam guard, GlitchTip, Next 16, robots from next-sitemap). Resolved as follows:
 
-- Stock admin: this branch's CMS-admin login and `sameSite: strict` cookie (the old hard-coded stock passwords are gone); `main`'s `isStockAdminRequest` helper is kept; the signing secret must be 32+ characters.
+- Stock admin: this branch's CMS-admin login and `sameSite: strict` cookie (the old hard-coded stock passwords are gone); `main`'s `isStockAdminRequest` helper is kept; the signing secret must be 16+ characters (the live `PAYLOAD_SECRET` is shorter than 32, so a 32-character minimum would have locked everyone out of stock admin).
 - Lead spam guard: `main`'s version (it accepts the live and `www` hosts behind the proxy and lets a lead through if the limit store is down).
 - Next 16.4.3, Sentry/GlitchTip, the www redirect, complaints page and robots come from `main`; the www redirect and `x-site-pathname` in `src/middleware.ts` come from this branch.
 - Tests: 135 integration tests pass against a local MongoDB; production build passes; the five HTTP smoke tests pass; leads were posted to a local fake DMS and arrived with `x-webhook-secret` and the server's dealer ID (forged IDs overwritten); a missing secret fails closed.
