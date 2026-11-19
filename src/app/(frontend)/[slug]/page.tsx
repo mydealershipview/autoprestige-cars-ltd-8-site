@@ -56,6 +56,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug = '' } = await paramsPromise
   const dealership = await getDealershipInfo()
   const page = staticSlugPages[slug]
+  if (!page) notFound()
   const titleText =
     page?.title ||
     slug

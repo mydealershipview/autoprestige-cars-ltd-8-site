@@ -294,7 +294,7 @@ export async function fetchAllAutoTraderListings(): Promise<AutoTraderVehicle[]>
         page++
         
         // Log progress
-        console.log(`Fetched page ${page - 1} of ${totalPages}, total vehicles so far: ${allListings.length}`)
+
       } else {
         hasMoreData = false
       }
@@ -348,7 +348,7 @@ export async function fetchAutoTraderListings(params: {
 
   // Try MyDealershipView API first
   try {
-    console.log('Fetching vehicles from MyDealershipView API...')
+
     const myDealershipUrl = `${process.env.DMS_URL}?dealerEmail=${process.env.DEALER_EMAIL}&pageSize=${pageSize}&page=${page}&includeReserved=true`
     
     // Add filters to the URL if provided
@@ -379,7 +379,7 @@ export async function fetchAutoTraderListings(params: {
     const data = await response.json()
     const vehicles = data.data?.vehicles || []
     const filteredResults = vehicles.filter((vehicle: any) => ['FORECOURT', 'SALE_IN_PROGRESS'].includes(vehicle.metadata.lifecycleState))
-    console.log(`Retrieved ${filteredResults.length} vehicles from MyDealershipView API`)
+
     
     // Transform response to match AutoTrader format if needed
     return {
@@ -392,7 +392,7 @@ export async function fetchAutoTraderListings(params: {
     console.error('MyDealershipView API error:', error)
     
     // Fallback to AutoTrader API
-    console.log('Falling back to AutoTrader API')
+
     try {
       const token = await getAutoTraderAuthToken()
       
@@ -401,7 +401,7 @@ export async function fetchAutoTraderListings(params: {
       let totalResults = 0
       
       for (const advertiserId of activeAffiliateIds) {
-        console.log(`Fetching vehicles for affiliate ID: ${advertiserId}`)
+
         
         // Build query parameters
         const queryParams = new URLSearchParams({
@@ -443,7 +443,7 @@ export async function fetchAutoTraderListings(params: {
           const filteredResults = data.results.filter(vehicle => ['FORECOURT', 'SALE_IN_PROGRESS'].includes(vehicle.metadata.lifecycleState))
           allResults.push(...filteredResults)
           totalResults += filteredResults?.length || 0
-          console.log(`Retrieved ${filteredResults?.length} vehicles from affiliate ${advertiserId}`)
+
         }
       }
 
@@ -455,7 +455,7 @@ export async function fetchAutoTraderListings(params: {
         page: page
       }
       
-      console.log(`Fallback: Retrieved ${totalResults} vehicles from AutoTrader API`)
+
       return formattedData
     } catch (error) {
       console.error('AutoTrader API fallback also failed:', error)
@@ -463,7 +463,7 @@ export async function fetchAutoTraderListings(params: {
       tokenExpiry = null
       
       // Final fallback to dummy data
-      console.log('Using final fallback dummy data')
+
       const dummyListings = await getDummyListings(params)
       
       // Try to merge with payload data for dummy listings too

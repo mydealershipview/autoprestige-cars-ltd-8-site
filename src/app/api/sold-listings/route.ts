@@ -1,3 +1,4 @@
+import { stockCacheHeaders, noStoreHeaders } from '@/utilities/stockCacheHeaders'
 import { NextRequest, NextResponse } from 'next/server'
 import { extractMakesAndModelsFromVehicles } from '../../../utilities/make-model'
 import { querySoldCarListings } from '@/lib/services/soldCars.service'
@@ -29,18 +30,18 @@ export async function GET(request: NextRequest) {
     if (!Number.isSafeInteger(page) || !Number.isSafeInteger(pageSize) || page < 1 || pageSize < 1 || pageSize > 100) {
       return NextResponse.json(
         { error: 'Invalid page or pageSize parameters' },
-        { status: 400 }
+        { status: 400, headers: noStoreHeaders }
       )
     }
 
     if (!['asc', 'desc'].includes(sortOrder) || !['price', 'year', 'mileage', 'make', 'model', 'fuelType', 'dateAdded'].includes(sortBy)) {
-      return NextResponse.json({ error: 'Invalid sort' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid sort' }, { status: 400, headers: noStoreHeaders })
     }
 
     for (const [min, max] of [[minPrice, maxPrice], [minMileage, maxMileage], [minYear, maxYear]]) {
       if ([min, max].some(value => value !== undefined && (!Number.isFinite(value) || value < 0)) ||
           (min !== undefined && max !== undefined && min > max)) {
-        return NextResponse.json({ error: 'Invalid numeric range' }, { status: 400 })
+        return NextResponse.json({ error: 'Invalid numeric range' }, { status: 400, headers: noStoreHeaders })
       }
     }
 
@@ -80,12 +81,12 @@ export async function GET(request: NextRequest) {
       availableModels: availableMakesModels.models,
     }
 
-    return NextResponse.json(response, { headers: { 'Cache-Control': 'no-store' } })
+    return NextResponse.json(response, { headers: stockCacheHeaders })
   } catch (error) {
     console.error('Listings API error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch listings' },
-      { status: 500 }
+      { status: 500, headers: noStoreHeaders }
     )
   }
 }

@@ -8,7 +8,7 @@ import PageClient from './page.client'
 import { paginateStaticPosts } from '@/data/staticPosts'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export default async function Page() {

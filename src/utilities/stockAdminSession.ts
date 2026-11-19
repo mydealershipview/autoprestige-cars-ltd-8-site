@@ -11,14 +11,15 @@ export const STOCK_ADMIN_COOKIE = 'stock_admin_auth'
 export const stockAdminCookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  sameSite: 'strict' as const,
   path: '/',
   maxAge: MAX_AGE,
 }
 
 async function signingKey() {
   const secret = process.env.PAYLOAD_SECRET
-  if (!secret) throw new Error('PAYLOAD_SECRET is required for stock-admin sessions')
+  // A short secret is rejected outright: the signature is only as strong as this key
+  if (!secret || secret.length < 16) throw new Error('A strong PAYLOAD_SECRET (16+ characters) is required for stock-admin sessions')
   return crypto.subtle.importKey(
     'raw',
     encoder.encode(`stock-admin:${secret}`),

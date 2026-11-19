@@ -9,6 +9,7 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  htmlLimitedBots: /.*/,
   // Next 16 builds with Turbopack by default; this site keeps webpack (its webpack() config
   // below), built with `next build --webpack` like MWA, Empire, Ideal Car, Motor Time and Buy Brand
   turbopack: {},

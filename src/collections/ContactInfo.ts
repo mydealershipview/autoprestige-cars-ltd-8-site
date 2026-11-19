@@ -110,7 +110,7 @@ export const ContactInfo: GlobalConfig = {
           label: 'Profile URL',
           required: true,
           admin: {
-            placeholder: 'https://facebook.com/mwaautosltd',
+            placeholder: 'https://www.facebook.com/people/Autoprestigecars_/100063872160410/',
           },
         },
         {
@@ -126,7 +126,7 @@ export const ContactInfo: GlobalConfig = {
       defaultValue: [
         {
           platform: 'facebook',
-          url: 'https://facebook.com/mwaautosltd',
+          url: 'https://www.facebook.com/people/Autoprestigecars_/100063872160410/',
           isActive: true,
         },
       ],
@@ -194,7 +194,7 @@ export const ContactInfo: GlobalConfig = {
           name: 'city',
           type: 'text',
           label: 'City',
-          defaultValue: 'Nottingham',
+          defaultValue: 'Bradford',
         },
         {
           name: 'postcode',

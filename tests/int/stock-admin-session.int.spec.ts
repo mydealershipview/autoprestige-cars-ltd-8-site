@@ -73,3 +73,15 @@ describe('stock-admin pages and actions', () => {
     expect((await del(await createStockAdminSession('stockadmin'))).status).toBe(200)
   })
 })
+
+describe('stock-admin session signing key', () => {
+  it('fails closed without a strong signing secret', async () => {
+    const saved = process.env.PAYLOAD_SECRET
+    for (const weak of ['', 'short-secret']) {
+      process.env.PAYLOAD_SECRET = weak
+      expect(await verifyStockAdminSession('authenticated')).toBe(false)
+      await expect(createStockAdminSession('admin')).rejects.toThrow()
+    }
+    process.env.PAYLOAD_SECRET = saved
+  })
+})

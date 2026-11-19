@@ -78,12 +78,6 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             }
           ]
         },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.8',
-          reviewCount: '125',
-          bestRating: '5',
-        },
         logo: {
           '@type': 'ImageObject',
           url: dealership.logoUrl || `${baseUrl}/logo.png`,

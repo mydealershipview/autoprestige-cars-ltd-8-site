@@ -1,7 +1,7 @@
 {
-  "name": "template-1",
+  "name": "autoprestige-cars",
   "version": "1.0.0",
-  "description": "Website template for Payload",
+  "description": "Auto Prestige Cars dealership website",
   "license": "MIT",
   "type": "module",
   "scripts": {

@@ -53,10 +53,10 @@ export default function StockAdminLogin() {
         <form onSubmit={handleSubmit} className="bg-[#111] border border-white/10 rounded-lg p-6 space-y-4">
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
-              Username
+              CMS admin email
             </label>
             <input
-              type="text"
+              type="email"
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}

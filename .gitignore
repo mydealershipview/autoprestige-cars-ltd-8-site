@@ -23,5 +23,9 @@ node_modules/
 # Private database rollback snapshots and transfer journals
 /.local-backups/
 
+# Local secrets and generated build state
+.env.*
+!.env.example
+
 # TypeScript build cache (generated; a committed copy breaks the Coolify build cache mount)
 *.tsbuildinfo
