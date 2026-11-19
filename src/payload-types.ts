@@ -1925,7 +1925,15 @@ export interface ContactInfo {
   socialLinks?:
     | {
         platform:
-          'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'whatsapp' | 'google' | 'other';
+          | 'facebook'
+          | 'twitter'
+          | 'instagram'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'whatsapp'
+          | 'google'
+          | 'other';
         /**
          * Enter the platform name when "Other" is selected
          */

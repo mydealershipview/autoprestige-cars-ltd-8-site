@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest'
 import { NextRequest } from 'next/server'
 import { middleware } from '@/middleware'
-import robots from '@/app/robots'
+import { createRequire } from 'node:module'
+const sitemapConfig = createRequire(import.meta.url)('../../next-sitemap.config.cjs')
 describe('indexing and canonical routing', () => {
   it('provides the trusted pathname for page-specific canonical links', async () => {
     const result = await middleware(new NextRequest('https://autoprestigecars.co.uk/usedcars/bmw-320-2020-stock?utm_source=test', { headers: { 'x-site-pathname': '/forged' } }))
@@ -18,7 +19,9 @@ describe('indexing and canonical routing', () => {
     expect(result.headers.get('location')).toBe('https://autoprestigecars.co.uk/stock-admin/login')
   })
   it('publishes production sitemaps and excludes private routes', () => {
-    expect(robots().sitemap).toContain('https://autoprestigecars.co.uk/vehicles-sitemap.xml')
-    expect(robots().rules).toMatchObject({ disallow: expect.arrayContaining(['/admin', '/stock-admin', '/api']) })
+    // robots.txt is generated after the build by next-sitemap (31/10/2026): every crawler allowed, admin logins blocked
+    expect(sitemapConfig.generateRobotsTxt).toBe(true)
+    expect(sitemapConfig.robotsTxtOptions.additionalSitemaps).toContain('https://autoprestigecars.co.uk/vehicles-sitemap.xml')
+    expect(sitemapConfig.robotsTxtOptions.policies[0].disallow).toEqual(expect.arrayContaining(['/websiteadmin', '/stock-admin']))
   })
 })

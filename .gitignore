@@ -26,4 +26,6 @@ node_modules/
 # Local secrets and generated build state
 .env.*
 !.env.example
+
+# TypeScript build cache (generated; a committed copy breaks the Coolify build cache mount)
 *.tsbuildinfo
