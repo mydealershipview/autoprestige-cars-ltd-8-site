@@ -92,19 +92,6 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${dealership.name}`,
     },
     description,
-    keywords: [
-      'used cars',
-      'car finance',
-      'part exchange',
-      'prestige vehicles',
-      'car dealership',
-      'used car dealers',
-      dealership.name,
-      dealership.address.city,
-      dealership.address.postcode,
-    ]
-      .filter(Boolean)
-      .join(', '),
     authors: [{ name: dealership.name }],
     creator: dealership.name,
     publisher: dealership.name,

@@ -19,20 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: serverUrl,
     },
-    keywords: [
-      'used cars',
-      'car dealers',
-      'used car finance',
-      'part exchange',
-      'prestige vehicles',
-      'car dealership',
-      'prestige car dealer',
-      'purveyors of fine automobiles',
-      dealership.name,
-      dealership.address.city,
-    ]
-      .filter(Boolean)
-      .join(', '),
     openGraph: {
       title,
       description,
@@ -127,7 +113,7 @@ const Home = async () => {
       <section className="relative h-screen w-full overflow-clip flex items-end">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/car_2.jpg" 
+            src="/prestige-performance-car-nissan-gtr.jpg" 
             alt="Online Showroom — Browse prestige and performance cars at Autoprestige Cars" 
             className="w-full h-full object-cover"
             width="1920"
@@ -158,7 +144,7 @@ const Home = async () => {
       <section className="relative h-screen w-full overflow-clip flex items-end">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/car.png" 
+            src="/prestige-car-finance-ferrari.png" 
             alt="Car Finance — Apply for competitive finance packages at Autoprestige Cars" 
             className="w-full h-full object-cover"
             width="1920"
@@ -277,25 +263,26 @@ const Home = async () => {
       {/* FAQ & Trust Section — GEO-optimised for AI citation */}
       <section className="relative py-20 px-6 lg:px-12 bg-[#0a0a0a]">
         <div className="max-w-4xl mx-auto">
-          <h4 className="text-2xl lg:text-3xl font-black tracking-widest uppercase mb-8 text-center">
+          {/* Headings in order (upgrade spec): section title h2, questions h3, body text p */}
+          <h2 className="text-2xl lg:text-3xl font-black tracking-widest uppercase mb-8 text-center">
             Purveyors of Fine Automobiles in {dealership.address.city || 'Bradford'}
-          </h4>
+          </h2>
 
           <div className="text-gray-300 text-sm lg:text-base leading-relaxed space-y-6">
-            <h5>
+            <p>
               Welcome to {displayName}, your trusted independent car dealership based in {dealership.address.city || 'Bradford'}, West Yorkshire. We specialise in sourcing and supplying the finest prestige and performance vehicles, offering a carefully curated selection of hand-picked cars from leading manufacturers including BMW, Mercedes-Benz, Audi, Land Rover, and Porsche. With over a decade of experience in the prestige car market, we have built a reputation for quality, transparency, and exceptional customer service.
-            </h5>
+            </p>
 
-            <h5 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Do you offer car finance?</h5>
-            <h6>
+            <h3 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Do you offer car finance?</h3>
+            <p>
               Yes, we offer flexible finance options to suit your budget. As an FCA-authorised credit broker (FCA No. {dealership.fcaNumber || '715892'}), we work with a panel of carefully selected lenders to find the most competitive rates. Apply online in minutes, or speak to our finance team on <span className="text-white font-semibold">{dealership.phone || '07725 124729'}</span>. All finance is subject to status — UK residents aged 18+ only.
-            </h6>
+            </p>
 
 
-            <h5 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Where are you based?</h5>
-            <h6>
+            <h3 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Where are you based?</h3>
+            <p>
               Our showroom is located in {dealership.address.city || 'Bradford'}, West Yorkshire. We serve customers across Bradford, Leeds, Huddersfield, Wakefield, Halifax, and throughout West Yorkshire. Call us on <span className="text-white font-semibold">{dealership.phone || '07725 124729'}</span> to arrange a viewing or test drive, or visit our contact page for directions.
-            </h6>
+            </p>
           </div>
         </div>
       </section>

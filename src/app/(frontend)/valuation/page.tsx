@@ -8,7 +8,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Vehicle Valuation | ${dealership.name}`,
     description:
-      dealership.seoText ||
       `Request a vehicle valuation from ${dealership.name}. Submit your vehicle details online and our team will get back to you promptly.`,
     openGraph: {
       title: `Vehicle Valuation | ${dealership.name}`,

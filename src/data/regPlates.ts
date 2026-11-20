@@ -1,3 +1,5 @@
+import { OPENING_HOURS_LINES } from './openingHours'
+
 const REG_PLATE_NAMES = [
   'KEZ 269',
   'J101 KER',
@@ -64,13 +66,7 @@ export const REG_PLATES_LOCATION_LINES = [
   'BD8 9AS',
 ] as const
 
-export const REG_PLATES_OPENING_TIMES = [
-  'Viewing by prior arrangement only',
-  'Mon - Thur: 10am - 6pm',
-  'Friday: 3pm - 6pm',
-  'Saturday: 11am - 4pm',
-  'Sunday: Closed',
-] as const
+export const REG_PLATES_OPENING_TIMES: readonly string[] = ['Viewing by prior arrangement only', ...OPENING_HOURS_LINES]
 
 export type RegPlateRecord = {
   plate: string

@@ -53,7 +53,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Promotions | ${dealership.name}`,
     description:
-      dealership.seoText ||
       `View current promotions and offers available from ${dealership.name}.`,
   }
 }
