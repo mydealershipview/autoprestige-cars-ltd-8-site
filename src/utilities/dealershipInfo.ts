@@ -107,3 +107,19 @@ export const showroomAddress = (dealership: DealershipInfo): string =>
     'West Yorkshire',
     dealership.address.postcode,
   ]).join(', ')
+
+/** "07725124729" -> "07725 124729" (UK 11-digit numbers); anything else unchanged */
+export const formatUkPhone = (phone?: string): string => {
+  const digits = (phone ?? '').replace(/\s+/g, '')
+  return /^0\d{10}$/.test(digits) ? `${digits.slice(0, 5)} ${digits.slice(5)}` : phone ?? ''
+}
+
+/**
+ * The site description for search results (upgrade spec: a unique meta description, 20/11/2026).
+ * Written here because the website admin isn't used: its "SEO text" held only the page title. The
+ * admin value is kept, commented out where it was read, in case the admin is used again.
+ */
+export const siteDescription = (dealership: DealershipInfo): string => {
+  const phone = formatUkPhone(dealership.phone)
+  return `${dealership.name}, ${showroomTown(dealership)}: hand-picked prestige and performance cars, with finance, part exchange and warranty. View our latest stock${phone ? ` or call ${phone}` : ''}.`
+}

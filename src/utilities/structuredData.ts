@@ -22,7 +22,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         name: dealership.name,
         alternateName: dealership.name,
         description:
-          dealership.seoText ||
+          // Website admin "SEO text" not in use (20/11/2026); to use it again: dealership.seoText ||
           `${dealership.name} is Purveyors of Fine Automobiles, a trusted independent used car dealership in ${showroomArea(dealership)}, specialising in prestige and performance vehicles with car finance, part exchange, and warranty available.`,
         url: baseUrl,
         telephone: dealership.phone,
@@ -73,7 +73,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         url: baseUrl,
         name: `${dealership.name} Website`,
         description:
-          dealership.seoText ||
+          // Website admin "SEO text" not in use (20/11/2026); to use it again: dealership.seoText ||
           `Explore quality used cars and dealership services from ${dealership.name}.`,
         publisher: {
           '@id': `${baseUrl}/#organization`
@@ -102,7 +102,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
           '@id': `${baseUrl}/#organization`
         },
         description:
-          dealership.seoText ||
+          // Website admin "SEO text" not in use (20/11/2026); to use it again: dealership.seoText ||
           `${dealership.name} offers quality used cars, finance options, and trusted support.`,
         breadcrumb: {
           '@id': `${baseUrl}/#breadcrumb`
