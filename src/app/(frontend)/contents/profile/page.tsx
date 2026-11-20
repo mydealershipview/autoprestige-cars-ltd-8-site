@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { OPENING_HOURS_LINES } from '@/data/openingHours'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 600
@@ -18,13 +19,7 @@ export const metadata: Metadata = {
   },
 }
 
-const openingTimes = [
-  'Viewing by prior arrangement only',
-  'Mon - Thur: 10am - 6pm',
-  'Friday: 3pm - 6pm',
-  'Saturday: 11am - 4pm',
-  'Sunday: Closed',
-]
+const openingTimes = ['Viewing by prior arrangement only', ...OPENING_HOURS_LINES]
 
 export default function ProfilePage() {
   return (

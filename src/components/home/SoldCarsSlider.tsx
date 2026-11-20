@@ -30,7 +30,10 @@ export function SoldCarsSlider() {
     }
   }
 
-  // Always render the section wrapper so it's visible — show skeleton while loading
+  // Upgrade spec: fill "Recently sold" from DMS sold data, or hide it. Nothing sold to show = no
+  // empty section. Loading still shows the skeleton; a failed load still shows its message.
+  if (!loading && !error && vehicles.length === 0) return null
+
   return (
     <section className="relative w-full overflow-hidden bg-[#0d0d0d] border-t-4 border-blue-500">
       {/* Diagonal line texture — matches page's angular aesthetic */}
@@ -215,11 +218,6 @@ export function SoldCarsSlider() {
               Try again
             </button>
           </div>
-        )}
-        {!loading && !error && vehicles.length === 0 && (
-          <p className="text-center text-zinc-600 py-12 text-sm uppercase tracking-widest font-semibold">
-            No sold vehicles to display
-          </p>
         )}
 
         {/* Mobile nav row */}

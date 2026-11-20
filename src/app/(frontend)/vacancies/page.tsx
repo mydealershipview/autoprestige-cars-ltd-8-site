@@ -23,11 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Vacancies | ${dealership.name}`,
     description:
-      dealership.seoText ||
       `Explore current career opportunities at ${dealership.name} and join our growing dealership team.`,
-    keywords: ['jobs', 'automotive careers', dealership.name, dealership.address.city]
-      .filter(Boolean)
-      .join(', '),
     openGraph: {
       title: `Vacancies | ${dealership.name}`,
       description: `Explore available roles at ${dealership.name}.`,

@@ -31,7 +31,7 @@ const services = [
     title: 'Alloy Wheels',
     description:
       'Alloy wheels can dramatically change your cars overall appearance. We have a wide range of brand new alloy wheels from 16" to 22" on offer and you can even complete the look with the tyres that we have available to suit your chosen alloy wheel size. What\'s more, we will also professionally fit them for you.',
-    image: '/car_2.jpg',
+    image: '/prestige-performance-car-nissan-gtr.jpg',
   },
   {
     title: 'Privacy Glass',
@@ -90,7 +90,7 @@ export default function ServicesPage() {
       >
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/car_2.jpg')" }}
+          style={{ backgroundImage: "url('/prestige-performance-car-nissan-gtr.jpg')" }}
         />
         <div className="absolute inset-0 bg-black/60" />
 

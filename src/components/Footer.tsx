@@ -4,17 +4,16 @@ import { Phone, MapPin, Clock, MessageCircle, Facebook, Instagram, Youtube, Send
 import { ContactData } from "@/types/contact"
 import { Make, Model } from "@/utilities/types"
 import Link from "next/link"
-import type { OpeningHours } from "@/types/dealership"
+import { OPENING_HOURS_LINES } from "@/data/openingHours"
 
 interface FooterProps {
   contactData?: ContactData | null
   dealershipName?: string
-  openingHours?: OpeningHours
   makes: Make[]
   models: Model[]
 }
 
-export default function Footer({ contactData, dealershipName, openingHours }: FooterProps) {
+export default function Footer({ contactData, dealershipName }: FooterProps) {
   const primaryPhone = contactData?.phoneNumbers?.find(p => p.isPrimary) ?? contactData?.phoneNumbers?.[0]
   const primaryEmail = contactData?.emailAddresses?.find(e => e.isPrimary) ?? contactData?.emailAddresses?.[0]
   const address = contactData?.businessAddress
@@ -122,9 +121,9 @@ export default function Footer({ contactData, dealershipName, openingHours }: Fo
                 <Clock className="h-4 w-4 text-white" />
               </div>
               <div className="text-white/80 text-xs leading-relaxed tracking-wider space-y-1">
-                <div>{openingHours?.weekdays || 'Monday - Friday: 9:00 am - 6:00 pm'}</div>
-                <div>{openingHours?.saturday || 'Saturday: 9:00 am - 5:00 pm'}</div>
-                <div>{openingHours?.sunday || 'Sunday: By Appointment'}</div>
+                {OPENING_HOURS_LINES.map((line) => (
+                  <div key={line}>{line}</div>
+                ))}
               </div>
             </div>
           </div>

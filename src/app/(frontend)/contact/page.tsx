@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin, Globe, Youtube, Instagram, Facebook, Send } from '
 import ContactForm from './_components/ContactForm'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
+import { OPENING_HOURS, hoursText } from '@/data/openingHours'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
@@ -11,7 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Contact Us | ${dealership.name}`,
     description:
-      dealership.seoText ||
       `Get in touch with ${dealership.name}. Find our contact details, opening hours, and send us a message.`,
     openGraph: {
       title: `Contact Us | ${dealership.name}`,
@@ -74,11 +74,7 @@ export default async function ContactPage() {
   const dealership = await getDealershipInfo()
   const contactData = mapDealershipInfoToContactData(dealership)
 
-  const openingHours = [
-    { day: 'Mon - Fri', hours: dealership.openingHours.weekdays || '09:00 am - 06:00 pm' },
-    { day: 'Sat', hours: dealership.openingHours.saturday || '10:00 am - 05:00 pm' },
-    { day: 'Sun', hours: dealership.openingHours.sunday || 'By Appointment Only' },
-  ]
+  const openingHours = OPENING_HOURS.map((row) => ({ day: row.label, hours: hoursText(row) }))
 
   // const phoneNumbers = contactData?.phoneNumbers ? [
   //   ...contactData.phoneNumbers,
@@ -134,7 +130,7 @@ export default async function ContactPage() {
       <section
         className="relative py-16 px-4"
         style={{
-          backgroundImage: "url('/car_2.jpg')",
+          backgroundImage: "url('/prestige-performance-car-nissan-gtr.jpg')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

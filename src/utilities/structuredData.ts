@@ -1,5 +1,6 @@
 import { getServerSideURL } from '@/utilities/getURL'
 import type { DealershipInfo } from '@/types/dealership'
+import { openingHoursSentence, openingHoursSpecification } from '@/data/openingHours'
 
 const getSameAsLinks = (dealership: DealershipInfo) => {
   return Object.values(dealership.social).filter((value): value is string => Boolean(value))
@@ -43,26 +44,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
           name: dealership.address.city || 'Bradford',
           sameAs: 'https://en.wikipedia.org/wiki/Bradford',
         },
-        openingHoursSpecification: [
-          {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            opens: '09:00',
-            closes: '18:00',
-          },
-          {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: 'Saturday',
-            opens: '09:00',
-            closes: '17:00',
-          },
-          {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: 'Sunday',
-            opens: '10:00',
-            closes: '16:00',
-          }
-        ],
+        openingHoursSpecification: openingHoursSpecification(),
         serviceType: ['Used Car Sales', 'Car Finance', 'Part Exchange'],
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
@@ -179,7 +161,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             name: 'Where is Autoprestige Cars located?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${dealership.name} is based in ${dealership.address.city || 'Bradford'}, West Yorkshire. Our showroom is open Monday to Friday 9am–6pm, Saturday 9am–5pm, and Sunday by appointment. Call us on ${dealership.phone || '07725 124729'} or visit our contact page for directions.`,
+              text: `${dealership.name} is based in ${dealership.address.city || 'Bradford'}, West Yorkshire. Our showroom is open ${openingHoursSentence()}. Call us on ${dealership.phone || '07725 124729'} or visit our contact page for directions.`,
             },
           },
         ],
@@ -206,22 +188,6 @@ export const generateLocalBusinessStructuredData = (dealership: DealershipInfo) 
       addressCountry: dealership.address.country || 'GB',
     },
     url: getServerSideURL(),
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        description: dealership.openingHours.weekdays,
-      },
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: 'Saturday',
-        description: dealership.openingHours.saturday,
-      },
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: 'Sunday',
-        description: dealership.openingHours.sunday,
-      }
-    ]
+    openingHoursSpecification: openingHoursSpecification(),
   }
 }

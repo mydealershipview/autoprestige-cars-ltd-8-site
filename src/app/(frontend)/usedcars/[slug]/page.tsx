@@ -64,9 +64,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const fallbackMetadata: Metadata = {
     title: `Quality Used Car For Sale | ${dealershipName}`,
     description: `Discover this quality used car at ${dealershipName}. Expert valuations, finance options, and customer-first support.`,
-    keywords: ['used cars for sale', 'quality used cars', `car dealer ${dealershipCity}`, dealershipName]
-      .filter(Boolean)
-      .join(', '),
     openGraph: {
       title: `Quality Used Car For Sale | ${dealershipName}`,
       description: `Premium quality used car available at ${dealershipName}. Finance options and part exchange welcome.`,
@@ -103,17 +100,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const title = `${year ? `${year} ` : ''}${make} ${model}${priceText} | Used Cars ${dealershipCity} | ${dealershipName}`
     const description = `${year ? `${year} ` : ''}${make} ${model}${mileageText}. ${fuelType ? `${fuelType} engine` : ''}${transmission ? `, ${transmission} transmission` : ''}${bodyType ? `, ${bodyType} body style` : ''}. Quality used car with finance options available at ${dealershipName}.`
 
-    const keywords = [
-      `${make} ${model} for sale`,
-      `used ${make} ${model}`,
-      `${make} ${model} ${dealershipCity}`,
-      year ? `${year} ${make} ${model}` : '',
-      fuelType ? `${fuelType} ${make}` : '',
-      transmission ? `${transmission} ${make}` : '',
-      `used cars ${dealershipCity}`,
-      `car finance ${dealershipCity}`,
-      dealershipName,
-    ].filter(Boolean).join(', ')
 
     return {
       title:
@@ -121,7 +107,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
           ? `Buy Used ${year ? `${year} ` : ''}${make} ${model} | ${dealershipName}`
           : title,
       description: description.length > 160 ? description.substring(0, 157) + '...' : description,
-      keywords,
       openGraph: {
         title: `${year ? `${year} ` : ''}${make} ${model}${priceText}`,
         description: `Premium quality ${make} ${model}${mileageText} available at ${dealershipName}. Finance options and part exchange welcome.`,

@@ -39,7 +39,6 @@ const Layout = async ({ children }: Props) => {
       <Footer
         contactData={contactData}
         dealershipName={dealership.name}
-        openingHours={dealership.openingHours}
         makes={makes}
         models={models}
       />
