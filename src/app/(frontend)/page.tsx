@@ -5,7 +5,7 @@ import { AnimatedCard } from '@/components/AnimatedCard'
 import { SoldCarsSlider } from '@/components/home/SoldCarsSlider'
 import Link from 'next/link'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
-import { showroomAddress, showroomArea, showroomTown } from '@/utilities/dealershipInfo'
+import { showroomAddress, showroomArea, showroomTown, siteDescription } from '@/utilities/dealershipInfo'
 import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
 import { FeaturedStock } from '@/components/home/FeaturedStock'
 import { CustomerReviews } from '@/components/home/CustomerReviews'
@@ -15,7 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://autoprestigecars.co.uk'
   const title = `${dealership.name} | Purveyors of Fine Automobiles`
   const description =
-    dealership.seoText || `${dealership.name} - ${dealership.tagline || 'Purveyors of Fine Automobiles. Trusted used car specialists.'}`
+    // Website admin "SEO text" not in use (20/11/2026); to use it again: dealership.seoText ||
+    siteDescription(dealership)
 
   return {
     title,

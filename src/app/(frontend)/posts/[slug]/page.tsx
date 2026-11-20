@@ -5,6 +5,7 @@ import Link from 'next/link'
 import PageClient from './page.client'
 import { findStaticPostBySlug, getStaticPosts } from '@/data/staticPosts'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { siteDescription } from '@/utilities/dealershipInfo'
 
 export async function generateStaticParams() {
   return getStaticPosts().map((post) => ({ slug: post.slug }))
@@ -83,6 +84,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   return {
     title: `${post.title} | ${dealership.name}`,
-    description: post.meta?.description || dealership.seoText,
+    // Website admin "SEO text" not in use (20/11/2026); to use it again: post.meta?.description || dealership.seoText
+    description: post.meta?.description || siteDescription(dealership),
   }
 }

@@ -13,7 +13,7 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { generateStructuredData } from '@/utilities/structuredData'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
-import { showroomTown } from '@/utilities/dealershipInfo'
+import { showroomTown, siteDescription } from '@/utilities/dealershipInfo'
 import Script from 'next/script'
 import Analytics from '@/components/Analytics'
 
@@ -83,8 +83,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const serverUrl = getServerSideURL()
   const title = `${dealership.name} | Quality Used Cars`
   const description =
-    dealership.seoText ||
-    `Browse quality used prestige vehicles at ${dealership.name} in ${showroomTown(dealership)}. Car finance, part exchange, and warranty available. Visit our showroom or apply online today.`
+    // Website admin "SEO text" not in use (20/11/2026); to use it again: dealership.seoText ||
+    siteDescription(dealership)
 
   return {
     metadataBase: new URL(serverUrl),

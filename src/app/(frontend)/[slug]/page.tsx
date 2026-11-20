@@ -3,6 +3,7 @@ import React from 'react'
 import { notFound } from 'next/navigation'
 import PageClient from './page.client'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { siteDescription } from '@/utilities/dealershipInfo'
 
 const staticSlugPages: Record<string, { title: string; paragraphs: string[] }> = {
   about: {
@@ -68,6 +69,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   return {
     title: `${titleText} | ${dealership.name}`,
-    description: page?.paragraphs[0] || dealership.seoText,
+    // Website admin "SEO text" not in use (20/11/2026); to use it again: page?.paragraphs[0] || dealership.seoText
+    description: page?.paragraphs[0] || siteDescription(dealership),
   }
 }

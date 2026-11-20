@@ -22,3 +22,18 @@ describe('showroom address (upgrade spec copy fixes)', () => {
     expect(showroomTown(d({}))).toBe('Bradford')
   })
 })
+
+describe('site description (written in code; admin SEO text not in use)', () => {
+  it('names the dealer and town, formats the phone, stays under 160 characters', async () => {
+    const { siteDescription } = await import('@/utilities/dealershipInfo')
+    const text = siteDescription({
+      name: 'Autoprestige Cars',
+      phone: '07725124729',
+      address: { line1: 'Rosse Street', line2: 'Bradford', city: 'West Yorkshire', postcode: 'BD8 9AS' },
+    } as DealershipInfo)
+    expect(text).toBe(
+      'Autoprestige Cars, Bradford: hand-picked prestige and performance cars, with finance, part exchange and warranty. View our latest stock or call 07725 124729.',
+    )
+    expect(text.length).toBeLessThanOrEqual(160)
+  })
+})
