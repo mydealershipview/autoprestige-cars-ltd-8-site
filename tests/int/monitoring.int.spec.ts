@@ -84,6 +84,18 @@ describe('GlitchTip events', () => {
     expect(chunk.level).toBe('info')
     expect(chunk.fingerprint).toEqual(['chunk-load-after-deploy'])
   })
+  it('name a bot\'s fake form request as info, one issue; a real missing server action stays an error', () => {
+    for (const value of ['The Server Reference ID did not match the expected format. Received "x".', 'Invalid Server Actions request.']) {
+      const fake = event({ exception: { values: [{ type: 'Error', value }] } })
+      expect(fake.exception?.values?.[0].value).toBe('[Auto Prestige] Bot sent a fake form request (blocked, not a customer)')
+      expect(fake.level).toBe('info')
+      expect(fake.fingerprint).toEqual(['bot-fake-form-request'])
+    }
+    const real = event({ exception: { values: [{ type: 'Error', value: 'Failed to find Server Action "7f7ff1ab4916b7857cc2003b466a976a60bd37c451".' }] } })
+    expect(real.exception?.values?.[0].value).toBe('[Auto Prestige] Failed to find Server Action "7f7ff1ab4916b7857cc2003b466a976a60bd37c451".')
+    expect(real.level).toBeUndefined()
+    expect(real.fingerprint).toBeUndefined()
+  })
   it('mark errors from search-engine crawlers as info, labelled; customer errors unchanged', () => {
     const bot = event({ request: { url: 'https://autoprestigecars.co.uk/used-cars/x', headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0.1) Chrome/141 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' } }, exception: { values: [{ type: 'SyntaxError', value: "Failed to execute 'json' on 'Response'" }] } })
     expect(bot.level).toBe('info')

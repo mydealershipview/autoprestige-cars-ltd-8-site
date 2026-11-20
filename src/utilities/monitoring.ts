@@ -63,6 +63,11 @@ const KNOWN_NOTICES = [
   // A visitor (or a search crawler) with a page from before a deploy asks for a script file the new
   // version replaced. Refreshing fixes it (31/10/2026: seen right after deploys).
   { match: /ChunkLoadError|Loading chunk [\w-]+ failed|Failed to load chunk/, id: 'chunk-load-after-deploy', title: 'Visitor had the previous version open (refresh fixes it)' },
+  // A scanner posting a made-up form action to the home page (20/11/2026: same fake ID "x"/"y",
+  // same form boundary and user agent on all six dealer sites). Next.js rejects it before any code
+  // runs, so nothing reaches a customer. A real browser never sends a malformed ID. Only these exact
+  // two rejections match; "Failed to find Server Action" (a real but old ID) is left as it is.
+  { match: /Server Reference ID did not match the expected format|Invalid Server Actions request/, id: 'bot-fake-form-request', title: 'Bot sent a fake form request (blocked, not a customer)' },
 ]
 
 function renameKnownNotice(event: ErrorEvent) {
