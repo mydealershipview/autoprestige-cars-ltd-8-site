@@ -5,6 +5,8 @@ import { AnimatedCard } from '@/components/AnimatedCard'
 import { SoldCarsSlider } from '@/components/home/SoldCarsSlider'
 import Link from 'next/link'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
+import { FeaturedStock } from '@/components/home/FeaturedStock'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
@@ -47,6 +49,12 @@ const Home = async () => {
   const dealership = await getDealershipInfo()
   const displayName = dealership.name || 'Dealership'
   const displayTagline = dealership.tagline || 'Trusted used vehicles and support'
+  // Read on the server so the cars are in the HTML. If the stock feed is down the homepage still
+  // loads without this section; the failure is logged (and reported by the stock service).
+  const liveVehicles = await getDmsWebsiteVehicles('live').catch((error) => {
+    console.error('Homepage stock unavailable:', error)
+    return null
+  })
 
   return (
     <main className="relative min-h-screen w-full overflow-x-hidden bg-black text-white">
@@ -108,6 +116,9 @@ const Home = async () => {
           </div>
         </div>
       </section>
+
+      {/* Latest stock, in the first HTML (upgrade spec: highest priority). Hidden if the feed is down. */}
+      {liveVehicles && <FeaturedStock vehicles={liveVehicles} />}
 
       {/* Online Showroom Section */}
       <section className="relative h-screen w-full overflow-clip flex items-end">
