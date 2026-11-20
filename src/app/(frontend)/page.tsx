@@ -5,6 +5,7 @@ import { AnimatedCard } from '@/components/AnimatedCard'
 import { SoldCarsSlider } from '@/components/home/SoldCarsSlider'
 import Link from 'next/link'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { showroomAddress, showroomArea, showroomTown } from '@/utilities/dealershipInfo'
 import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
 import { FeaturedStock } from '@/components/home/FeaturedStock'
 
@@ -32,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${serverUrl}/website-template-OG.webp`,
           width: 1200,
           height: 630,
-          alt: `${dealership.name} — Purveyors of Fine Automobiles in ${dealership.address.city || 'Bradford'}`,
+          alt: `${dealership.name} — Purveyors of Fine Automobiles in ${showroomTown(dealership)}`,
         },
       ],
     },
@@ -228,14 +229,15 @@ const Home = async () => {
           <div className="flex items-center mb-3">
             <div className="w-6 h-5 bg-blue-500 mr-3 -skew-x-[24deg]"></div>
             <h2 className="text-3xl lg:text-4xl font-black tracking-widest uppercase leading-tight">
-              SELL YOUR CAR
+              SELL OR PART EXCHANGE
             </h2>
           </div>
+          <h3 className="text-sm text-gray-400 font-semibold tracking-widest uppercase mb-2">Free, No-Obligation Valuation</h3>
           <p className="text-base text-gray-300 font-medium mb-6">
-            Sell your sport or prestige car directly to {displayName}
+            Sell your sport or prestige car directly to {displayName}, or part exchange it against any car in our stock
           </p>
           <Link href="/valuation" className="inline-flex items-center text-sm font-bold tracking-widest hover:text-blue-400 !transition-colors uppercase gap-2">
-            GET A QUOTE <ChevronRight className="h-4 w-4 text-blue-400" />
+            GET A VALUATION <ChevronRight className="h-4 w-4 text-blue-400" />
           </Link>
         </AnimatedCard>
       </section>
@@ -276,12 +278,12 @@ const Home = async () => {
         <div className="max-w-4xl mx-auto">
           {/* Headings in order (upgrade spec): section title h2, questions h3, body text p */}
           <h2 className="text-2xl lg:text-3xl font-black tracking-widest uppercase mb-8 text-center">
-            Purveyors of Fine Automobiles in {dealership.address.city || 'Bradford'}
+            Purveyors of Fine Automobiles in {showroomTown(dealership)}
           </h2>
 
           <div className="text-gray-300 text-sm lg:text-base leading-relaxed space-y-6">
             <p>
-              Welcome to {displayName}, your trusted independent car dealership based in {dealership.address.city || 'Bradford'}, West Yorkshire. We specialise in sourcing and supplying the finest prestige and performance vehicles, offering a carefully curated selection of hand-picked cars from leading manufacturers including BMW, Mercedes-Benz, Audi, Land Rover, and Porsche. With over a decade of experience in the prestige car market, we have built a reputation for quality, transparency, and exceptional customer service.
+              Welcome to {displayName}, your trusted independent car dealership based in {showroomArea(dealership)}. We specialise in sourcing and supplying the finest prestige and performance vehicles, offering a carefully curated selection of hand-picked cars from leading manufacturers including BMW, Mercedes-Benz, Audi, Land Rover, and Porsche. With over a decade of experience in the prestige car market, we have built a reputation for quality, transparency, and exceptional customer service.
             </p>
 
             <h3 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Do you offer car finance?</h3>
@@ -289,10 +291,14 @@ const Home = async () => {
               Yes, we offer flexible finance options to suit your budget. As an FCA-authorised credit broker (FCA No. {dealership.fcaNumber || '715892'}), we work with a panel of carefully selected lenders to find the most competitive rates. Apply online in minutes, or speak to our finance team on <span className="text-white font-semibold">{dealership.phone || '07725 124729'}</span>. All finance is subject to status — UK residents aged 18+ only.
             </p>
 
+            <h3 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Can I part exchange my current car?</h3>
+            <p>
+              Yes. We offer competitive part exchange valuations against any car in our stock, or we can buy your car outright. Tell us about your car on our <Link href="/valuation" className="text-white font-semibold underline">valuation page</Link> or visit the showroom in {showroomTown(dealership)} for a no-obligation valuation.
+            </p>
 
             <h3 className="text-lg font-bold text-white tracking-widest uppercase mt-8">Where are you based?</h3>
             <p>
-              Our showroom is located in {dealership.address.city || 'Bradford'}, West Yorkshire. We serve customers across Bradford, Leeds, Huddersfield, Wakefield, Halifax, and throughout West Yorkshire. Call us on <span className="text-white font-semibold">{dealership.phone || '07725 124729'}</span> to arrange a viewing or test drive, or visit our contact page for directions.
+              Our showroom is at {showroomAddress(dealership)}. We serve customers across Bradford, Leeds, Huddersfield, Wakefield, Halifax, and throughout West Yorkshire. Call us on <span className="text-white font-semibold">{dealership.phone || '07725 124729'}</span> to arrange a viewing or test drive, or visit our contact page for directions.
             </p>
           </div>
         </div>
