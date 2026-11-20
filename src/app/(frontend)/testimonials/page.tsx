@@ -2,6 +2,8 @@ import React from 'react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import { StarRating } from '@/components/StarRating'
+import { GOOGLE_REVIEW_URL, TESTIMONIALS } from '@/data/testimonials'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
@@ -17,81 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: 'en_GB',
     },
   }
-}
-
-const testimonials = [
-  {
-    name: 'Mark R',
-    text: 'Very good experience, easy and relaxed process from initial enquiries to vehicle collection. Thank you to the team.',
-    rating: 5,
-  },
-  {
-    name: 'Ben H',
-    text: 'Very helpful and friendly staff. Very clean and tidy showroom with some amazing cars for sale and not badly priced.',
-    rating: 5,
-  },
-  {
-    name: 'Waquas A',
-    text: "I would like to thank the team for the service provided when purchasing my new vehicle. I highly recommend and will most definitely be returning for my next vehicle. Thanks guys!",
-    rating: 5,
-  },
-  {
-    name: 'Frankie',
-    text: "Brilliant customer service today, came in looking for a C63 and had a nice friendly chat, can't wait to pick it up tomorrow thanks guys :)",
-    rating: 5,
-  },
-  {
-    name: 'Paul G',
-    text: "Top class service from the second I walked in, bought a 1 year old RS3 at a very competitive price. The showroom is incredible! Highly recommend these lads.",
-    rating: 5,
-  },
-  {
-    name: 'Damien J',
-    text: 'Top service, top company and top choice of vehicles. Always purchase my cars here. I will highly recommend this company.',
-    rating: 5,
-  },
-  {
-    name: 'Tom R',
-    text: 'Highly professional, courteous and easy to deal with. Sold a car to them and got a great price.',
-    rating: 5,
-  },
-  {
-    name: 'Abdi',
-    text: "Fantastic service, genuinely unbeatable! The nicest car dealers I have ever met. Will be coming here again soon for a new present.",
-    rating: 5,
-  },
-  {
-    name: 'Christian C',
-    text: 'Great service from staff, got a brand new car with a decent deal.',
-    rating: 5,
-  },
-  {
-    name: 'Sarah M',
-    text: 'Absolutely fantastic from start to finish. Nothing was too much trouble and the whole experience was seamless. Would 100% recommend.',
-    rating: 5,
-  },
-  {
-    name: 'James K',
-    text: 'Excellent selection of vehicles and knowledgeable staff. The whole buying process was transparent and stress-free. Very happy with my purchase.',
-    rating: 5,
-  },
-  {
-    name: 'Lisa T',
-    text: 'Genuinely impressed by the level of service. The team went above and beyond to help me find the right car within my budget. Could not ask for more.',
-    rating: 5,
-  },
-]
-
-function StarRating({ count }: { count: number }) {
-  return (
-    <div className="flex justify-center gap-1 mb-3">
-      {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.286 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.286-3.957a1 1 0 00-.364-1.118L2.062 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.049 2.927z" />
-        </svg>
-      ))}
-    </div>
-  )
 }
 
 export default function ReviewsPage() {
@@ -146,7 +73,7 @@ export default function ReviewsPage() {
       {/* Reviews Grid */}
       <div className="max-w-7xl mx-auto px-4 pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
+          {TESTIMONIALS.map((t, i) => (
             <div
               key={i}
               className="border border-white/20 p-8 flex flex-col items-center text-center hover:border-blue-500 !transition-colors !duration-300"
@@ -163,7 +90,7 @@ export default function ReviewsPage() {
         <div className="mt-16 text-center">
           <p className="text-white/60 text-sm mb-4">Want to share your experience?</p>
           <a
-            href="https://search.google.com/local/writereview?placeid=ChIJJ9M8hrzme0gRJmPMgCLO__Y"
+            href={GOOGLE_REVIEW_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold tracking-widest uppercase text-sm px-8 py-4 !transition-colors"

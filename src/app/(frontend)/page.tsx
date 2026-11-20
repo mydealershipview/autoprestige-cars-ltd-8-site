@@ -8,6 +8,7 @@ import { getDealershipInfo } from '@/lib/services/dealership.service'
 import { showroomAddress, showroomArea, showroomTown } from '@/utilities/dealershipInfo'
 import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
 import { FeaturedStock } from '@/components/home/FeaturedStock'
+import { CustomerReviews } from '@/components/home/CustomerReviews'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
@@ -272,6 +273,9 @@ const Home = async () => {
           </Link>
         </AnimatedCard>
       </section>
+
+      {/* Customer reviews (upgrade spec: after the story, before the FAQ) */}
+      <CustomerReviews />
 
       {/* FAQ & Trust Section — GEO-optimised for AI citation */}
       <section className="relative py-20 px-6 lg:px-12 bg-[#0a0a0a]">

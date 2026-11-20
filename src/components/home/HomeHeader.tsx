@@ -211,7 +211,7 @@ export default function HomeHeader({
 
       {/* Slide-in Navigation Sidebar */}
       <nav
-        className={`fixed top-0 left-0 z-40 h-full w-full sm:w-[420px] bg-black flex flex-col transform !transition-transform !duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 z-40 h-full w-full sm:w-[420px] bg-black flex flex-col overflow-x-hidden transform !transition-transform !duration-300 ease-in-out ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -264,7 +264,8 @@ export default function HomeHeader({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </span>
-            <span className="font-semibold tracking-widest text-sm uppercase">{primaryEmail || displayTagline}</span>
+            {/* Long email: wrap inside the menu (it used to stick out past the closed menu on phones) */}
+            <span className="min-w-0 break-all font-semibold tracking-widest text-sm uppercase">{primaryEmail || displayTagline}</span>
           </a>
         </div>
       </nav>
