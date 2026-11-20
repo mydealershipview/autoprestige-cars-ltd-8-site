@@ -76,3 +76,34 @@ export const getDealershipMapsUrl = (dealership: DealershipInfo): string => {
 
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressParts.join(', '))}`
 }
+
+/**
+ * Where the showroom is, for sentences (upgrade spec copy fixes, 20/11/2026). The website admin
+ * holds the town in the second address line and the county in "city" (Rosse Street / Bradford /
+ * West Yorkshire), so writing "{city}, West Yorkshire" printed "West Yorkshire, West Yorkshire".
+ * The town is the address part that isn't the county; this stays right if the admin is corrected.
+ */
+const isCounty = (part: string) => /yorkshire$/i.test(part)
+const clean = (parts: Array<string | undefined>) => {
+  const seen = new Set<string>()
+  return parts
+    .map((part) => part?.trim() ?? '')
+    .filter((part) => part && !seen.has(part.toLowerCase()) && seen.add(part.toLowerCase()))
+}
+
+/** "Bradford" */
+export const showroomTown = (dealership: DealershipInfo): string =>
+  clean([dealership.address.city, dealership.address.line2]).find((part) => !isCounty(part)) || 'Bradford'
+
+/** "Bradford, West Yorkshire" */
+export const showroomArea = (dealership: DealershipInfo): string => `${showroomTown(dealership)}, West Yorkshire`
+
+/** "Rosse Street, Bradford, West Yorkshire, BD8 9AS" */
+export const showroomAddress = (dealership: DealershipInfo): string =>
+  clean([
+    dealership.address.line1,
+    dealership.address.line2,
+    showroomTown(dealership),
+    'West Yorkshire',
+    dealership.address.postcode,
+  ]).join(', ')

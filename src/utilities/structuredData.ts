@@ -1,5 +1,6 @@
 import { getServerSideURL } from '@/utilities/getURL'
 import type { DealershipInfo } from '@/types/dealership'
+import { showroomArea, showroomTown } from '@/utilities/dealershipInfo'
 import { openingHoursSentence, openingHoursSpecification } from '@/data/openingHours'
 
 const getSameAsLinks = (dealership: DealershipInfo) => {
@@ -22,14 +23,14 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         alternateName: dealership.name,
         description:
           dealership.seoText ||
-          `${dealership.name} is Purveyors of Fine Automobiles, a trusted independent used car dealership in ${dealership.address.city || 'Bradford'}, West Yorkshire, specialising in prestige and performance vehicles with car finance, part exchange, and warranty available.`,
+          `${dealership.name} is Purveyors of Fine Automobiles, a trusted independent used car dealership in ${showroomArea(dealership)}, specialising in prestige and performance vehicles with car finance, part exchange, and warranty available.`,
         url: baseUrl,
         telephone: dealership.phone,
         email: dealership.email,
         address: {
           '@type': 'PostalAddress',
           streetAddress: addressLine,
-          addressLocality: dealership.address.city || 'Bradford',
+          addressLocality: showroomTown(dealership),
           addressRegion: 'West Yorkshire',
           postalCode: dealership.address.postcode,
           addressCountry: dealership.address.country || 'GB',
@@ -41,7 +42,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
         },
         areaServed: {
           '@type': 'City',
-          name: dealership.address.city || 'Bradford',
+          name: showroomTown(dealership),
           sameAs: 'https://en.wikipedia.org/wiki/Bradford',
         },
         openingHoursSpecification: openingHoursSpecification(),
@@ -145,7 +146,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             name: 'Can I part exchange my current car?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `Yes, ${dealership.name} offers competitive part exchange valuations. Simply provide your vehicle details online or visit our showroom in ${dealership.address.city || 'Bradford'} for a no-obligation valuation. We accept part exchanges against any vehicle in our inventory, or we can purchase your car outright.`,
+              text: `Yes, ${dealership.name} offers competitive part exchange valuations. Simply provide your vehicle details online or visit our showroom in ${showroomTown(dealership)} for a no-obligation valuation. We accept part exchanges against any vehicle in our inventory, or we can purchase your car outright.`,
             },
           },
           {
@@ -161,7 +162,7 @@ export const generateStructuredData = (dealership: DealershipInfo) => {
             name: 'Where is Autoprestige Cars located?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${dealership.name} is based in ${dealership.address.city || 'Bradford'}, West Yorkshire. Our showroom is open ${openingHoursSentence()}. Call us on ${dealership.phone || '07725 124729'} or visit our contact page for directions.`,
+              text: `${dealership.name} is based in ${showroomArea(dealership)}. Our showroom is open ${openingHoursSentence()}. Call us on ${dealership.phone || '07725 124729'} or visit our contact page for directions.`,
             },
           },
         ],
@@ -183,7 +184,7 @@ export const generateLocalBusinessStructuredData = (dealership: DealershipInfo) 
     address: {
       '@type': 'PostalAddress',
       streetAddress: addressLine,
-      addressLocality: dealership.address.city,
+      addressLocality: showroomTown(dealership),
       postalCode: dealership.address.postcode,
       addressCountry: dealership.address.country || 'GB',
     },

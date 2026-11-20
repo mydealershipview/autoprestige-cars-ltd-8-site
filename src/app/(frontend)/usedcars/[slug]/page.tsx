@@ -11,7 +11,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import VehicleClient from './_components/VehicleClient'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
-import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
+import { mapDealershipInfoToContactData, showroomTown } from '@/utilities/dealershipInfo'
 
 
 interface VehicleResponse {
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const dealership = await getDealershipInfo()
   const dealershipName = dealership.name
-  const dealershipCity = dealership.address.city || 'your area'
+  const dealershipCity = showroomTown(dealership)
 
   const parseSlug = (slug: string) => {
     const parts = slug.split('-')
