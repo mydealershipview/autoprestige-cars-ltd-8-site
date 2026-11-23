@@ -159,7 +159,7 @@ export default async function IndividualListingPage({ params }: { params: Promis
     notFound()
   }
 
-  const { vehicle } = vehicleDetails
+  const { vehicle, similarProducts } = vehicleDetails
 
   const contactPhone =
     contactData?.phoneNumbers?.find((entry) => entry.isPrimary)?.number ||
@@ -176,6 +176,7 @@ export default async function IndividualListingPage({ params }: { params: Promis
   return (
     <VehicleClient
       vehicle={vehicle}
+      similarVehicles={vehicle.metadata?.lifecycleState === 'SOLD' ? similarProducts : []}
       dealershipName={dealership.name}
       phoneNumber={contactPhone}
       whatsappNumber={whatsappNumber}
