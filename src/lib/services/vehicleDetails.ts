@@ -82,11 +82,17 @@ export async function getVehicleDetails(stockId: string) {
     if (!vehicle) vehicle = (await getSoldCarVehicleByStockId(stockId)) ?? undefined
     if (!vehicle) return null
 
-    // Get similar vehicles (full objects)
-    const similarVehicles = getSimilarVehicles(allListings, vehicle, 6)
-
     // The DMS owns sold adverts, including price, text and visibility.
     const sold = vehicle.metadata.lifecycleState === 'SOLD'
+
+    // Get similar vehicles (full objects). Upgrade spec: a sold page always offers cars in stock, so if there is
+    // none of the same make, a sold car gets the nearest prices instead.
+    let similarVehicles = getSimilarVehicles(allListings, vehicle, 6)
+    if (sold && similarVehicles.length === 0) {
+      const priceOf = (v: AutoTraderVehicle) => v.adverts?.forecourtPrice?.amountGBP || v.adverts?.retailAdverts?.totalPrice?.amountGBP || 0
+      const target = priceOf(vehicle)
+      similarVehicles = [...allListings].sort((a, b) => Math.abs(priceOf(a) - target) - Math.abs(priceOf(b) - target)).slice(0, 6)
+    }
     const allVehicleStockIds = [stockId, ...similarVehicles.map(v => v.metadata.stockId)]
     const payloadDataMap = sold ? new Map() : await fetchPayloadVehicleData(allVehicleStockIds)
     const overridesMap = sold ? new Map() : await fetchOverridesMap(allVehicleStockIds)

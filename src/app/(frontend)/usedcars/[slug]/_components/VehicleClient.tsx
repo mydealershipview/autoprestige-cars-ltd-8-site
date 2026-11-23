@@ -15,6 +15,7 @@ import {
   MapPin,
 } from 'lucide-react'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
+import { generateVehicleSlug } from '@/utilities/formatVehicleData'
 import { trackEvent } from '@/lib/analytics'
 
 import {
@@ -31,6 +32,8 @@ interface VehicleClientProps {
   phoneNumber: string
   whatsappNumber: string
   emailAddress: string
+  /** Upgrade spec: on a sold car's page, similar cars in stock (empty for cars in stock). */
+  similarVehicles?: AutoTraderVehicle[]
 }
 
 export default function VehicleClient({
@@ -39,6 +42,7 @@ export default function VehicleClient({
   phoneNumber,
   whatsappNumber,
   emailAddress,
+  similarVehicles = [],
 }: VehicleClientProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
@@ -481,6 +485,53 @@ export default function VehicleClient({
             </div>
           </aside>
         </div>
+
+        {/* Upgrade spec: a sold car's page offers similar cars in stock (sold cars only) */}
+        {isSold && similarVehicles.length > 0 && (
+          <section aria-labelledby="similar-in-stock" className="mt-4 border border-white/15 p-4 md:p-5">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 id="similar-in-stock" className="text-lg font-bold uppercase tracking-[0.12em] text-white">Similar cars in stock</h2>
+                <p className="mt-1 text-xs text-zinc-400">This one has gone, but these are available now.</p>
+              </div>
+              <Link href="/usedcars" className="border border-white/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-200 hover:bg-white/10">
+                View all stock
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {similarVehicles.slice(0, 4).map((car) => {
+                const carMake = car.vehicle?.make || car.vehicle?.standard?.make || ''
+                const carModel = car.vehicle?.model || car.vehicle?.standard?.model || ''
+                const carPrice = car.adverts?.forecourtPrice?.amountGBP ?? car.adverts?.retailAdverts?.totalPrice?.amountGBP ?? null
+                const carImage = car.media?.images?.find((image) => image?.href)?.href
+                const carMiles = car.vehicle?.odometerReadingMiles
+                return (
+                  <Link
+                    key={car.metadata?.stockId}
+                    href={`/usedcars/${generateVehicleSlug(car)}`}
+                    className="group flex flex-col border border-white/10 bg-zinc-950 hover:border-white/30"
+                  >
+                    <div className="aspect-[4/3] overflow-hidden bg-zinc-900">
+                      {carImage ? (
+                        <img src={carImage} alt={`${carMake} ${carModel}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-[10px] uppercase tracking-[0.16em] text-zinc-600">No image</div>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col p-3">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">{carMake}</p>
+                      <h3 className="text-sm font-semibold text-white">{carModel}</h3>
+                      <p className="mt-1 text-xs text-zinc-400">
+                        {[car.vehicle?.yearOfManufacture, carMiles ? `${new Intl.NumberFormat('en-GB').format(carMiles)} miles` : null].filter(Boolean).join(' · ')}
+                      </p>
+                      <p className="mt-auto pt-2 text-lg font-bold text-white">{carPrice ? `£${new Intl.NumberFormat('en-GB').format(carPrice)}` : 'POA'}</p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Dealer Address */}
         <div className="mt-4 flex items-start gap-4 border border-white/10 bg-zinc-950 px-5 py-4">
