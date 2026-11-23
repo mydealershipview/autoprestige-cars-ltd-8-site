@@ -3,6 +3,7 @@ import { extractMakesAndModelsFromVehicles } from '@/utilities/make-model'
 import React from 'react'
 import Navigation from './Navigation'
 import Footer from './Footer'
+import { MobileContactBar } from './MobileContactBar'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 import { mapDealershipInfoToContactData } from '@/utilities/dealershipInfo'
 
@@ -42,6 +43,7 @@ const Layout = async ({ children }: Props) => {
         makes={makes}
         models={models}
       />
+      <MobileContactBar phone={dealership.phone} whatsapp={dealership.whatsapp} />
     </>
   )
 }
