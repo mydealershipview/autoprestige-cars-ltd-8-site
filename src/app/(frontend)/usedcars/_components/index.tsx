@@ -13,6 +13,20 @@ import { useWishlist } from '@/contexts/WishlistContext'
 import { ChevronDown, Search, CreditCard, Camera, Video, SlidersHorizontal, X } from 'lucide-react'
 import ReserveModal from '../[slug]/_components/modals/ReserveModal'
 import { useSoldVehicles } from '@/hooks/useSoldVehicles'
+import {
+  ListingsFilters,
+  FacetRow,
+  OptionKey,
+  countWith,
+  emptyFilters,
+  facetOptions,
+  filtersFromParams,
+  stockYears,
+  withCount,
+} from '@/utilities/stockFilters'
+import { toWishlistVehicle } from '@/utilities/wishlistVehicle'
+import NotifyMeForm from './NotifyMeForm'
+import { stockAlertsEnabled } from '@/utilities/stockAlerts'
 
 const SoldVehiclesShowcase = dynamic(() => import('./SoldVehiclesShowcase'), {
   ssr: false,
@@ -27,21 +41,6 @@ const SoldVehiclesShowcase = dynamic(() => import('./SoldVehiclesShowcase'), {
 
 interface UsedCarsComponentProps {
   listingsData?: unknown
-}
-
-interface ListingsFilters {
-  make: string
-  model: string
-  minPrice: string
-  maxPrice: string
-  fuelType: string
-  bodyType: string
-  transmissionType: string
-  minYear: string
-  maxYear: string
-  colour: string
-  minMileage: string
-  maxMileage: string
 }
 
 type ExtendedModel = Model & {
@@ -72,7 +71,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   const [error, setError] = useState<string | null>(null)
   const [totalResults, setTotalResults] = useState(0)
   const [pageSize] = useState(20)
-  const { toggleWishlist, isInWishlist } = useWishlist()
+  const { toggleWishlist, isInWishlist, wishlistCount } = useWishlist()
 
   // Sorting state
   const [sortBy, setSortBy] = useState('price')
@@ -86,6 +85,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   const [models, setModels] = useState<ExtendedModel[]>([])
   const [allModels, setAllModels] = useState<ExtendedModel[]>([])
   const [makesModelsLoaded, setMakesModelsLoaded] = useState(false)
+  // Filter values of every car in stock, for the live option counts (null until loaded)
+  const [facets, setFacets] = useState<FacetRow[] | null>(null)
   
   // Get current page from URL params
   const currentPage = parseInt(searchParams.get('page') || '1', 10)
@@ -101,20 +102,16 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
 
   // Get filters from URL params
   const getFiltersFromParams = useCallback((): ListingsFilters => {
-    return {
-      make: decodeURIComponent(searchParams.get('make') || ''),
-      model: decodeURIComponent(searchParams.get('model') || ''),
-      minPrice: searchParams.get('minPrice') || '',
-      maxPrice: searchParams.get('maxPrice') || '',
-      fuelType: searchParams.get('fuelType') || '',
-      bodyType: searchParams.get('bodyType') || '',
-      transmissionType: searchParams.get('transmissionType') || '',
-      minYear: searchParams.get('minYear') || '',
-      maxYear: searchParams.get('maxYear') || '',
-      colour: searchParams.get('colour') || '',
-      minMileage: searchParams.get('minMileage') || '',
-      maxMileage: searchParams.get('maxMileage') || '',
+    const fromUrl = filtersFromParams(searchParams)
+    // Make and model were always decoded once more; kept so older links behave the same
+    const decode = (value: string) => {
+      try {
+        return decodeURIComponent(value)
+      } catch {
+        return value
+      }
     }
+    return { ...fromUrl, make: decode(fromUrl.make), model: decode(fromUrl.model) }
   }, [searchParams])
 
   const filters = getFiltersFromParams()
@@ -154,6 +151,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
       const data = await response.json()
       setListings(data.results)
       setTotalResults(data.totalResults)
+      if (Array.isArray(data.facets)) setFacets(data.facets)
 
       // Update makes and models from the response
       if (data.availableMakes) {
@@ -204,6 +202,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     filters.colour,
     filters.minMileage,
     filters.maxMileage,
+    filters.engineSize,
+    filters.doors,
+    filters.seats,
   ])
 
   const updateURL = useCallback(
@@ -268,20 +269,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
   }
 
   const handleClearFilters = () => {
-    const clearedFilters: ListingsFilters = {
-      make: '',
-      model: '',
-      minPrice: '',
-      maxPrice: '',
-      fuelType: '',
-      bodyType: '',
-      transmissionType: '',
-      minYear: '',
-      maxYear: '',
-      colour: '',
-      minMileage: '',
-      maxMileage: '',
-    }
+    const clearedFilters: ListingsFilters = emptyFilters()
     updateURL(clearedFilters, 1, sortBy, sortOrder)
     setModels([])
   }
@@ -341,6 +329,10 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     transmission: false,
     year: false,
     mileage: false,
+    colour: false,
+    engineSize: false,
+    doors: false,
+    seats: false,
   })
 
   const toggleSection = (key: string) => {
@@ -509,6 +501,34 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
     { label: '200,000', value: '200000' },
   ]
 
+  // Live counts (spec 4): each option shows how many cars it would list, given the other filters
+  const countFor = (change: Partial<ListingsFilters>) => (facets ? countWith(facets, filters, change) : null)
+  const countLabel = (label: string, change: Partial<ListingsFilters>) => {
+    const count = countFor(change)
+    return count === null ? label : withCount(label, count)
+  }
+  const rangeChange = (key: keyof ListingsFilters, value: string): Partial<ListingsFilters> => ({ [key]: value })
+  const monthlyChange = (key: 'minPrice' | 'maxPrice', value: string): Partial<ListingsFilters> => ({
+    [key]: value ? estimatePriceFromMonthly(Number(value)).toString() : '',
+  })
+  // Options from the cars in stock; a 0 option stays visible but can't be picked (unless already selected)
+  const renderStockOptions = (key: OptionKey, format: (value: string) => string = (value) => value) => {
+    const options = facets
+      ? facetOptions(facets, filters, key)
+      : filters[key]
+        ? [{ value: filters[key], count: -1 }]
+        : []
+    return options.map((option) => {
+      const selected = option.value.toLowerCase() === filters[key].toLowerCase()
+      return (
+        <option key={option.value} value={selected ? filters[key] : option.value} disabled={option.count === 0 && !selected}>
+          {option.count < 0 ? format(option.value) : withCount(format(option.value), option.count)}
+        </option>
+      )
+    })
+  }
+  const yearChoices = facets ? stockYears(facets, filters) : yearOptions
+
   return (
     <main className="min-h-screen bg-[#111111] text-white overflow-x-hidden">
       {/* Navbar spacer — nav is rendered globally via Layout */}
@@ -568,6 +588,13 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               Sold Cars
               <span className="text-base leading-none">&rsaquo;</span>
             </Link>
+            <Link
+              href="/wishlist"
+              className="mt-2 flex items-center justify-between rounded border border-white/15 bg-white/5 px-3 py-3 text-xs font-extrabold uppercase tracking-wide text-white !transition-colors hover:bg-white/10"
+            >
+              Shortlist{wishlistCount > 0 ? ` (${wishlistCount})` : ''}
+              <span className="text-base leading-none">&rsaquo;</span>
+            </Link>
           </div>
 
           {/* Manufacturer */}
@@ -580,8 +607,12 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             >
               <option value="">All Makes</option>
               {makes.map((make) => (
-                <option key={make.makeId} value={make.name}>
-                  {make.name}
+                <option
+                  key={make.makeId}
+                  value={make.name}
+                  disabled={countFor({ make: make.name, model: '' }) === 0 && make.name !== filters.make}
+                >
+                  {countLabel(make.name, { make: make.name, model: '' })}
                 </option>
               ))}
             </select>
@@ -598,8 +629,12 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             >
               <option value="">All Models</option>
               {models.map((model) => (
-                <option key={model.modelId} value={model.name}>
-                  {model.name}
+                <option
+                  key={model.modelId}
+                  value={model.name}
+                  disabled={countFor({ model: model.name }) === 0 && model.name !== filters.model}
+                >
+                  {countLabel(model.name, { model: model.name })}
                 </option>
               ))}
             </select>
@@ -647,7 +682,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                   >
                     {(financeMode === 'price' ? priceOptions : monthlyOptions).map((option) => (
                       <option key={`from-${financeMode}-${option.value || 'any'}`} value={option.value}>
-                        {option.label}
+                        {option.value
+                          ? countLabel(option.label, financeMode === 'price' ? rangeChange('minPrice', option.value) : monthlyChange('minPrice', option.value))
+                          : option.label}
                       </option>
                     ))}
                   </select>
@@ -670,7 +707,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                   >
                     {(financeMode === 'price' ? priceOptions : monthlyOptions).map((option) => (
                       <option key={`to-${financeMode}-${option.value || 'any'}`} value={option.value}>
-                        {option.label}
+                        {option.value
+                          ? countLabel(option.label, financeMode === 'price' ? rangeChange('maxPrice', option.value) : monthlyChange('maxPrice', option.value))
+                          : option.label}
                       </option>
                     ))}
                   </select>
@@ -688,13 +727,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               className={selectCls}
             >
               <option value="">Any</option>
-              <option value="Saloon">Saloon</option>
-              <option value="Hatchback">Hatchback</option>
-              <option value="SUV">SUV</option>
-              <option value="Coupe">Coupe</option>
-              <option value="Convertible">Convertible</option>
-              <option value="Estate">Estate</option>
-              <option value="MPV">MPV</option>
+              {renderStockOptions('bodyType')}
             </select>
           </FilterSection>
 
@@ -707,10 +740,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               className={selectCls}
             >
               <option value="">Any</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Diesel">Diesel</option>
-              <option value="Electric">Electric</option>
-              <option value="Hybrid">Hybrid</option>
+              {renderStockOptions('fuelType')}
             </select>
           </FilterSection>
 
@@ -723,8 +753,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               className={selectCls}
             >
               <option value="">Any</option>
-              <option value="Automatic">Automatic</option>
-              <option value="Manual">Manual</option>
+              {renderStockOptions('transmissionType')}
             </select>
           </FilterSection>
 
@@ -738,9 +767,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 className={selectCls}
               >
                 <option value="">From</option>
-                {yearOptions.map((year) => (
+                {yearChoices.map((year) => (
                   <option key={`year-from-${year}`} value={year}>
-                    {year}
+                    {countLabel(year, rangeChange('minYear', year))}
                   </option>
                 ))}
               </select>
@@ -751,9 +780,9 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 className={selectCls}
               >
                 <option value="">To</option>
-                {yearOptions.map((year) => (
+                {yearChoices.map((year) => (
                   <option key={`year-to-${year}`} value={year}>
-                    {year}
+                    {countLabel(year, rangeChange('maxYear', year))}
                   </option>
                 ))}
               </select>
@@ -772,7 +801,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 <option value="">From</option>
                 {mileageOptions.map((option) => (
                   <option key={`mileage-from-${option.value || 'any'}`} value={option.value}>
-                    {option.label}
+                    {option.value ? countLabel(option.label, rangeChange('minMileage', option.value)) : option.label}
                   </option>
                 ))}
               </select>
@@ -785,11 +814,63 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 <option value="">To</option>
                 {mileageOptions.map((option) => (
                   <option key={`mileage-to-${option.value || 'any'}`} value={option.value}>
-                    {option.label}
+                    {option.value ? countLabel(option.label, rangeChange('maxMileage', option.value)) : option.label}
                   </option>
                 ))}
               </select>
             </div>
+          </FilterSection>
+
+          {/* Colour */}
+          <FilterSection sectionKey="colour" label="Colour" isActive={!!filters.colour}>
+            <select
+              value={filters.colour}
+              onChange={(e) => handleFilterChange('colour', e.target.value)}
+              aria-label="Colour"
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              {renderStockOptions('colour')}
+            </select>
+          </FilterSection>
+
+          {/* Engine Size */}
+          <FilterSection sectionKey="engineSize" label="Engine Size" isActive={!!filters.engineSize}>
+            <select
+              value={filters.engineSize}
+              onChange={(e) => handleFilterChange('engineSize', e.target.value)}
+              aria-label="Engine size"
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              {renderStockOptions('engineSize', (value) => `${value}L`)}
+            </select>
+          </FilterSection>
+
+          {/* Doors */}
+          <FilterSection sectionKey="doors" label="Doors" isActive={!!filters.doors}>
+            <select
+              value={filters.doors}
+              onChange={(e) => handleFilterChange('doors', e.target.value)}
+              aria-label="Doors"
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              {renderStockOptions('doors')}
+            </select>
+          </FilterSection>
+
+          {/* Seats */}
+          <FilterSection sectionKey="seats" label="Seats" isActive={!!filters.seats}>
+            <select
+              value={filters.seats}
+              onChange={(e) => handleFilterChange('seats', e.target.value)}
+              aria-label="Seats"
+              className={selectCls}
+            >
+              <option value="">Any</option>
+              {renderStockOptions('seats')}
+            </select>
           </FilterSection>
         </aside>
 
@@ -922,6 +1003,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                 >
                   Clear Filters
                 </button>
+                {stockAlertsEnabled() && <NotifyMeForm filters={filters} />}
               </div>
             )}
 
@@ -1028,10 +1110,13 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             </div>
                           )}
                           {/* Wishlist */}
-                          {/* <button
+                          {stockId && (
+                          <button
+                            type="button"
                             onClick={(e) => {
                               e.preventDefault()
-                              // toggleWishlist(stockId)
+                              e.stopPropagation()
+                              toggleWishlist(toWishlistVehicle(vehicle))
                             }}
                             className="absolute top-2 z-20 right-2 p-1.5 rounded bg-black/60 hover:bg-black/80 !transition-colors"
                             aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
@@ -1050,7 +1135,8 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
                               />
                             </svg>
-                          </button> */}
+                          </button>
+                          )}
                           </Link>
                         </div>
 

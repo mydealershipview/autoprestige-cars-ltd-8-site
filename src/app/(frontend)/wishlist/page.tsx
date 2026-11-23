@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
+import WishlistClient from './_components/WishlistClient'
 
 export async function generateMetadata(): Promise<Metadata> {
   const dealership = await getDealershipInfo()
@@ -11,5 +12,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Wishlist() {
-  return <></>
+  return <WishlistClient />
 }
