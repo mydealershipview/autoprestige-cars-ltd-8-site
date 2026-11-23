@@ -13,10 +13,15 @@ import {
   X,
   Maximize2,
   MapPin,
+  Heart,
+  BellRing,
 } from 'lucide-react'
 import { AutoTraderVehicle } from '@/utilities/autotrader'
 import { generateVehicleSlug } from '@/utilities/formatVehicleData'
 import { trackEvent } from '@/lib/analytics'
+import { useWishlist } from '@/contexts/WishlistContext'
+import { toWishlistVehicle } from '@/utilities/wishlistVehicle'
+import { stockAlertsEnabled } from '@/utilities/stockAlerts'
 
 import {
   ReserveModal,
@@ -25,6 +30,7 @@ import {
   PartExchangeModal,
   EmailModal,
 } from './modals'
+import PriceDropModal from './modals/PriceDropModal'
 
 interface VehicleClientProps {
   vehicle: AutoTraderVehicle
@@ -87,6 +93,9 @@ export default function VehicleClient({
   const [showFinance, setShowFinance] = useState(false)
   const [showPartExchange, setShowPartExchange] = useState(false)
   const [showEmail, setShowEmail] = useState(false)
+  const [showPriceDrop, setShowPriceDrop] = useState(false)
+  const { toggleWishlist, isInWishlist } = useWishlist()
+  const saved = isInWishlist(vehicle.metadata?.stockId || '')
 
   const make = vehicle.vehicle.make || vehicle.vehicle.standard?.make || ''
   const model = vehicle.vehicle.model || vehicle.vehicle.standard?.model || ''
@@ -482,6 +491,35 @@ export default function VehicleClient({
               <button onClick={() => setShowPartExchange(true)} disabled={unavailable} className="w-full border border-white/15 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:border-white/15 disabled:hover:text-zinc-400">
                 Part Exchange
               </button>
+              {/* Upgrade spec 7: shortlist + price-drop alert (not on sold or unavailable cars) */}
+              {!unavailable && vehicle.metadata?.stockId && (
+                <div className={`grid gap-2 ${stockAlertsEnabled() ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                  <button
+                    type="button"
+                    onClick={() => toggleWishlist(toWishlistVehicle(vehicle))}
+                    aria-pressed={saved}
+                    className="flex items-center justify-center gap-2 border border-white/15 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white"
+                  >
+                    <Heart className={`h-4 w-4 ${saved ? 'fill-blue-400 text-blue-400' : ''}`} />
+                    {saved ? 'Saved' : 'Save'}
+                  </button>
+                  {stockAlertsEnabled() && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPriceDrop(true)}
+                    className="flex items-center justify-center gap-2 border border-white/15 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400 hover:border-white/30 hover:text-white"
+                  >
+                    <BellRing className="h-4 w-4" />
+                    Price Drop Alert
+                  </button>
+                  )}
+                </div>
+              )}
+              {saved && (
+                <Link href="/wishlist" className="text-center text-xs uppercase tracking-[0.12em] text-blue-400 hover:text-blue-300">
+                  View shortlist &amp; compare
+                </Link>
+              )}
             </div>
           </aside>
         </div>
@@ -648,6 +686,16 @@ export default function VehicleClient({
           vehiclePrice={price}
           stockId={vehicle.metadata?.stockId}
           onClose={() => setShowPartExchange(false)}
+        />
+      )}
+      {showPriceDrop && !unavailable && stockAlertsEnabled() && (
+        <PriceDropModal
+          vehicleMake={make}
+          vehicleModel={model}
+          vehicleReg={vehicle.vehicle.registration || ''}
+          vehiclePrice={price ?? null}
+          stockId={vehicle.metadata?.stockId}
+          onClose={() => setShowPriceDrop(false)}
         />
       )}
       {showEmail && (

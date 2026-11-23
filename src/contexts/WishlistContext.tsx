@@ -14,6 +14,13 @@ export interface WishlistVehicle {
   mileage?: string
   fuel?: string
   transmission?: string
+  // Kept for the side-by-side comparison on the wishlist page (absent on older saves)
+  bodyType?: string
+  engineSize?: string
+  colour?: string
+  doors?: string
+  seats?: string
+  href?: string
 }
 
 interface WishlistContextType {

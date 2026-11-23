@@ -4,107 +4,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { AutoTraderVehicle } from '../../../utilities/autotrader'
 import { extractMakesAndModelsFromVehicles } from '../../../utilities/make-model'
 import { mergeVehiclesWithPayloadData } from '../../../utilities/mergePayloadData'
+import { filterVehicles, filtersFromParams, toFacetRow } from '../../../utilities/stockFilters'
 
 async function fetchAllListings(): Promise<AutoTraderVehicle[]> {
   return getDmsWebsiteVehicles('live')
-}
-
-// Filter function
-function filterListings(listings: AutoTraderVehicle[], filters: {
-  make?: string
-  model?: string
-  minPrice?: number
-  maxPrice?: number
-  minMileage?: number
-  maxMileage?: number
-  fuelType?: string
-  bodyType?: string
-  transmissionType?: string
-  minYear?: number
-  maxYear?: number
-}): AutoTraderVehicle[] {
-  return listings.filter(vehicle => {
-    // Make filter
-    if (filters.make) {
-      const vehicleMake = vehicle.vehicle.make || vehicle.vehicle.standard?.make
-      if (!vehicleMake || vehicleMake.toLowerCase() !== filters.make.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Model filter
-    if (filters.model) {
-      const vehicleModel = vehicle.vehicle.model || vehicle.vehicle.standard?.model
-      if (!vehicleModel || vehicleModel.toLowerCase() !== filters.model.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Price filters
-    const price = vehicle.adverts?.forecourtPrice?.amountGBP || vehicle.adverts?.retailAdverts?.totalPrice?.amountGBP
-    if (typeof filters.minPrice === 'number') {
-      if (typeof price !== 'number' || price < filters.minPrice) {
-        return false
-      }
-    }
-    if (typeof filters.maxPrice === 'number') {
-      if (typeof price !== 'number' || price > filters.maxPrice) {
-        return false
-      }
-    }
-
-    // Mileage filters
-    const mileage = vehicle.vehicle.odometerReadingMiles
-    if (typeof filters.minMileage === 'number') {
-      if (typeof mileage !== 'number' || mileage < filters.minMileage) {
-        return false
-      }
-    }
-    if (typeof filters.maxMileage === 'number') {
-      if (typeof mileage !== 'number' || mileage > filters.maxMileage) {
-        return false
-      }
-    }
-
-    // Fuel type filter
-    if (filters.fuelType) {
-      const vehicleFuelType = vehicle.vehicle.fuelType || vehicle.vehicle.standard?.fuelType
-      if (!vehicleFuelType || vehicleFuelType.toLowerCase() !== filters.fuelType.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Body type filter
-    if (filters.bodyType) {
-      const vehicleBodyType = vehicle.vehicle.bodyType || vehicle.vehicle.standard?.bodyType
-      if (!vehicleBodyType || vehicleBodyType.toLowerCase() !== filters.bodyType.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Transmission type filter
-    if (filters.transmissionType) {
-      const vehicleTransmission = vehicle.vehicle.transmissionType || vehicle.vehicle.standard?.transmissionType
-      if (!vehicleTransmission || vehicleTransmission.toLowerCase() !== filters.transmissionType.toLowerCase()) {
-        return false
-      }
-    }
-
-    // Year filters
-    const vehicleYear = vehicle.vehicle.yearOfManufacture
-    if (typeof filters.minYear === 'number') {
-      if (typeof vehicleYear !== 'number' || vehicleYear < filters.minYear) {
-        return false
-      }
-    }
-    if (typeof filters.maxYear === 'number') {
-      if (typeof vehicleYear !== 'number' || vehicleYear > filters.maxYear) {
-        return false
-      }
-    }
-
-    return true
-  })
 }
 
 // Sort function
@@ -171,17 +74,6 @@ export async function GET(request: NextRequest) {
     // Extract query parameters
     const page = parseInt(searchParams.get('page') || '1')
     const pageSize = parseInt(searchParams.get('pageSize') || '20')
-    const make = searchParams.get('make') ? decodeURIComponent(searchParams.get('make')!) : undefined
-    const model = searchParams.get('model') ? decodeURIComponent(searchParams.get('model')!) : undefined
-    const minPrice = searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice')!) : undefined
-    const maxPrice = searchParams.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!) : undefined
-    const minMileage = searchParams.get('minMileage') ? parseInt(searchParams.get('minMileage')!) : undefined
-    const maxMileage = searchParams.get('maxMileage') ? parseInt(searchParams.get('maxMileage')!) : undefined
-    const fuelType = searchParams.get('fuelType') || undefined
-    const bodyType = searchParams.get('bodyType') || undefined
-    const transmissionType = searchParams.get('transmissionType') || undefined
-    const minYear = searchParams.get('minYear') ? parseInt(searchParams.get('minYear')!) : undefined
-    const maxYear = searchParams.get('maxYear') ? parseInt(searchParams.get('maxYear')!) : undefined
     const sortBy = searchParams.get('sortBy') || 'dateAdded'
     const sortOrder = (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc'
 
@@ -196,20 +88,8 @@ export async function GET(request: NextRequest) {
     // Fetch all listings
     const allListings = await fetchAllListings()
 
-    // Apply filters using names directly
-    const filteredListings = filterListings(allListings, {
-      make,
-      model,
-      minPrice,
-      maxPrice,
-      minMileage,
-      maxMileage,
-      fuelType,
-      bodyType,
-      transmissionType,
-      minYear,
-      maxYear,
-    })
+    // Apply filters (one definition shared with the stock list's option counts)
+    const filteredListings = filterVehicles(allListings, filtersFromParams(searchParams))
 
     // Apply sorting
     const sortedListings = sortListings(filteredListings, sortBy, sortOrder)
@@ -233,6 +113,8 @@ export async function GET(request: NextRequest) {
       page,
       availableMakes: availableMakesModels.makes,
       availableModels: availableMakesModels.models,
+      // Filter values of every car in stock, so the page can show live option counts
+      facets: allListings.map(toFacetRow),
     }
 
     return NextResponse.json(response, { headers: stockCacheHeaders })

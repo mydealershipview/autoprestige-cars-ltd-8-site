@@ -32,7 +32,9 @@ const car = (id: string, make: string, model: string, price: number, state = 'FO
 
 const render = async (props: Record<string, unknown>) => {
   const { default: VehicleClient } = await import('@/app/(frontend)/usedcars/[slug]/_components/VehicleClient')
-  return renderToStaticMarkup(createElement(VehicleClient, { dealershipName: 'Autoprestige', phoneNumber: '01274 000000', whatsappNumber: '447725124729', emailAddress: '', ...props } as never))
+  const { WishlistProvider } = await import('@/contexts/WishlistContext')
+  // The site wraps every page in WishlistProvider (src/providers); the car page's Save button needs it
+  return renderToStaticMarkup(createElement(WishlistProvider, null, createElement(VehicleClient, { dealershipName: 'Autoprestige', phoneNumber: '01274 000000', whatsappNumber: '447725124729', emailAddress: '', ...props } as never)))
 }
 
 describe('sold car page: similar cars', () => {

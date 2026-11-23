@@ -144,3 +144,60 @@ export function buildReservationPayload(args: {
     amount: args.amountPence,
   }
 }
+
+/** Splits "Alex Smith" into first and last name, as the contact form does. */
+export function splitFullName(fullName: string) {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean)
+  return { firstName: parts[0] || '', lastName: parts.slice(1).join(' ') }
+}
+
+interface AlertContact {
+  fullName: string
+  email: string
+  phone: string
+}
+
+/**
+ * Website alerts (Upgrade Spec section 7) are 'find-your-next-car' leads to the DMS, sent through
+ * the same /api/submit-form route (spam guard, dealer routing) as every other enquiry.
+ */
+export function buildNotifyMePayload(contact: AlertContact, filterSummary: string): WebhookData {
+  const { firstName, lastName } = splitFullName(contact.fullName)
+  return {
+    ...buildBaseWebhookPayload({
+      enquiryType: 'find-your-next-car',
+      firstName,
+      lastName,
+      email: contact.email.trim(),
+      phoneNumber: contact.phone.trim(),
+    }),
+    findYourNextCar: { enquiryType: 'help-finding-car', vehiclePreferences: filterSummary },
+    notes: `Website alert: notify me when a matching car arrives (${filterSummary})`,
+  }
+}
+
+export function buildPriceDropPayload(
+  contact: AlertContact,
+  vehicle: { stockId?: string | null; make: string; model: string; registration: string; price: number | null },
+): WebhookData {
+  const { firstName, lastName } = splitFullName(contact.fullName)
+  const reg = vehicle.registration || vehicle.stockId || 'this car'
+  const payload = withInterestedVehicle(
+    buildBaseWebhookPayload({
+      enquiryType: 'find-your-next-car',
+      firstName,
+      lastName,
+      email: contact.email.trim(),
+      phoneNumber: contact.phone.trim(),
+    }),
+    vehicle,
+  )
+  return {
+    ...payload,
+    findYourNextCar: {
+      enquiryType: 'stock-vehicle',
+      vehiclePreferences: [vehicle.make, vehicle.model, vehicle.registration].filter(Boolean).join(' '),
+    },
+    notes: `Website alert: price drop on ${reg}`,
+  }
+}
