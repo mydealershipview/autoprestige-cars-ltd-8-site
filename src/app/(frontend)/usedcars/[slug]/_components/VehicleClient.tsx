@@ -249,10 +249,10 @@ export default function VehicleClient({
         <div className="relative grid grid-cols-1 overflow-hidden border border-white/15 lg:grid-cols-2">
             {hasImages && images.length > 1 && (
               <>
-                <button onClick={prevImage} className="absolute left-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
+                <button onClick={prevImage} aria-label="Previous image" className="absolute left-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
                   <ChevronLeft className="h-6 w-6" />
                 </button>
-                <button onClick={nextImage} className="absolute right-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
+                <button onClick={nextImage} aria-label="Next image" className="absolute right-3 top-1/2 z-10 -translate-y-1/2 bg-black/55 p-2 text-white hover:bg-black/80">
                   <ChevronRight className="h-6 w-6" />
                 </button>
               </>

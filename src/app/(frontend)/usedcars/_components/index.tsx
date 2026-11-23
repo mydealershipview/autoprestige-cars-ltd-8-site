@@ -575,6 +575,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <select
               value={filters.make}
               onChange={(e) => handleMakeChange(e.target.value)}
+              aria-label="Manufacturer"
               className={selectCls}
             >
               <option value="">All Makes</option>
@@ -591,6 +592,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <select
               value={filters.model}
               onChange={(e) => handleModelChange(e.target.value)}
+              aria-label="Model"
               disabled={!filters.make}
               className={`${selectCls} disabled:opacity-40`}
             >
@@ -632,6 +634,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                   <p className="text-lg font-semibold tracking-wide text-white/85">From</p>
                   <select
                     value={financeMode === 'price' ? filters.minPrice : monthlyFromValue}
+                    aria-label={financeMode === 'price' ? 'Price from' : 'Monthly finance from'}
                     onChange={(e) => {
                       const value = e.target.value
                       if (financeMode === 'price') {
@@ -654,6 +657,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                   <p className="text-lg font-semibold tracking-wide text-white/85">To</p>
                   <select
                     value={financeMode === 'price' ? filters.maxPrice : monthlyToValue}
+                    aria-label={financeMode === 'price' ? 'Price to' : 'Monthly finance to'}
                     onChange={(e) => {
                       const value = e.target.value
                       if (financeMode === 'price') {
@@ -680,6 +684,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <select
               value={filters.bodyType}
               onChange={(e) => handleFilterChange('bodyType', e.target.value)}
+              aria-label="Body type"
               className={selectCls}
             >
               <option value="">Any</option>
@@ -698,6 +703,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <select
               value={filters.fuelType}
               onChange={(e) => handleFilterChange('fuelType', e.target.value)}
+              aria-label="Fuel type"
               className={selectCls}
             >
               <option value="">Any</option>
@@ -713,6 +719,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <select
               value={filters.transmissionType}
               onChange={(e) => handleFilterChange('transmissionType', e.target.value)}
+              aria-label="Transmission"
               className={selectCls}
             >
               <option value="">Any</option>
@@ -727,6 +734,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               <select
                 value={filters.minYear}
                 onChange={(e) => handleFilterChange('minYear', e.target.value)}
+                aria-label="Year from"
                 className={selectCls}
               >
                 <option value="">From</option>
@@ -739,6 +747,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               <select
                 value={filters.maxYear}
                 onChange={(e) => handleFilterChange('maxYear', e.target.value)}
+                aria-label="Year to"
                 className={selectCls}
               >
                 <option value="">To</option>
@@ -757,6 +766,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               <select
                 value={filters.minMileage}
                 onChange={(e) => handleFilterChange('minMileage', e.target.value)}
+                aria-label="Mileage from"
                 className={selectCls}
               >
                 <option value="">From</option>
@@ -769,6 +779,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
               <select
                 value={filters.maxMileage}
                 onChange={(e) => handleFilterChange('maxMileage', e.target.value)}
+                aria-label="Mileage to"
                 className={selectCls}
               >
                 <option value="">To</option>
@@ -808,6 +819,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <select
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => handleSortDropdownChange(e.target.value)}
+              aria-label="Sort by"
               className="bg-[#1a1a1a] border border-white/10 rounded px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 shrink-0 w-30 sm:w-auto sm:min-w-45"
             >
               <option value="price-desc">Price Highest to Lowest</option>
