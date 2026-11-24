@@ -16,7 +16,7 @@ export async function register() {
       // Not console.log: on the DMS that flooded GlitchTip (1.5 million events, 18/10/2026).
       integrations: [Sentry.captureConsoleIntegration({ levels: ['warn', 'error'] })],
       normalizeDepth: 6,
-      beforeSend: prepareEvent,
+      beforeSend: (event) => prepareEvent(event),
     })
   }
 }

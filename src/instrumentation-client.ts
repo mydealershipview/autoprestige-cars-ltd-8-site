@@ -11,7 +11,8 @@ Sentry.init({
   tracesSampleRate: 0,
   integrations: [Sentry.captureConsoleIntegration({ levels: ['warn', 'error'] })],
   normalizeDepth: 6,
-  beforeSend: prepareEvent,
+  // Browser side: crawler and other-script errors are not sent (src/utilities/monitoring.ts)
+  beforeSend: (event) => prepareEvent(event, { browser: true }),
 })
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
