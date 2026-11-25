@@ -70,7 +70,7 @@ export function FeaturedStock({ vehicles }: { vehicles: WebsiteVehicle[] }) {
                       <img
                         src={image}
                         alt={[name, derivative].filter(Boolean).join(' ')}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full object-cover !transition-transform !duration-500 group-hover:scale-105"
                         width="800"
                         height="600"
                         loading="lazy"

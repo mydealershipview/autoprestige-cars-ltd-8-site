@@ -551,7 +551,7 @@ export default function VehicleClient({
                   >
                     <div className="aspect-[4/3] overflow-hidden bg-zinc-900">
                       {carImage ? (
-                        <img src={carImage} alt={`${carMake} ${carModel}`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        <img src={carImage} alt={`${carMake} ${carModel}`} className="h-full w-full object-cover !transition-transform !duration-500 group-hover:scale-105" loading="lazy" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-[10px] uppercase tracking-[0.16em] text-zinc-600">No image</div>
                       )}

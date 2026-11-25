@@ -149,7 +149,7 @@ export function SoldCarsSlider() {
                         <img
                           src={imageUrl}
                           alt={`${make} ${model}`}
-                          className="relative z-10 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                          className="relative z-10 h-full w-full object-contain !transition-transform !duration-500 group-hover:scale-105"
                           width="800"
                           height="600"
                           loading="lazy"
