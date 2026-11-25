@@ -4,8 +4,10 @@ import type { WebsiteVehicle } from '@/lib/services/dmsWebsiteStock'
 import { formatPrice, generateVehicleSlug } from '@/utilities/formatVehicleData'
 import { isReserved } from '@/utilities/websiteVehicleStatus'
 
-/** Upgrade spec (Habib, 13/11/2026): 8 to 12 cars on the homepage, in the first HTML. */
+/** Upgrade spec (Habib, 13/11/2026): 8 to 12 cars on the homepage, in the first HTML. The dealer picks
+ * 8 to 12 in the DMS; FEATURED_COUNT is only for the fallback below. */
 export const FEATURED_COUNT = 8
+export const FEATURED_MAX = 12
 /** Fewer cars than this: hide the section rather than show a thin row (spec). */
 export const FEATURED_MIN = 4
 
@@ -17,16 +19,29 @@ const time = (v: WebsiteVehicle) => {
 /** A new arrival carries one "Coming soon" picture until it is photographed: not for the homepage. */
 const hasPhotos = (v: WebsiteVehicle) => (v.media?.images?.length ?? 0) >= 2
 
-/** Newest on the forecourt first, the same order as the Used Cars page ("dateAdded"), photographed
- * cars only. Until the DMS featured-stock rule exists (pinned cars, minimum price), the newest
- * photographed cars are the featured ones. Every car is still on the Used Cars page. */
-export function pickFeatured(vehicles: WebsiteVehicle[]): WebsiteVehicle[] {
-  return vehicles.filter(hasPhotos).sort((a, b) => time(b) - time(a)).slice(0, FEATURED_COUNT)
+/** The cars the dealer's DMS rule chose (Settings > Website, 25/11/2026), in that order, taken from
+ * the live list so every card links to a car on the Used Cars page. A Reserved car shown from its
+ * website copy matches by its original stock ID. Photographed cars only, like before.
+ * featuredIds null = the featured feed is down: newest photographed cars, the same order as the
+ * Used Cars page ("dateAdded"), so the homepage keeps its stock. */
+export function pickFeatured(vehicles: WebsiteVehicle[], featuredIds: string[] | null = null): WebsiteVehicle[] {
+  if (!featuredIds) return vehicles.filter(hasPhotos).sort((a, b) => time(b) - time(a)).slice(0, FEATURED_COUNT)
+  const byId = new Map<string, WebsiteVehicle>()
+  for (const vehicle of vehicles) {
+    byId.set(String(vehicle.metadata.stockId), vehicle)
+    if (vehicle.sourceStockId) byId.set(String(vehicle.sourceStockId), vehicle)
+  }
+  const picked = new Set<WebsiteVehicle>()
+  for (const id of featuredIds) {
+    const vehicle = byId.get(id)
+    if (vehicle && hasPhotos(vehicle)) picked.add(vehicle)
+  }
+  return [...picked].slice(0, FEATURED_MAX)
 }
 
 /** Server-rendered, so search engines and AI crawlers see the stock without running scripts. */
-export function FeaturedStock({ vehicles }: { vehicles: WebsiteVehicle[] }) {
-  const featured = pickFeatured(vehicles)
+export function FeaturedStock({ vehicles, featuredIds = null }: { vehicles: WebsiteVehicle[]; featuredIds?: string[] | null }) {
+  const featured = pickFeatured(vehicles, featuredIds)
   if (featured.length < FEATURED_MIN) return null
 
   return (

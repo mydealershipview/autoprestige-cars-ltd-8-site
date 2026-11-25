@@ -11,7 +11,7 @@ export type WebsiteVehicle = AutoTraderVehicle & {
 }
 
 type Kind = 'live' | 'sold' | 'reserved'
-type FeedKind = Kind | 'inventory'
+type FeedKind = Kind | 'inventory' | 'featured'
 const MAX_PAGES = 100
 let legacyAccessWarned = false
 type Bundle = Record<Kind, WebsiteVehicle[]>
@@ -41,6 +41,13 @@ export function websiteStockUrl(kind: FeedKind, page = 1, pageSize = 100): URL {
   if (kind === 'reserved' || !keyed) url.searchParams.set('dealerEmail', process.env.DEALER_EMAIL!)
   for (const key of ['status', 'includeReserved', 'lifecycleState']) url.searchParams.delete(key)
   if (kind === 'reserved') url.pathname = url.pathname.replace(/\/stock\/?$/, '/reserved-ads')
+  url.searchParams.delete('featured')
+  // The homepage featured cars (DMS Settings > Website, 25/11/2026): one answer, no paging or filters.
+  if (kind === 'featured') {
+    for (const key of ['page', 'pageSize']) url.searchParams.delete(key)
+    url.searchParams.set('featured', 'true')
+    return url
+  }
   if (kind !== 'inventory') url.searchParams.set(kind === 'sold' ? 'status' : 'includeReserved', kind === 'sold' ? 'sold' : 'true')
   url.searchParams.set('page', String(page))
   url.searchParams.set('pageSize', String(pageSize))
@@ -154,4 +161,37 @@ export async function getDmsWebsiteInventoryVehicles(): Promise<WebsiteVehicle[]
     return cached.rows
   }
   return refreshInventory(key)
+}
+
+// Homepage featured cars, in the dealer's order (DMS Settings > Website: featured cars first, then the
+// newest above a minimum price). Only the stock IDs are kept: the cars themselves come from the live
+// list, so the homepage never shows a car the Used Cars page doesn't. Same cache times as the stock.
+const featuredCaches = new Map<string, { fetchedAt: number; ids: string[] }>()
+const featuredPending = new Map<string, Promise<string[]>>()
+function refreshFeatured(key: string): Promise<string[]> {
+  let request = featuredPending.get(key)
+  if (!request) {
+    request = readPage('featured', 1).then(({ vehicles }) => {
+      const ids = vehicles.map(vehicle => String(vehicle.metadata.stockId))
+      featuredCaches.set(key, { ids, fetchedAt: Date.now() })
+      return ids
+    })
+    featuredPending.set(key, request)
+    const current = request
+    const clear = () => { if (featuredPending.get(key) === current) featuredPending.delete(key) }
+    void current.then(clear, clear)
+  }
+  return request
+}
+/** Empty when the dealer's rule finds fewer than 4 cars (the section is hidden). Throws when the feed is down. */
+export async function getDmsFeaturedStockIds(): Promise<string[]> {
+  const key = websiteStockUrl('featured').toString()
+  const cached = featuredCaches.get(key)
+  const age = cached ? Date.now() - cached.fetchedAt : Infinity
+  if (cached && age < freshMs()) return cached.ids
+  if (cached && age < maxStaleMs()) {
+    refreshFeatured(key).catch(() => {})
+    return cached.ids
+  }
+  return refreshFeatured(key)
 }

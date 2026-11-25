@@ -6,7 +6,7 @@ import { SoldCarsSlider } from '@/components/home/SoldCarsSlider'
 import Link from 'next/link'
 import { getDealershipInfo } from '@/lib/services/dealership.service'
 import { showroomAddress, showroomArea, showroomTown, siteDescription } from '@/utilities/dealershipInfo'
-import { getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
+import { getDmsFeaturedStockIds, getDmsWebsiteVehicles } from '@/lib/services/dmsWebsiteStock'
 import { FeaturedStock } from '@/components/home/FeaturedStock'
 import { CustomerReviews } from '@/components/home/CustomerReviews'
 
@@ -54,10 +54,18 @@ const Home = async () => {
   const displayTagline = dealership.tagline || 'Trusted used vehicles and support'
   // Read on the server so the cars are in the HTML. If the stock feed is down the homepage still
   // loads without this section; the failure is logged (and reported by the stock service).
-  const liveVehicles = await getDmsWebsiteVehicles('live').catch((error) => {
-    console.error('Homepage stock unavailable:', error)
-    return null
-  })
+  const [liveVehicles, featuredIds] = await Promise.all([
+    getDmsWebsiteVehicles('live').catch((error) => {
+      console.error('Homepage stock unavailable:', error)
+      return null
+    }),
+    // The dealer's featured cars (DMS Settings > Website). If that read fails the section shows the
+    // newest cars instead; the failure is logged and reported by the stock service.
+    getDmsFeaturedStockIds().catch((error) => {
+      console.error('Homepage featured cars unavailable, showing the newest:', error)
+      return null
+    }),
+  ])
 
   return (
     <main className="relative min-h-screen w-full overflow-x-hidden bg-black text-white">
@@ -122,7 +130,7 @@ const Home = async () => {
       </section>
 
       {/* Latest stock, in the first HTML (upgrade spec: highest priority). Hidden if the feed is down. */}
-      {liveVehicles && <FeaturedStock vehicles={liveVehicles} />}
+      {liveVehicles && <FeaturedStock vehicles={liveVehicles} featuredIds={featuredIds} />}
 
       {/* Online Showroom Section */}
       <section className="relative h-screen w-full overflow-clip flex items-end">
