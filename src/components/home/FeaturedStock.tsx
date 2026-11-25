@@ -63,7 +63,9 @@ export function FeaturedStock({ vehicles }: { vehicles: WebsiteVehicle[] }) {
             return (
               <li key={vehicle.metadata.stockId}>
                 <Link href={href} className="block group h-full bg-zinc-900 border border-zinc-700 hover:border-zinc-500 transition-colors">
-                  <div className="relative h-52 overflow-hidden bg-zinc-800">
+                  {/* 4:3 like the stock photos (800x600), so the whole car shows on every screen
+                      width. A fixed h-52 cut the bottom off on phones (25/11/2026). */}
+                  <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
                     {image ? (
                       <img
                         src={image}

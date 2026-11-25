@@ -109,7 +109,8 @@ const Home = async () => {
             <div className="w-8 h-8 lg:w-10 lg:h-10 bg-blue-500 mr-4 -skew-x-[24deg] mt-1"></div>
             
             <div className="flex flex-col">
-              <h1 className="text-3xl lg:text-4xl font-black tracking-widest uppercase mb-1 drop-shadow-lg">
+              {/* Below 360px (iPhone SE size) "AUTOPRESTIGE" ran off the screen: smaller, tighter there */}
+              <h1 className="text-3xl lg:text-4xl font-black tracking-widest uppercase mb-1 drop-shadow-lg max-[360px]:text-2xl max-[360px]:tracking-wider">
                 {displayName}
               </h1>
               <p className="text-sm lg:text-base text-gray-200 tracking-widest font-medium uppercase drop-shadow-md">
