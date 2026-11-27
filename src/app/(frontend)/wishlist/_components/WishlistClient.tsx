@@ -122,7 +122,8 @@ export default function WishlistClient() {
                 <p className="mt-2 text-xs text-zinc-400">Tick 2 or 3 cars above to see them side by side.</p>
               ) : (
                 <div className="mt-4 overflow-x-auto">
-                  <table className="w-full min-w-[560px] border-collapse text-sm">
+                  {/* Equal car columns (table-fixed): every 4:3 photo is the same height, so photos and names line up */}
+                  <table className="w-full min-w-[560px] table-fixed border-collapse text-sm">
                     <thead>
                       <tr>
                         <th scope="col" className="w-28 border-b border-white/10 p-2 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
