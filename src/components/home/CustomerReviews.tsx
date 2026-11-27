@@ -27,7 +27,7 @@ export function CustomerReviews() {
               WHAT OUR CUSTOMERS SAY
             </h2>
           </div>
-          <p className="text-sm text-zinc-500 tracking-[0.18em] font-semibold uppercase ml-10">
+          <p className="text-sm text-zinc-400 tracking-[0.18em] font-semibold uppercase ml-10">
             From customers who bought from us and sold to us
           </p>
         </div>

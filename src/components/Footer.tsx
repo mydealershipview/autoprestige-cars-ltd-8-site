@@ -170,7 +170,7 @@ export default function Footer({ contactData, dealershipName }: FooterProps) {
         <div className="w-full h-px bg-white/10 mb-12" />
 
         {/* Primary Disclaimer */}
-        <div className="text-[10px] md:text-xs text-center text-gray-500 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
+        <div className="text-[10px] md:text-xs text-center text-gray-400 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
           <div className="space-y-4 text-xs md:text-sm text-gray-300 leading-relaxed tracking-wide">
             <p>
               <span className="text-white font-semibold uppercase tracking-widest text-[11px] block mb-2">Important Disclosure</span>
@@ -186,14 +186,14 @@ export default function Footer({ contactData, dealershipName }: FooterProps) {
         </div>
 
         {/* FCA Regulatory Note */}
-        <div className="text-[10px] text-center text-gray-600 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
+        <div className="text-[10px] text-center text-gray-400 max-w-6xl mx-auto leading-relaxed mb-12 uppercase tracking-wide">
           <p>
             Authorised &amp; regulated by the Financial Conduct Authority for Consumer Credit. Finance subject to status — UK residents 18+ only. Guarantees may be required.
           </p>
         </div>
 
         {/* Company Registration Numbers */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-[10px] text-gray-500 tracking-widest uppercase mb-4 text-center">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-[10px] text-gray-400 tracking-widest uppercase mb-4 text-center">
           <span>VAT No. GB 219955471</span>
           <span className="hidden sm:inline text-white/20">|</span>
           <span>Company No. 9681013</span>
@@ -202,7 +202,7 @@ export default function Footer({ contactData, dealershipName }: FooterProps) {
         </div>
 
         {/* Bottom Legal Links */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-500 tracking-wider">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-400 tracking-wider">
           <span>© {new Date().getFullYear()} Autoprestige Cars. All Rights Reserved.</span>
           <span className="hidden md:inline">|</span>
           <Link href="/terms" className="hover:text-blue-400 !transition-colors uppercase border-b border-blue-700 pb-0.5">Terms &amp; Conditions</Link>
@@ -217,7 +217,7 @@ export default function Footer({ contactData, dealershipName }: FooterProps) {
         </div>
 
         {/* Powered By */}
-        <div className="mt-8 text-center text-[10px] md:text-xs text-gray-600 tracking-wider">
+        <div className="mt-8 text-center text-[10px] md:text-xs text-gray-400 tracking-wider">
           Website powered by <a href="https://mydealershipview.com/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-400 !transition-colors border-b border-blue-700 pb-0.5">MYDEALERSHIPVIEW</a>
         </div>
       </div>

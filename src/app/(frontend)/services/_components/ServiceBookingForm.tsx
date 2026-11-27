@@ -347,7 +347,7 @@ export default function ServiceBookingForm() {
         </p>
       )}
 
-      <p className="text-white/40 text-xs">* required fields</p>
+      <p className="text-white/60 text-xs">* required fields</p>
 
       <div className="flex justify-end">
         <button

@@ -112,7 +112,7 @@ export default function SoldVehiclesShowcase({ vehicles }: SoldVehiclesShowcaseP
                     {make} {model}
                   </p>
                   {derivative && (
-                    <p className="mt-0.5 truncate text-[10px] text-gray-500">{derivative}</p>
+                    <p className="mt-0.5 truncate text-[10px] text-gray-400">{derivative}</p>
                   )}
                   <div className="mt-2 flex flex-wrap gap-1">
                     {year && (
@@ -132,7 +132,7 @@ export default function SoldVehiclesShowcase({ vehicles }: SoldVehiclesShowcaseP
                     )}
                   </div>
                   {price && (
-                    <p className="mt-2.5 text-sm font-bold text-gray-500 line-through">
+                    <p className="mt-2.5 text-sm font-bold text-gray-400 line-through">
                       {formatPrice(price)}
                     </p>
                   )}
