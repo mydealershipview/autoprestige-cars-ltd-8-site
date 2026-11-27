@@ -353,7 +353,7 @@ export default function ServiceBookingForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-blue-500 hover:bg-blue-600 disabled:opacity-60 text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
+          className="bg-[#0c6dff] hover:bg-blue-600 disabled:opacity-60 text-white font-black tracking-widest uppercase px-10 py-3 !transition-colors text-sm"
         >
           {isSubmitting ? 'Submitting…' : 'Submit'}
         </button>

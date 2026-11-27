@@ -1139,7 +1139,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                         <Link
                           // href={`/usedcars/${slug}`}
                           href="#"
-                          className="block pointer-events-none text-center bg-blue-500 hover:bg-blue-400 !transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
+                          className="block pointer-events-none text-center bg-[#0c6dff] hover:bg-blue-600 !transition-colors py-2.5 text-[11px] font-extrabold tracking-[0.15em] uppercase text-white mt-auto"
                         >
                           {/* More &rsaquo; */}
                           Now Sold

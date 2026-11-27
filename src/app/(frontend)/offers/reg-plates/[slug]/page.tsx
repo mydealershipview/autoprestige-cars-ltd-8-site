@@ -52,7 +52,7 @@ export default async function RegPlateDetailPage({ params }: RegPlateDetailPageP
           </p>
           <Link
             href="/contact"
-            className="inline-flex w-fit items-center bg-blue-500 hover:bg-blue-600 !transition-colors px-5 py-2 font-semibold text-white"
+            className="inline-flex w-fit items-center bg-[#0c6dff] hover:bg-blue-600 !transition-colors px-5 py-2 font-semibold text-white"
           >
             Make an Enquiry
           </Link>

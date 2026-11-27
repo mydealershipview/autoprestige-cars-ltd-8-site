@@ -118,7 +118,7 @@ export function FeaturedStock({ vehicles, featuredIds = null }: { vehicles: Webs
         <div className="mt-10 text-center">
           <Link
             href="/usedcars"
-            className="inline-flex items-center gap-2 border border-blue-500 px-6 py-3 text-sm font-bold tracking-widest uppercase text-white hover:bg-blue-500 transition-colors"
+            className="inline-flex items-center gap-2 border border-blue-500 px-6 py-3 text-sm font-bold tracking-widest uppercase text-white hover:bg-[#0c6dff] transition-colors"
           >
             View all {vehicles.length} cars <ChevronRight className="h-4 w-4" />
           </Link>

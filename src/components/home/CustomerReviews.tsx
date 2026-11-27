@@ -49,7 +49,7 @@ export function CustomerReviews() {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/testimonials"
-            className="inline-flex items-center gap-2 border border-blue-500 px-6 py-3 text-sm font-bold tracking-widest uppercase text-white hover:bg-blue-500 transition-colors"
+            className="inline-flex items-center gap-2 border border-blue-500 px-6 py-3 text-sm font-bold tracking-widest uppercase text-white hover:bg-[#0c6dff] transition-colors"
           >
             Read all reviews <ChevronRight className="h-4 w-4" />
           </Link>
