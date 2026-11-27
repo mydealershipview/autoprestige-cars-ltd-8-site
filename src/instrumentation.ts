@@ -19,6 +19,11 @@ export async function register() {
       beforeSend: (event) => prepareEvent(event),
     })
   }
+  // Sold cars in memory from server start (27/11/2026): not during `next build`, server only
+  if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.NEXT_PHASE !== 'phase-production-build') {
+    const { startSoldCarsWarmup } = await import('@/lib/services/soldCarsWarmup')
+    startSoldCarsWarmup()
+  }
 }
 
 // Errors thrown while rendering pages and running API routes
