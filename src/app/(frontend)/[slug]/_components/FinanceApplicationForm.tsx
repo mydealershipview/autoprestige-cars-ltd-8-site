@@ -231,7 +231,7 @@ export default function FinanceApplicationForm() {
         <button
           type="button"
           onClick={() => setSubmitted(false)}
-          className="rounded-md bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 text-xs font-black tracking-widest uppercase !transition-colors"
+          className="rounded-md bg-[#0c6dff] hover:bg-blue-600 text-white px-6 py-3 text-xs font-black tracking-widest uppercase !transition-colors"
         >
           Submit Another Application
         </button>
@@ -509,7 +509,7 @@ export default function FinanceApplicationForm() {
         <button
           type="submit"
           disabled={isSubmitting || !formData.acceptedTerms}
-          className="w-full rounded-md bg-blue-500 hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed text-white px-8 py-4 text-xs font-black tracking-widest uppercase !transition-colors"
+          className="w-full rounded-md bg-[#0c6dff] hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed text-white px-8 py-4 text-xs font-black tracking-widest uppercase !transition-colors"
         >
           {isSubmitting ? 'Submitting...' : 'Submit Application'}
         </button>

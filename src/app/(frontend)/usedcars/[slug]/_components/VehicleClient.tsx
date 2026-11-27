@@ -482,7 +482,7 @@ export default function VehicleClient({
                 trackEvent('finance_quote_started', { item_id: vehicle.metadata?.stockId || undefined })
                 const section = document.getElementById("cw_standalone_calculate_button");
                 section?.scrollIntoView({ behavior: "smooth" });
-              }} disabled={unavailable} className="w-full bg-blue-500 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
+              }} disabled={unavailable} className="w-full bg-[#0c6dff] py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-blue-600 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-[#0c6dff]">
                 Apply For Finance
               </button>
               <button onClick={() => { trackEvent('reservation_started', { item_id: vehicle.metadata?.stockId || undefined }); if (canReserve(vehicle)) setShowReserve(true) }} disabled={!canReserve(vehicle)} className="w-full border border-white/25 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-white/8 disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent">

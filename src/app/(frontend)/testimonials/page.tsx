@@ -93,7 +93,7 @@ export default function ReviewsPage() {
             href={GOOGLE_REVIEW_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold tracking-widest uppercase text-sm px-8 py-4 !transition-colors"
+            className="inline-flex items-center gap-2 bg-[#0c6dff] hover:bg-blue-600 text-white font-bold tracking-widest uppercase text-sm px-8 py-4 !transition-colors"
           >
             Leave a Google Review
           </a>

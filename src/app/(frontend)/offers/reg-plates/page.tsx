@@ -63,7 +63,7 @@ export default async function RegPlatesPage() {
                   {plate.price == null ? 'Price - POA' : `£${new Intl.NumberFormat('en-GB').format(plate.price)}`}
                 </p>
               )}
-              <span className="mt-6 w-full bg-blue-500 group-hover:bg-blue-600 !transition-colors text-white text-center font-semibold tracking-wide py-3">
+              <span className="mt-6 w-full bg-[#0c6dff] group-hover:bg-blue-600 !transition-colors text-white text-center font-semibold tracking-wide py-3">
                 More Details
               </span>
             </Link>
