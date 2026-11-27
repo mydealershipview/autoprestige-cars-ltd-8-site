@@ -54,7 +54,7 @@ export function FeaturedStock({ vehicles, featuredIds = null }: { vehicles: Webs
               LATEST STOCK
             </h2>
           </div>
-          <p className="text-sm text-zinc-500 tracking-[0.18em] font-semibold uppercase ml-10">
+          <p className="text-sm text-zinc-400 tracking-[0.18em] font-semibold uppercase ml-10">
             Hand-picked prestige and performance cars
           </p>
         </div>
@@ -99,7 +99,7 @@ export function FeaturedStock({ vehicles, featuredIds = null }: { vehicles: Webs
                   </div>
                   <div className="px-4 py-3 border-t border-zinc-700">
                     <h3 className="text-sm font-black uppercase tracking-wide text-white truncate">{make} {model}</h3>
-                    {derivative && <p className="text-xs text-zinc-500 truncate mt-0.5">{derivative}</p>}
+                    {derivative && <p className="text-xs text-zinc-400 truncate mt-0.5">{derivative}</p>}
                     <p className="flex flex-wrap gap-1.5 mt-2.5 text-[11px] text-zinc-400">
                       {[year, mileage ? `${new Intl.NumberFormat('en-GB').format(mileage)} miles` : '', fuel, gearbox]
                         .filter(Boolean)

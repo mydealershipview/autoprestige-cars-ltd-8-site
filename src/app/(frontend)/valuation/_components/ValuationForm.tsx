@@ -399,7 +399,7 @@ export default function ValuationForm() {
       )}
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <p className="text-white/40 text-xs">* required fields</p>
+        <p className="text-white/60 text-xs">* required fields</p>
         <button
           type="submit"
           disabled={isSubmitting}

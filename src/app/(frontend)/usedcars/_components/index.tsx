@@ -950,7 +950,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
             <p className="text-[11px] font-bold text-gray-300 mb-0.5">
               We are a credit broker, not a lender. Representative Example:
             </p>
-            <p className="text-[10px] text-gray-500 leading-relaxed max-w-5xl mx-auto">
+            <p className="text-[10px] text-gray-400 leading-relaxed max-w-5xl mx-auto">
               Finance Product Type: Hire Purchase. The fixed interest rate of 8.9% is applied to a total credit
               amount of £18,895.50 for a duration of 48 months. The cash price of the vehicle is £20,995.00, and
               a deposit of £2,099.50 is required. The total amount to be paid over the term of the agreement is
@@ -1173,7 +1173,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                           {/* Price columns */}
                           <div className="flex gap-4 mt-2.5">
                             <div>
-                              <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                              <p className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">
                                 Our Price
                               </p>
                               <p className="text-sm font-bold text-white leading-tight">
@@ -1183,7 +1183,7 @@ export default function UsedCarsComponent({ listingsData: _listingsData }: UsedC
                             {vehiclePrice && monthlyPrice !== 'N/A' && (
                               <div>
                                 <div className="flex items-center gap-1.5">
-                                  <p className="text-[9px] uppercase tracking-wider text-gray-500 font-semibold">
+                                  <p className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">
                                     Monthly
                                   </p>
                                   <span className="text-[8px] uppercase tracking-wider text-teal-400 font-bold">

@@ -414,7 +414,7 @@ export default function VehicleClient({
 
             {vehicle.metadata?.stockId && (
               <div className="flex items-center justify-between border-b border-white/8 py-2.5">
-                <span className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">Stock ID:</span>
+                <span className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">Stock ID:</span>
                 <span className="font-mono text-[11px] font-semibold tracking-wider text-zinc-300">{vehicle.metadata.stockId}</span>
               </div>
             )}
@@ -459,7 +459,7 @@ export default function VehicleClient({
             <div className="mt-4">
               {specRows.map((item, i) => (
                 <div key={item.label} className={`grid grid-cols-2 text-sm py-2 ${i < specRows.length - 1 ? 'border-b border-white/8' : ''}`}>
-                  <span className="text-zinc-500">{item.label}</span>
+                  <span className="text-zinc-400">{item.label}</span>
                   <span className="text-right font-semibold text-white">{item.value}</span>
                 </div>
               ))}
@@ -557,7 +557,7 @@ export default function VehicleClient({
                       )}
                     </div>
                     <div className="flex flex-1 flex-col p-3">
-                      <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">{carMake}</p>
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">{carMake}</p>
                       <h3 className="text-sm font-semibold text-white">{carModel}</h3>
                       <p className="mt-1 text-xs text-zinc-400">
                         {[car.vehicle?.yearOfManufacture, carMiles ? `${new Intl.NumberFormat('en-GB').format(carMiles)} miles` : null].filter(Boolean).join(' · ')}
@@ -577,7 +577,7 @@ export default function VehicleClient({
             <MapPin className="h-4 w-4 text-blue-500" />
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Our Location</span>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-400 mb-1">Our Location</span>
             <span className="text-sm text-zinc-200 leading-relaxed">
               Autoprestige House, Cars Unlimited T/A Autoprestige, Rosse Street, Bradford, West Yorkshire, BD8 9AS, United Kingdom
             </span>

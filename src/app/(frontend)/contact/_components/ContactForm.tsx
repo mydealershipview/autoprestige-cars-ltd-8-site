@@ -191,7 +191,7 @@ export default function ContactForm() {
 
       {/* Footer */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
-        <p className="text-white/40 text-xs">
+        <p className="text-white/60 text-xs">
           * required fields
         </p>
         <button

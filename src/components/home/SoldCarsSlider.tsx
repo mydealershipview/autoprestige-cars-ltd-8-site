@@ -54,7 +54,7 @@ export function SoldCarsSlider() {
                 RECENTLY SOLD
               </h2>
             </div>
-            <p className="text-sm text-zinc-500 tracking-[0.18em] font-semibold uppercase ml-10">
+            <p className="text-sm text-zinc-400 tracking-[0.18em] font-semibold uppercase ml-10">
               Vehicles that have found their new owners
             </p>
           </div>
@@ -172,7 +172,7 @@ export function SoldCarsSlider() {
                           {make} {model}
                         </p>
                         {derivative && (
-                          <p className="text-[11px] text-zinc-500 truncate mt-0.5">{derivative}</p>
+                          <p className="text-[11px] text-zinc-400 truncate mt-0.5">{derivative}</p>
                         )}
 
                         <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
@@ -194,7 +194,7 @@ export function SoldCarsSlider() {
                         </div>
 
                         {price ? (
-                          <p className="mt-2.5 text-sm font-bold text-zinc-500 line-through">
+                          <p className="mt-2.5 text-sm font-bold text-zinc-400 line-through">
                             {formatPrice(price)}
                           </p>
                         ) : null}
